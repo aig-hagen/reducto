@@ -63,6 +63,11 @@ add_executable(ParallelSolver ${SOURCES})
 target_include_directories(ParallelSolver PUBLIC INCLD)
 target_include_directories(ParallelSolver PUBLIC LIB)
 
+find_package(OpenMP)
+if(OpenMP_CXX_FOUND)
+    target_link_libraries(ParallelSolver PUBLIC OpenMP::OpenMP_CXX)
+endif()
+
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET ParallelSolver PROPERTY CXX_STANDARD 20)
