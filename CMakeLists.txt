@@ -1,7 +1,8 @@
-﻿# CMakeList.txt : CMake project for ParallelSolver, include source and define
-# project specific logic here.
-#
-cmake_minimum_required (VERSION 3.8)
+﻿cmake_minimum_required(VERSION 3.10)
+
+# specify the C++ standard
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Enable Hot Reload for MSVC compilers if supported.
 if (POLICY CMP0141)
@@ -14,7 +15,6 @@ project ("ParallelSolver" LANGUAGES C CXX)
 # Add source to this project's executable.
 set(INCLD "${CMAKE_CURRENT_LIST_DIR}/include")
 set(SRC "${CMAKE_CURRENT_LIST_DIR}/src/")
-set(LIB_PSTREAMS "${CMAKE_CURRENT_LIST_DIR}/lib/pstreams-1.0.3")
 
 set(HEADERS
 	${INCLD}/Main.h
@@ -34,7 +34,6 @@ set(HEADERS
 	${INCLD}/ScepticalPRCheck.h
 	${INCLD}/ScepticalPRParallel.h
 	${INCLD}/ScepticalPRSequential.h
-	${LIB_PSTREAMS}/pstream.h
 	)
 
 set(SRCFILES
@@ -62,21 +61,38 @@ set(SOURCES ${SRCFILES} ${HEADERS})
 add_executable(ParallelSolver ${SOURCES})
 
 target_include_directories(ParallelSolver PUBLIC INCLD)
-target_include_directories(ParallelSolver PUBLIC LIB_PSTREAMS)
 
+# Add libraries
+
+# --- OpenMP ---
 find_package(OpenMP)
 if(OpenMP_CXX_FOUND)
     target_link_libraries(ParallelSolver PUBLIC OpenMP::OpenMP_CXX)
 endif()
 
+# --- pstreams ---
+set(LIB_PSTREAMS "${CMAKE_CURRENT_LIST_DIR}/lib/pstreams-1.0.3")
+
+add_subdirectory(${LIB_PSTREAMS})
+target_link_libraries(ParallelSolver PUBLIC PStreams)
+target_include_directories(ParallelSolver PUBLIC 
+	"${PROJECT_BINARY_DIR}"
+	"${LIB_PSTREAMS}"
+)
+
+# --- cryptominisat ---
+set(LIB_CMS "${CMAKE_CURRENT_LIST_DIR}/lib/cryptominisat-5.11.15")
+
+add_subdirectory(${LIB_CMS})
+target_link_libraries(ParallelSolver PUBLIC cryptominisat5)
+target_include_directories(ParallelSolver PUBLIC
+	"${PROJECT_BINARY_DIR}"
+	"${LIB_CMS}"
+)
+
+
+# further settings
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET ParallelSolver PROPERTY CXX_STANDARD 20)
 endif()
-
-# TODO: Add tests and install targets if needed.
-
-
-
-
-

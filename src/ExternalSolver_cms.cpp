@@ -5,6 +5,6 @@ using namespace CMSat;
 
 uint8_t ExternalSatSolver::solve_cms(SATProblem_t *problem)
 {
-	//CMSat::SATSolver solver;
+	CMSat::SATSolver solver;
 	return 20;
 }
