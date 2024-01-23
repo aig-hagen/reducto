@@ -14,7 +14,7 @@ project ("ParallelSolver" LANGUAGES C CXX)
 # Add source to this project's executable.
 set(INCLD "${CMAKE_CURRENT_LIST_DIR}/include")
 set(SRC "${CMAKE_CURRENT_LIST_DIR}/src/")
-set(LIB "${CMAKE_CURRENT_LIST_DIR}/lib/pstreams-1.0.3")
+set(LIB_PSTREAMS "${CMAKE_CURRENT_LIST_DIR}/lib/pstreams-1.0.3")
 
 set(HEADERS
 	${INCLD}/Main.h
@@ -34,7 +34,7 @@ set(HEADERS
 	${INCLD}/ScepticalPRCheck.h
 	${INCLD}/ScepticalPRParallel.h
 	${INCLD}/ScepticalPRSequential.h
-	${LIB}/pstream.h
+	${LIB_PSTREAMS}/pstream.h
 	)
 
 set(SRCFILES
@@ -62,7 +62,7 @@ set(SOURCES ${SRCFILES} ${HEADERS})
 add_executable(ParallelSolver ${SOURCES})
 
 target_include_directories(ParallelSolver PUBLIC INCLD)
-target_include_directories(ParallelSolver PUBLIC LIB)
+target_include_directories(ParallelSolver PUBLIC LIB_PSTREAMS)
 
 find_package(OpenMP)
 if(OpenMP_CXX_FOUND)
