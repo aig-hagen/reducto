@@ -293,11 +293,11 @@ uint8_t print_list_int64(nodeInt64_t *head)
     {
         nodeInt64_t *current = head;
         printf("{ ");
-        printf("%lld", current->number);
+        printf("%ld", current->number);
         while (current->next != NULL)
         {
             current = current->next;
-            printf(", %lld", current->number);
+            printf(", %ld", current->number);
         }
         printf(" }");
         return EXIT_SUCCESS;

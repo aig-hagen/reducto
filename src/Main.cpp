@@ -101,7 +101,7 @@ int main()
 	print_list_uint32(initial_set2);
 	printf("\n");*/
 
-#pragma omp parallel for
+//#pragma omp parallel for
 	for (uint32_t i = 1; i < 7; i++)
 	{
 		//printf("Thread number: %d \n", omp_get_thread_num());

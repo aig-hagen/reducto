@@ -2,7 +2,7 @@
 
 using namespace std;
 
-uint8_t ExternalSatSolver::solve(SATProblem_t *problem, string path_to_solver) {
+uint8_t ExternalSatSolver::solve_pstreams(SATProblem_t *problem, string path_to_solver) {
 	redi::pstream process(path_to_solver, redi::pstreams::pstdout | redi::pstreams::pstdin | redi::pstreams::pstderr);
 	process << "p cnf " << problem->numberOfVariables << " " << (problem->numberOfClauses + problem->numberOfAssumptions) << "\n";
 	//std::cout << "p cnf " << problem->numberOfVariables << " " << (problem->numberOfClauses + problem->numberOfAssumptions) << "\n";		//DEBUG
@@ -85,7 +85,7 @@ uint8_t ExternalSatSolver::solve(SATProblem_t *problem, string path_to_solver) {
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-uint8_t ExternalSatSolver::solve_with_assumptions(SATProblem_t *problem, nodeInt64_t *assumptions, string path_to_solver)
+uint8_t ExternalSatSolver::solve_pstreams_with_assumptions(SATProblem_t *problem, nodeInt64_t *assumptions, string path_to_solver)
 {
 	nodeInt64_t *current = assumptions;
 	while (current != NULL)
@@ -94,6 +94,6 @@ uint8_t ExternalSatSolver::solve_with_assumptions(SATProblem_t *problem, nodeInt
 		current = current->next;
 	}
 
-	return solve(problem, path_to_solver);
+	return solve_pstreams(problem, path_to_solver);
 }
 

@@ -22,7 +22,7 @@ public:
     /// </summary>
     /// <param name="problem">The SAT-problem to solve.</param>
     /// <returns>Returns '10' if the operation was successful. Otherwise returns '20'.</returns>
-    static uint8_t solve(SATProblem_t *problem, std::string path_to_solver);
+    static uint8_t solve_pstreams(SATProblem_t *problem, std::string path_to_solver);
     
        
     /// <summary>
@@ -33,7 +33,7 @@ public:
     /// <returns>
     /// Returns '10' if the operation was successful. Otherwise returns '20'.
     /// </returns>
-    static uint8_t solve_with_assumptions(SATProblem_t *problem, nodeInt64_t *assumptions, std::string path_to_solver);
+    static uint8_t solve_pstreams_with_assumptions(SATProblem_t *problem, nodeInt64_t *assumptions, std::string path_to_solver);
 };
 
 #endif
