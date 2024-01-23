@@ -32,7 +32,7 @@ public:
 	/// <param name="framework">The abstract argumentation framework, specifying the underlying attack relations between the arguments.</param>
 	/// <param name="activeArgs">The active arguments of the current state of the framework.</param>
 	/// <returns>TRUE iff the sceptical acceptance was rejected. FALSE otherwise.</returns>
-	//static bool check_rejection_parallel(uint32_t argument, argFramework_t *framework, activeArgs_t *activeArgs);
+	static bool check_rejection_parallel(uint32_t argument, argFramework_t *framework, activeArgs_t *activeArgs);
 };
 
 #endif

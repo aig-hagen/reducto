@@ -1,5 +1,3 @@
-//#include <stdint.h>
-//#include <stdlib.h>
 #include "../include/List.h"
 
 
@@ -7,6 +5,18 @@ uint32_t count_list_uint32(nodeUInt32_t *head)
 {
     nodeUInt32_t *current = head;
      uint32_t count = 1;
+    while (current->next != NULL) { // iterate to end of list
+        current = current->next;
+        count++;
+    }
+
+    return count;
+}
+
+uint32_t count_list_int64(nodeInt64_t *head)
+{
+    nodeInt64_t *current = head;
+    uint32_t count = 1;
     while (current->next != NULL) { // iterate to end of list
         current = current->next;
         count++;

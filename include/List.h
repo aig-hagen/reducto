@@ -55,6 +55,12 @@ typedef struct listInt64 {
 /// <returns>Number of nodes in the specified list.</returns>
  uint32_t count_list_uint32(nodeUInt32_t *head);
  /// <summary>
+/// Counts the nodes of a specified list. 
+/// </summary>
+/// <param name="head">The first node of the list.</param>
+/// <returns>Number of nodes in the specified list.</returns>
+ uint32_t count_list_int64(nodeInt64_t *head);
+ /// <summary>
  /// Creates a list of integers.
  /// </summary>
  /// <param name="number">First number to be added to the list.</param>

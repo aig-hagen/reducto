@@ -55,7 +55,12 @@ uint8_t InitialSetSolver::calculate_next_solution(argFramework_t *framework, act
 		add_complement_clause(problem);
 	}
 
-	if (ExternalSatSolver::solve_pstreams(problem, "cryptominisat5") == 20)
+	/*if (ExternalSatSolver::solve_pstreams(problem, "cryptominisat5") == 20)
+	{
+		return EXIT_FAILURE;
+	}*/
+
+	if (ExternalSatSolver::solve_cms(problem) == 20)
 	{
 		return EXIT_FAILURE;
 	}
