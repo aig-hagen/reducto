@@ -50,7 +50,8 @@ set(SRCFILES
 	${SRC}Matrix.c 
 	${SRC}Reduct.c 
 	${SRC}SatProblem.c 
-	${SRC}ExternalSolver.cpp
+	${SRC}ExternalSolver_cms.cpp
+	${SRC}ExternalSolver_pstreams.cpp
 	${SRC}InitialSetSolver.cpp
 	${SRC}ScepticalPRCheck.c
 	${SRC}ScepticalPRParallel.cpp

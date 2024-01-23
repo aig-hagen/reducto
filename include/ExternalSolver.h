@@ -18,7 +18,9 @@ SAT calls are answered by opening a pipe to an instance of the external solver w
 class ExternalSatSolver {
 public:    
     /// <summary>
-    /// Computes the solution of the specified SAT-problem.
+    /// Computes the solution of the specified SAT-problem using the library pstreams.
+    /// This method is not recommended fpr parallel execution, since psteams uses
+    /// the stdout/stdin of the process for each thread.
     /// </summary>
     /// <param name="problem">The SAT-problem to solve.</param>
     /// <returns>Returns '10' if the operation was successful. Otherwise returns '20'.</returns>
@@ -26,7 +28,10 @@ public:
     
        
     /// <summary>
-    /// Computes the solution of the specified SAT-problem combined with the specified assumptions.
+    /// Computes the solution of the specified SAT-problem combined with the specified assumptions,
+    /// using the library pstreams.
+    /// This method is not recommended fpr parallel execution, since psteams uses
+    /// the stdout/stdin of the process for each thread.
     /// </summary>
     /// <param name="problem">The SAT-problem to solve.</param>
     /// <param name="assumptions">The assumptions to take into account.</param>
@@ -34,6 +39,16 @@ public:
     /// Returns '10' if the operation was successful. Otherwise returns '20'.
     /// </returns>
     static uint8_t solve_pstreams_with_assumptions(SATProblem_t *problem, nodeInt64_t *assumptions, std::string path_to_solver);
+
+    /// <summary>
+    /// Computes the solution of the specified SAT-problem using the library cryptominisat.
+    /// This method is the preferred option for parallel execution.
+    /// </summary>
+    /// <param name="problem">The SAT-problem to solve.</param>
+    /// <returns>
+    /// Returns '10' if the operation was successful. Otherwise returns '20'.
+    /// </returns>
+    static uint8_t solve_cms(SATProblem_t *problem);
 };
 
 #endif

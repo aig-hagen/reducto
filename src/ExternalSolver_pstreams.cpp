@@ -97,3 +97,5 @@ uint8_t ExternalSatSolver::solve_pstreams_with_assumptions(SATProblem_t *problem
 	return solve_pstreams(problem, path_to_solver);
 }
 
+
+
