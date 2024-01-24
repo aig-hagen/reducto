@@ -36,7 +36,7 @@ uint8_t add_clause(SATProblem_t *solver, nodeInt64_t *clause)
 
 	solver->numberOfClauses += 1;
 
-	result =  push_int64(clause, 0);
+	//result =  push_int64(clause, 0);
 	return result;
 }
 

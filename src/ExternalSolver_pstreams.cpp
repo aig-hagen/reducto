@@ -19,7 +19,7 @@ uint8_t ExternalSatSolver::solve_pstreams(SATProblem_t *problem, string path_to_
 			currentLiteral = currentLiteral->next;
 		}
 
-		process << "\n";
+		process << "0" << "\n";
 		//std::cout << "\n";																												//DEBUG
 		currentClause = currentClause->next;
 	}
