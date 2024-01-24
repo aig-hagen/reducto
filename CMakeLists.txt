@@ -81,7 +81,8 @@ target_include_directories(ParallelSolver PUBLIC
 )
 
 # --- cryptominisat ---
-set(LIB_CMS "${CMAKE_CURRENT_LIST_DIR}/lib/cryptominisat-5.11.4")
+
+set(LIB_CMS "${CMAKE_CURRENT_LIST_DIR}/lib/cryptominisat-5.11.15")
 
 add_subdirectory(${LIB_CMS})
 target_link_libraries(ParallelSolver PUBLIC cryptominisat5)

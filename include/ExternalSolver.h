@@ -12,7 +12,11 @@ extern "C" {
 //#include "../lib/pstreams-1.0.3/pstream.h"
 //#include "../lib/cryptominisat-5.11.15/src/cryptominisat.h"
 #include "pstream.h"
-#include "cryptominisat.h"
+#include <cryptominisat.h>
+#include <assert.h>
+#include <vector>
+using std::vector;
+using namespace CMSat;
 
 /*
 Class for all kinds of pre-compiled SAT solvers, e.g. cadical, cryptominisat5

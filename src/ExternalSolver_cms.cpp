@@ -33,7 +33,10 @@ void static add_clauses(SATSolver solver, listInt64_t *clauses)
 uint8_t ExternalSatSolver::solve_cms(SATProblem_t *problem)
 {
 	uint32_t numVars = problem->numberOfVariables * 2 + 1;
-	CMSat::SATSolver solver;
+	CMSat::SATSolver solver;/*
+	solver.set_verbosity(0);
+	solver.set_max_time(0);
+	solver.set_max_confl(0);*/
 	solver.set_num_threads(1);
 	solver.new_vars(numVars);
 	add_clauses(solver, problem->clauses);
