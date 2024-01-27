@@ -5,10 +5,10 @@ bool ScepticalPRSequential::check_rejection_per_reduct_recursiv(uint32_t argumen
 {
 	if (activeArgs->numberActiveArguments < 2)
 	{
-		printf("\n==================================================\n");					//DEBUG
-		print_active_arguments(activeArgs);													//DEBUG
-		printf("\n");																		//DEBUG
-		printf(" !! Only one active argument left: %d", get_first_active(activeArgs));		//DEBUG
+		//printf("\n==================================================\n");					//DEBUG
+		//print_active_arguments(activeArgs);													//DEBUG
+		//printf("\n");																		//DEBUG
+		//printf(" !! Only one active argument left: %d", get_first_active(activeArgs));		//DEBUG
 
 		//there is only 1 active argument, this has to be the argument to check, if not then there should have been a rejection check earlier who did not work
 		if (get_first_active(activeArgs) != argument)
@@ -18,7 +18,7 @@ bool ScepticalPRSequential::check_rejection_per_reduct_recursiv(uint32_t argumen
 		}
 
 
-		printf("\n --- FALSE --- \n");														//DEBUG
+		//printf("\n --- FALSE --- \n");														//DEBUG
 		return false;
 	}
 
@@ -29,9 +29,9 @@ bool ScepticalPRSequential::check_rejection_per_reduct_recursiv(uint32_t argumen
 
 	//iterate through initial sets
 	do {
-		printf("\n==================================================\n");					//DEBUG
-		print_active_arguments(activeArgs);													//DEBUG
-		printf("\n");																		//DEBUG
+		//printf("\n==================================================\n");					//DEBUG
+		//print_active_arguments(activeArgs);													//DEBUG
+		//printf("\n");																		//DEBUG
 
 		nodeUInt32_t *initial_set = create_list_uint32((uint32_t)0);
 		flag_exit = InitialSetSolver::calculate_next_initial_set(framework, activeArgs, problem, initial_set);
@@ -42,30 +42,30 @@ bool ScepticalPRSequential::check_rejection_per_reduct_recursiv(uint32_t argumen
 		}
 		if (check_rejection(argument, initial_set, framework))
 		{
-			printf("\n --- TRUE --- \n");													//DEBUG
+			//printf("\n --- TRUE --- \n");													//DEBUG
 			return true;
 		}
 
 		if (check_terminate_extension_build(argument, initial_set))
 		{
-			printf("\n Terminate path, since argument is in initial set \n");				//DEBUG
+			//printf("\n Terminate path, since argument is in initial set \n");				//DEBUG
 			continue;
 		}
 
-		printf("Reduct by ");																//DEBUG
-		print_list_uint32(initial_set);														//DEBUG
-		printf("\n");																		//DEBUG
+		//printf("Reduct by ");																//DEBUG
+		//print_list_uint32(initial_set);														//DEBUG
+		//printf("\n");																		//DEBUG
 		activeArgs_t *reduct = get_reduct_set(activeArgs, framework, initial_set);
-		print_active_arguments(reduct);														//DEBUG
+		//print_active_arguments(reduct);														//DEBUG
 		if (check_rejection_per_reduct_recursiv(argument, framework, reduct))
 		{
-			printf("\n --- TRUE --- \n");													//DEBUG
+			//printf("\n --- TRUE --- \n");													//DEBUG
 			return true;
 		}
 
 	} while (flag_exit != EXIT_FAILURE);
 
-	printf("\n --- FALSE --- \n");															//DEBUG
+	//printf("\n --- FALSE --- \n");															//DEBUG
 	return false;
 }
 

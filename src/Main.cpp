@@ -7,6 +7,51 @@ using namespace CMSat;
 
 using namespace std;
 
+void AnalyseSolvingAlgorithms(argFramework_t *framework, activeArgs_t *actives, int numArgsStart, int numArgsEnd)
+{
+	double start, end, run_time_seq_rec, run_time_seq_it, run_time_para_rec, diff_para_rec_seq_rec, diff_para_rec_seq_it;
+
+	printf("==================== sequential recursive ==========================");
+	start = omp_get_wtime();
+	for (uint32_t i = numArgsStart; i < numArgsEnd + 1; i++)
+	{
+		uint32_t argument = i;
+		bool isScepticAccepted = !ScepticalPRSequential::check_rejection_per_reduct_recursiv(argument, framework, actives);
+		std::cout << std::boolalpha << "\nsceptic acceptance of " << argument << " : " << isScepticAccepted << std::endl;
+	}
+	end = omp_get_wtime();
+	run_time_seq_rec = end - start;
+	printf("Compute Time: %f seconds\n", run_time_seq_rec);
+
+	printf("==================== sequential iterative ==========================");
+	start = omp_get_wtime();
+	for (uint32_t i = numArgsStart; i < numArgsEnd + 1; i++)
+	{
+		uint32_t argument = i;
+		bool isScepticAccepted = !ScepticalPRSequential::check_rejection_iterative(argument, framework, actives);
+		std::cout << std::boolalpha << "\nsceptic acceptance of " << argument << " : " << isScepticAccepted << std::endl;
+	}
+	end = omp_get_wtime();
+	run_time_seq_it = end - start;
+	printf("Compute Time: %f seconds\n", run_time_seq_it);
+
+	printf("==================== parallel recursive ==========================");
+	start = omp_get_wtime();
+	for (uint32_t i = numArgsStart; i < numArgsEnd + 1; i++)
+	{
+		uint32_t argument = i;
+		bool isScepticAccepted = !ScepticalPRParallel::check_rejection_parallel(argument, framework, actives);
+		std::cout << std::boolalpha << "\nsceptic acceptance of " << argument << " : " << isScepticAccepted << std::endl;
+	}
+	end = omp_get_wtime();
+	run_time_para_rec = end - start;
+	printf("Compute Time: %f seconds\n", run_time_para_rec);
+	diff_para_rec_seq_rec = run_time_para_rec - run_time_seq_rec;
+	printf("Difference to sequential recursive: %f seconds, meaning %.2f% \n", diff_para_rec_seq_rec, diff_para_rec_seq_rec / run_time_seq_rec * 100);
+	diff_para_rec_seq_it = run_time_para_rec - run_time_seq_it;
+	printf("Difference to sequential iterative: %f seconds, meaning %.2f% \n", diff_para_rec_seq_it, diff_para_rec_seq_it / run_time_seq_it * 100);
+}
+
 static void test0()
 {
 	argumentInitTemp_t *head = set_up_initialization(4);
@@ -112,18 +157,7 @@ static void test4Args()
 	printf("\n");
 
 	activeArgs_t *actives = initialize_actives(4);
-
-	//#pragma omp parallel for
-	for (uint32_t i = 1; i < 5; i++)
-	{
-		//printf("Thread number %d taking argument %d\n", omp_get_thread_num(), i);
-		uint32_t argument = i;
-		//uint32_t argument = 1;
-		//bool isScepticAccepted = !ScepticalPRSequential::check_rejection_per_reduct_recursiv(argument, framework, actives);
-		bool isScepticAccepted = !ScepticalPRSequential::check_rejection_iterative(argument, framework, actives);
-		//bool isScepticAccepted = !ScepticalPRParallel::check_rejection_parallel(argument, framework, actives);
-		std::cout << std::boolalpha << "\nsceptic acceptance of " << argument << " : " << isScepticAccepted << std::endl;
-	}
+	AnalyseSolvingAlgorithms(framework, actives, 0 ,4);
 }
 
 static void test6Args() 
@@ -141,25 +175,48 @@ static void test6Args()
 
 	printf("Attackers\n");
 	print_matrix(framework->attackers);
+	printf("\n");
 
 	printf("Victims\n");
 	print_matrix(framework->victims);
 	printf("\n");
 
 	activeArgs_t *actives = initialize_actives(6);
-
-	//#pragma omp parallel for
-	for (uint32_t i = 1; i < 7; i++)
-	{
-		printf("Thread number %d taking argument %d\n", omp_get_thread_num(), i);
-		uint32_t argument = i;
-		//uint32_t argument = 1;
-		//bool isScepticAccepted = !ScepticalPRSequential::check_rejection_per_reduct_recursiv(argument, framework, actives);
-		bool isScepticAccepted = !ScepticalPRSequential::check_rejection_iterative(argument, framework, actives);
-		//bool isScepticAccepted = !ScepticalPRParallel::check_rejection_parallel(argument, framework, actives);
-		std::cout << std::boolalpha << "\nsceptic acceptance of " << argument << " : " << isScepticAccepted << std::endl;
-	}
+	AnalyseSolvingAlgorithms(framework, actives, 0 ,6);
 }
+
+static void testArgsALot()
+{
+	int numArgs = 50;
+	argumentInitTemp_t *head = set_up_initialization(numArgs);
+	for (int i = 1; i < numArgs + 1; i++)
+	{
+		if (i % 3)
+		{
+			add_attack(head, i, ( i * numArgs / 2) %numArgs);
+			add_attack(head, i, (i * numArgs / 3) % numArgs);
+		}
+		else
+		{
+			add_attack(head, i, (i + numArgs / 2) % numArgs);
+			add_attack(head, i, (i + numArgs / 3) % numArgs);
+		}
+	}
+	argFramework_t *framework = initialize_framework(head);
+
+	/*printf("Attackers\n");
+	print_matrix(framework->attackers);
+	printf("\n");*/
+
+	printf("Victims\n");
+	print_matrix(framework->victims);
+	printf("\n");
+
+	activeArgs_t *actives = initialize_actives(numArgs);
+	AnalyseSolvingAlgorithms(framework, actives, 1, 1);
+}
+
+
 
 
 void static add_clauses(SATSolver *solver, listInt64_t *clauses)
@@ -271,7 +328,8 @@ int main()
 {
 	//test0();
 	//test4Args();
-	test6Args();
+	//test6Args();
+	testArgsALot();
 	//testCMS();
 	//testExampleCMS();
 }

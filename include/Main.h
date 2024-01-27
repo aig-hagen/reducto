@@ -27,3 +27,5 @@ extern "C" {
 
 
 #endif
+
+static void AnalyseSolvingAlgorithms(argFramework_t *framework, activeArgs_t *actives);
