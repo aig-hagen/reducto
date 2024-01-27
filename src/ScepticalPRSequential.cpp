@@ -33,8 +33,8 @@ bool ScepticalPRSequential::check_rejection_per_reduct_recursiv(uint32_t argumen
 		//print_active_arguments(activeArgs);													//DEBUG
 		//printf("\n");																		//DEBUG
 
-		nodeUInt32_t *initial_set = create_list_uint32((uint32_t)0);
-		flag_exit = InitialSetSolver::calculate_next_initial_set(framework, activeArgs, problem, initial_set);
+		flag_exit = InitialSetSolver::calculate_next_solution(framework, activeArgs, problem);
+		nodeUInt32_t *initial_set = get_set_from_solution(problem->solution, activeArgs);
 		if (flag_exit == EXIT_FAILURE)
 		{
 			//no initial set calculated
@@ -56,16 +56,20 @@ bool ScepticalPRSequential::check_rejection_per_reduct_recursiv(uint32_t argumen
 		//print_list_uint32(initial_set);														//DEBUG
 		//printf("\n");																		//DEBUG
 		activeArgs_t *reduct = get_reduct_set(activeArgs, framework, initial_set);
+		free_list_uint32(initial_set);
 		//print_active_arguments(reduct);														//DEBUG
 		if (check_rejection_per_reduct_recursiv(argument, framework, reduct))
 		{
 			//printf("\n --- TRUE --- \n");													//DEBUG
 			return true;
 		}
+		free_activeArguments(reduct);
 
 	} while (flag_exit != EXIT_FAILURE);
 
 	//printf("\n --- FALSE --- \n");															//DEBUG
+
+	free_problem(problem);
 	return false;
 }
 
@@ -79,27 +83,29 @@ bool static generate_initial_sets_in_state(uint32_t argument, argFramework_t *fr
 	uint8_t flag_has_initial_sets = EXIT_SUCCESS;
 	while (true) {
 		//do for all initial sets in the current state of the framework		
-		arrayInt_t *solution = create_array(0);
+		
 
-		flag_has_initial_sets = InitialSetSolver::calculate_next_solution(framework, activeArgs, problem, solution);				// after this line new thread can start  [Parallel]
+		flag_has_initial_sets = InitialSetSolver::calculate_next_solution(framework, activeArgs, problem);
 
 		if (flag_has_initial_sets == EXIT_FAILURE)
 		{
 			return false;
 		}
 
-		nodeUInt32_t *initial_set = get_set_from_solution(solution, activeArgs);
+		nodeUInt32_t *initial_set = get_set_from_solution(problem->solution, activeArgs);
+		
 
 		if (check_rejection(argument, initial_set, framework))
 		{
 			//sceptical acceptance is rejected -> abort all calculations
-			return true;																					// raise flag for all threads to stop		[Parallel]
+			return true;
 		}
 
 		//only add reduct to list, if following the path of the initial set is useful
 		if (!check_terminate_extension_build(argument, initial_set))
 		{
 			activeArgs_t *reduct = get_reduct_set(activeArgs, framework, initial_set);
+			free_list_uint32(initial_set);
 
 			//printf("================================================================\n");				//DEBUG
 			//printf("origin: \n");																		//DEBUG
@@ -136,14 +142,6 @@ bool static generate_initial_sets_in_state(uint32_t argument, argFramework_t *fr
 
 bool ScepticalPRSequential::check_rejection_iterative(uint32_t argument, argFramework_t *framework, activeArgs_t *activeArgs)
 {
-	// 1. für alle möglichen initial sets im aktuellen state:
-	//	1.1 ein initial set generieren + prüfen ob durch dieses initial set schon rejection erkennbar + state-initial set zur Liste hinzufügen, wenn extension weiter verfolgt werden soll
-	// 2. list von state-initial set durchlaufen
-	//		2.1 prüfen ob state interessant
-	//		2.2 reduziere framework
-	//		2.2 für alle möglichen initial sets im state:
-	//			2.2.1 ein initial set generieren + prüfen ob durch dieses initial set schon rejection erkennbar + state-initial set zur Liste hinzufügen, wenn extension weiter verfolgt werden soll
-
 	//analyse the initial state
 	SATProblem_t *problem = create_sat_problem(activeArgs->numberActiveArguments);
 	add_clauses_nonempty_admissible_set(problem, framework, activeArgs);
@@ -152,12 +150,13 @@ bool ScepticalPRSequential::check_rejection_iterative(uint32_t argument, argFram
 	{
 		return true;
 	}
+	free_problem(problem);
 
 	//iterate through all possible following states
 	while (listReducts->element != NULL)
 	{
 		activeArgs_t *currentState = listReducts->element;
-		listReducts = remove_top_lst_active_args(listReducts);											// after this line new thread can start  [Parallel]
+		listReducts = remove_top_lst_active_args(listReducts);											
 
 		SATProblem_t *newProblem = create_sat_problem(currentState->numberActiveArguments);
 		add_clauses_nonempty_admissible_set(newProblem, framework, currentState);
@@ -165,8 +164,11 @@ bool ScepticalPRSequential::check_rejection_iterative(uint32_t argument, argFram
 		{
 			return true;
 		}
+		free_activeArguments(currentState);
+		free_problem(newProblem);
 	}
 
+	free_lst_active_args(listReducts);
 	return false;
 }
 

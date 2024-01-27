@@ -47,9 +47,9 @@ void AnalyseSolvingAlgorithms(argFramework_t *framework, activeArgs_t *actives, 
 	run_time_para_rec = end - start;
 	printf("Compute Time: %f seconds\n", run_time_para_rec);
 	diff_para_rec_seq_rec = run_time_para_rec - run_time_seq_rec;
-	printf("Difference to sequential recursive: %f seconds, meaning %.2f% \n", diff_para_rec_seq_rec, diff_para_rec_seq_rec / run_time_seq_rec * 100);
+	printf("Difference to sequential recursive: %f seconds, meaning %.2f \n", diff_para_rec_seq_rec, diff_para_rec_seq_rec / run_time_seq_rec * 100);
 	diff_para_rec_seq_it = run_time_para_rec - run_time_seq_it;
-	printf("Difference to sequential iterative: %f seconds, meaning %.2f% \n", diff_para_rec_seq_it, diff_para_rec_seq_it / run_time_seq_it * 100);
+	printf("Difference to sequential iterative: %f seconds, meaning %.2f \n", diff_para_rec_seq_it, diff_para_rec_seq_it / run_time_seq_it * 100);
 }
 
 static void test0()
@@ -129,14 +129,14 @@ static void test0()
 	printf("\n=========================================== new set ===========================================\n");
 	ExternalSatSolver::solve(problem, "cryptominisat5");*/
 
-	nodeUInt32_t *initial_set1 = create_list_uint32((uint32_t)0);
-	InitialSetSolver::calculate_next_initial_set(framework, actives, problem, initial_set1);
+	InitialSetSolver::calculate_next_solution(framework, actives, problem);
+	nodeUInt32_t *initial_set1 = get_set_from_solution(problem->solution, actives);
 	printf("Initial set 1 = ");
 	print_list_uint32(initial_set1);
 	printf("\n");
 
-	nodeUInt32_t *initial_set2 = create_list_uint32((uint32_t)0);
-	InitialSetSolver::calculate_next_initial_set(framework, actives, problem, initial_set2);
+	InitialSetSolver::calculate_next_solution(framework, actives, problem);
+	nodeUInt32_t *initial_set2 = get_set_from_solution(problem->solution, actives);
 	printf("Initial set 2 = ");
 	print_list_uint32(initial_set2);
 	printf("\n");
@@ -157,7 +157,7 @@ static void test4Args()
 	printf("\n");
 
 	activeArgs_t *actives = initialize_actives(4);
-	AnalyseSolvingAlgorithms(framework, actives, 0 ,4);
+	AnalyseSolvingAlgorithms(framework, actives, 1 ,4);
 }
 
 static void test6Args() 
@@ -182,7 +182,7 @@ static void test6Args()
 	printf("\n");
 
 	activeArgs_t *actives = initialize_actives(6);
-	AnalyseSolvingAlgorithms(framework, actives, 0 ,6);
+	AnalyseSolvingAlgorithms(framework, actives, 1 ,6);
 }
 
 static void testArgsALot()
@@ -328,8 +328,8 @@ int main()
 {
 	//test0();
 	//test4Args();
-	//test6Args();
-	testArgsALot();
+	test6Args();
+	//testArgsALot();
 	//testCMS();
 	//testExampleCMS();
 }

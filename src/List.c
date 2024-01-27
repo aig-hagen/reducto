@@ -123,6 +123,11 @@ uint8_t free_list_list_uint32(listUInt32_t *head)
 
 uint8_t free_list_int64(nodeInt64_t *head)
 {
+    if (head == NULL)
+    {
+        return EXIT_SUCCESS;
+    }
+
     nodeInt64_t *current = head;
     nodeInt64_t *next = current->next;
 

@@ -26,9 +26,8 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 
 	//iterate through initial sets
 	do {
-
-		nodeUInt32_t *initial_set = create_list_uint32((uint32_t)0);
-		flag_exit = InitialSetSolver::calculate_next_initial_set(framework, activeArgs, problem, initial_set);
+		flag_exit = InitialSetSolver::calculate_next_solution(framework, activeArgs, problem);
+		nodeUInt32_t *initial_set = get_set_from_solution(problem->solution, activeArgs);
 		if (flag_exit == EXIT_FAILURE)
 		{
 			//no initial set calculated
@@ -46,11 +45,17 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 		}
 
 		activeArgs_t *reduct = get_reduct_set(activeArgs, framework, initial_set);
+		free_list_uint32(initial_set);
 
 #pragma omp task firstprivate(reduct) priority(0)
-		check_rejection_parallel_recursiv(argument, framework, reduct, isRejected);
+		{
+			check_rejection_parallel_recursiv(argument, framework, reduct, isRejected);
+			free_activeArguments(reduct);
+		}
 
 	} while (flag_exit != EXIT_FAILURE && *isRejected == false);
+
+	free_problem(problem);
 
 	return;
 }

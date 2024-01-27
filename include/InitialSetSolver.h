@@ -18,10 +18,8 @@ extern "C" {
 
 class InitialSetSolver {
 public:
-	
-	static uint8_t calculate_next_initial_set(argFramework_t *framework, activeArgs_t *activeArgs, SATProblem_t *problem, nodeUInt32_t *out_initial_set);
 
-	static uint8_t calculate_next_solution(argFramework_t *framework, activeArgs_t *activeArgs, SATProblem_t *problem, arrayInt_t *out_solution);
+	static uint8_t calculate_next_solution(argFramework_t *framework, activeArgs_t *activeArgs, SATProblem_t *problem);
 };
 
 #endif
