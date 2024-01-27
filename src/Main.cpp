@@ -47,9 +47,9 @@ void AnalyseSolvingAlgorithms(argFramework_t *framework, activeArgs_t *actives, 
 	run_time_para_rec = end - start;
 	printf("Compute Time: %f seconds\n", run_time_para_rec);
 	diff_para_rec_seq_rec = run_time_para_rec - run_time_seq_rec;
-	printf("Difference to sequential recursive: %f seconds, meaning %.2f \n", diff_para_rec_seq_rec, diff_para_rec_seq_rec / run_time_seq_rec * 100);
+	printf("Difference to sequential recursive: %f seconds, meaning %.2f%% \n", diff_para_rec_seq_rec, diff_para_rec_seq_rec / run_time_seq_rec * 100);
 	diff_para_rec_seq_it = run_time_para_rec - run_time_seq_it;
-	printf("Difference to sequential iterative: %f seconds, meaning %.2f \n", diff_para_rec_seq_it, diff_para_rec_seq_it / run_time_seq_it * 100);
+	printf("Difference to sequential iterative: %f seconds, meaning %.2f%% \n", diff_para_rec_seq_it, diff_para_rec_seq_it / run_time_seq_it * 100);
 }
 
 static void test0()

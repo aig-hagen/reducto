@@ -53,6 +53,11 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 			free_activeArguments(reduct);
 		}
 
+		if (flag_exit != EXIT_FAILURE && *isRejected == true)
+		{
+			printf("Thread %d preliminary terminated.\n", omp_get_thread_num());
+		}
+
 	} while (flag_exit != EXIT_FAILURE && *isRejected == false);
 
 	free_problem(problem);
