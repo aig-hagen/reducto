@@ -23,12 +23,14 @@ set(HEADERS
 	${INCLD}/Array.h 
 	${INCLD}/Decodings.h 
 	${INCLD}/Encodings.h 
+	${INCLD}/Encodings_cms.h 
 	${INCLD}/LinkedSparseMatrix.h 
 	${INCLD}/List.h 
 	${INCLD}/ListActives.h 
 	${INCLD}/Matrix.h 
 	${INCLD}/Reduct.h 
 	${INCLD}/SatProblem.h
+	${INCLD}/Decodings_cms.h
 	${INCLD}/ExternalSolver.h
 	${INCLD}/InitialSetSolver.h
 	${INCLD}/ScepticalPRCheck.h
@@ -43,13 +45,14 @@ set(SRCFILES
 	${SRC}Array.c 
 	${SRC}Decodings.c 
 	${SRC}Encodings.c 
+	${SRC}Encodings_cms.cpp 
 	${SRC}LinkedSparseMatrix.c 
 	${SRC}List.c 
 	${SRC}ListActives.c 
 	${SRC}Matrix.c 
 	${SRC}Reduct.c 
 	${SRC}SatProblem.c 
-	${SRC}ExternalSolver_cms.cpp
+	${SRC}Decodings_cms.cpp
 	${SRC}ExternalSolver_pstreams.cpp
 	${SRC}InitialSetSolver.cpp
 	${SRC}ScepticalPRCheck.c

@@ -9,14 +9,14 @@ extern "C" {
 #include "Actives.h"
 #include "AF.h"
 #include "Decodings.h"
-#include "Encodings.h"
 #include "List.h"
 #include "ListActives.h"
 #include "Reduct.h"
-#include "SatProblem.h"
 #include "ScepticalPRCheck.h"
 }
 
+#include "Encodings_cms.h"
+#include "Decodings_cms.h"
 #include "ExternalSolver.h"
 #include "InitialSetSolver.h"
 #include "omp.h"

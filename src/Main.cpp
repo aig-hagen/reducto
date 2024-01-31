@@ -11,7 +11,7 @@ void AnalyseSolvingAlgorithms(argFramework_t *framework, activeArgs_t *actives, 
 {
 	double start, end, run_time_seq_rec, run_time_seq_it, run_time_para_rec, diff_para_rec_seq_rec, diff_para_rec_seq_it;
 
-	printf("==================== sequential recursive ==========================");
+	printf("==================== sequential recursive ==========================\n");
 	start = omp_get_wtime();
 	for (uint32_t i = numArgsStart; i < numArgsEnd + 1; i++)
 	{
@@ -23,7 +23,7 @@ void AnalyseSolvingAlgorithms(argFramework_t *framework, activeArgs_t *actives, 
 	run_time_seq_rec = end - start;
 	printf("Compute Time: %f seconds\n", run_time_seq_rec);
 
-	printf("==================== sequential iterative ==========================");
+	printf("==================== sequential iterative ==========================\n");
 	start = omp_get_wtime();
 	for (uint32_t i = numArgsStart; i < numArgsEnd + 1; i++)
 	{
@@ -35,11 +35,12 @@ void AnalyseSolvingAlgorithms(argFramework_t *framework, activeArgs_t *actives, 
 	run_time_seq_it = end - start;
 	printf("Compute Time: %f seconds\n", run_time_seq_it);
 
-	printf("==================== parallel recursive ==========================");
+	printf("==================== parallel recursive ==========================\n");
 	start = omp_get_wtime();
 	for (uint32_t i = numArgsStart; i < numArgsEnd + 1; i++)
 	{
 		uint32_t argument = i;
+		printf("////////////////////////// ARGUMENT %d //////////////////////////////\n", i);															//DEBUG
 		bool isScepticAccepted = !ScepticalPRParallel::check_rejection_parallel(argument, framework, actives);
 		std::cout << std::boolalpha << "\nsceptic acceptance of " << argument << " : " << isScepticAccepted << std::endl;
 	}
