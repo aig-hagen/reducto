@@ -47,7 +47,12 @@ typedef struct listInt64 {
 } listInt64_t;
 
 
-
+/// <summary>
+/// Creates a new inpedendent list of integers and copies the values of the specified list to the new list.
+/// </summary>
+/// <param name="head">List containing integers to copy.</param>
+/// <returns>Independent copy of the specified list.</returns>
+nodeUInt32_t *copy_list_uint32(nodeUInt32_t *head);
 /// <summary>
 /// Counts the nodes of a specified list. 
 /// </summary>
@@ -160,5 +165,10 @@ typedef struct listInt64 {
  /// <param name="head">Head of the list of lists to print.</param>
  /// <returns>EXIT_SUCCESS iff the operation was successful.</returns>
  uint8_t print_list_list_int64(listInt64_t *head);
-
+ /// <summary>
+ /// Removes the head of a list.
+ /// </summary>
+ /// <param name="head">The list, of which the head needs to be removed.</param>
+ /// <returns>The new head of the list or NULL.</returns>
+ nodeUInt32_t* remove_head_list_uint32(nodeUInt32_t *head);
 #endif

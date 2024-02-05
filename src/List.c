@@ -1,5 +1,36 @@
 #include "../include/List.h"
 
+uint8_t appendNode(nodeUInt32_t *predecessor, uint32_t number)
+{
+    nodeUInt32_t *ptrNode = NULL;
+    ptrNode = (nodeUInt32_t *)malloc(sizeof * ptrNode);
+    if (ptrNode == NULL) {
+        printf("Memory allocation failed\n");
+        exit(1);
+    }
+    else {
+        predecessor->next = ptrNode;
+        ptrNode->number = number;
+        ptrNode->next = NULL;
+
+        return EXIT_SUCCESS;
+    }
+}
+
+nodeUInt32_t *copy_list_uint32(nodeUInt32_t *head)
+{
+    nodeUInt32_t *out_head = create_list_uint32(head->number);
+    nodeUInt32_t *ptrOut = out_head;
+
+    nodeUInt32_t *p = NULL;
+    for (p = head->next; p; p = p->next)
+    {
+        appendNode(ptrOut, p->number);
+        ptrOut = ptrOut->next;
+    }
+
+    return out_head;
+}
 
 uint32_t count_list_uint32(nodeUInt32_t *head)
 {
@@ -167,20 +198,7 @@ uint8_t push_uint32(nodeUInt32_t *head, uint32_t number)
         current = current -> next;
     }
 
-    nodeUInt32_t *ptrNode = NULL;
-    ptrNode = (nodeUInt32_t*) malloc(sizeof *ptrNode );
-    if (ptrNode == NULL) {
-        printf("Memory allocation failed\n");
-        exit(1);
-    }
-    else {
-        current->next = ptrNode;
-        current = current->next;
-        current->number = number;
-        current->next = NULL;
-
-        return EXIT_SUCCESS;
-    }
+    return appendNode(current, number);
 }
 
 uint8_t push_list_uint32(listUInt32_t *head, nodeUInt32_t *list)
@@ -341,4 +359,11 @@ uint8_t print_list_list_int64(listInt64_t *head)
             return EXIT_SUCCESS;
         }
     }
+}
+
+nodeUInt32_t *remove_head_list_uint32(nodeUInt32_t *head)
+{
+    nodeUInt32_t *output = head->next;
+    free(head);
+    return output;
 }

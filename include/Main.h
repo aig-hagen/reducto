@@ -20,6 +20,7 @@ extern "C" {
 #include "../include/SatProblem.h"
 }
 
+#include "../include/ExtensionSolver.h"
 #include "../include/ExternalSolver.h"
 #include "../include/InitialSetSolver.h"
 #include "../include/ScepticalPRSequential.h"
@@ -27,5 +28,3 @@ extern "C" {
 
 
 #endif
-
-static void AnalyseSolvingAlgorithms(argFramework_t *framework, activeArgs_t *actives);

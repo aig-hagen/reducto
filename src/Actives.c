@@ -49,6 +49,12 @@ activeArgs_t *copy_active_arguments(activeArgs_t *original)
 
 uint8_t deactivate_argument(activeArgs_t *activeArguments, uint32_t argument)
 {
+	if (argument == 0)
+	{
+		printf("Argument 0 cannot be deactivated\n");
+		exit(1);
+	}
+
 	uint32_t** matrix = activeArguments->matrix->content;
 
 	if (matrix[argument][0] == argument && matrix[argument][1] == argument) {

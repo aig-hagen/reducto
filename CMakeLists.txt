@@ -23,7 +23,6 @@ set(HEADERS
 	${INCLD}/Array.h 
 	${INCLD}/Decodings.h 
 	${INCLD}/Encodings.h 
-	${INCLD}/Encodings_cms.h 
 	${INCLD}/LinkedSparseMatrix.h 
 	${INCLD}/List.h 
 	${INCLD}/ListActives.h 
@@ -31,6 +30,8 @@ set(HEADERS
 	${INCLD}/Reduct.h 
 	${INCLD}/SatProblem.h
 	${INCLD}/Decodings_cms.h
+	${INCLD}/Encodings_cms.h 
+	${INCLD}/ExtensionSolver.h 
 	${INCLD}/ExternalSolver.h
 	${INCLD}/InitialSetSolver.h
 	${INCLD}/ScepticalPRCheck.h
@@ -45,7 +46,6 @@ set(SRCFILES
 	${SRC}Array.c 
 	${SRC}Decodings.c 
 	${SRC}Encodings.c 
-	${SRC}Encodings_cms.cpp 
 	${SRC}LinkedSparseMatrix.c 
 	${SRC}List.c 
 	${SRC}ListActives.c 
@@ -53,6 +53,8 @@ set(SRCFILES
 	${SRC}Reduct.c 
 	${SRC}SatProblem.c 
 	${SRC}Decodings_cms.cpp
+	${SRC}Encodings_cms.cpp 
+	${SRC}ExtensionSolver.cpp 
 	${SRC}ExternalSolver_pstreams.cpp
 	${SRC}InitialSetSolver.cpp
 	${SRC}ScepticalPRCheck.c

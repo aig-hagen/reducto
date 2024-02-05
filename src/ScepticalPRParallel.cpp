@@ -1,20 +1,41 @@
 #include "../include/ScepticalPRParallel.h"
 using namespace std;
 
-static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t *framework, activeArgs_t *activeArgs, bool *isRejected)
+static nodeUInt32_t *ExtendExtension(nodeUInt32_t *extension_build, nodeUInt32_t *initial_set)
 {
-	if (*isRejected == true)
+	nodeUInt32 *tmpCopy = copy_list_uint32(extension_build);
+	nodeUInt32_t *p = NULL;
+	for (p = initial_set; p; p = p->next)
 	{
-		printf("%d: preliminary terminated.\n", omp_get_thread_num());																									//DEBUG
-		printf("%d: finished task - argument %d ----------------------------------\n", omp_get_thread_num(), argument);													//DEBUG
+		push_uint32(tmpCopy, p->number);
+	}
+
+	return tmpCopy;
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
+static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t *framework, activeArgs_t *activeArgs, bool *isRejected,
+	nodeUInt32_t *extension_build, nodeUInt32_t **output_extension)
+{
+	bool isRejected_tmp = false;
+
+#pragma omp flush(isRejected)
+#pragma omp atomic read
+	isRejected_tmp = *isRejected;
+	if (isRejected_tmp == true)
+	{
+		printf("%d: preliminary terminated.\n", omp_get_thread_num());																		//DEBUG
+		printf("%d: finished task - argument %d ----------------------------------\n", omp_get_thread_num(), argument);						//DEBUG
 		return;
 	}
 
-	printf("%d: starting task - argument %d ----------------------------------\n", omp_get_thread_num(), argument);														//DEBUG
-	//printf("Thread number %d checking argument %d computing state: \n", omp_get_thread_num() , argument);																//DEBUG
-	//print_active_arguments(activeArgs);																																//DEBUG
-	//printf("\n");																																						//DEBUG
-	int id = omp_get_thread_num();																																		//DEBUG
+	printf("%d: starting task - argument %d ----------------------------------\n", omp_get_thread_num(), argument);							//DEBUG
+	//printf("Thread number %d checking argument %d computing state: \n", omp_get_thread_num() , argument);									//DEBUG
+	//print_active_arguments(activeArgs);																									//DEBUG
+	//printf("\n");																															//DEBUG
+	int id = omp_get_thread_num();																											//DEBUG
 
 	bool *isSolved = NULL;
 	isSolved = (bool *)malloc(sizeof * isSolved);
@@ -24,19 +45,22 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 	SATSolver solver;
 	solver.set_num_threads(1);
 	solver.new_vars(numVars);
-	//printf("%d Encode: \n", id);																																		//DEBUG
+	//printf("%d Encode: \n", id);																											//DEBUG
 	Encodings_CMS::add_clauses_nonempty_admissible_set(&solver, framework, activeArgs);
 
-	uint8_t flag_exit = EXIT_SUCCESS;
-
-	if (*isRejected == true)
+#pragma omp flush(isRejected)
+#pragma omp atomic read
+	isRejected_tmp = *isRejected;
+	if (isRejected_tmp == true)
 	{
-		printf("%d: preliminary terminated.\n", omp_get_thread_num());																									//DEBUG
+		printf("%d: preliminary terminated.\n", omp_get_thread_num());																		//DEBUG
 		free(isSolved);
 		//TODO			solver.free();
-		printf("%d: finished task - argument %d ----------------------------------\n", omp_get_thread_num(), argument);													//DEBUG
+		printf("%d: finished task - argument %d ----------------------------------\n", omp_get_thread_num(), argument);						//DEBUG
 		return;
 	}
+
+	uint8_t flag_exit = EXIT_SUCCESS;
 
 	//iterate through initial sets
 	do {
@@ -60,11 +84,18 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 
 		if (check_rejection(argument, initial_set, framework))
 		{
-			*isRejected = true;
+#pragma atomic write
+			*isRejected = true;			
+#pragma omp flush(isRejected)		//maybe flush is not needed since isRejected point so a memory address, which content is changed
 			printf("%d: initial set ", id);																					//DEBUG
 			print_list_uint32(initial_set);																					//DEBUG
 			printf(" rejects argument %d \n", argument);																	//DEBUG
-			printf("%d: finished task - argument %d ----------------------------------\n", omp_get_thread_num(), argument);													//DEBUG
+			printf("%d: finished task - argument %d ----------------------------------\n", omp_get_thread_num(), argument);	//DEBUG
+
+			nodeUInt32_t *new_extension_build = ExtendExtension(extension_build, initial_set);
+			free_list_uint32(initial_set);
+#pragma atomic write
+			*output_extension = new_extension_build;
 			return;
 		}
 
@@ -74,15 +105,10 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 			print_list_uint32(initial_set);																					//DEBUG
 			printf(" aborted\n");																							//DEBUG
 
-			if (flag_exit != EXIT_FAILURE && *isRejected == true)
-			{
-				printf("%d: preliminary terminated.\n", omp_get_thread_num());												//DEBUG
-			}
 			continue;
 		}
 
 		activeArgs_t *reduct = get_reduct_set(activeArgs, framework, initial_set);
-		free_list_uint32(initial_set);
 
 		if (reduct->numberActiveArguments < 2)
 		{
@@ -95,12 +121,12 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 				exit(1);
 			}*/
 
-			if (flag_exit != EXIT_FAILURE && *isRejected == true)
-			{
-				printf("%d: preliminary terminated.\n", omp_get_thread_num());												//DEBUG
-			}
 			continue;
 		}
+
+		//copy extension to extend it
+		nodeUInt32_t *new_extension_build = ExtendExtension(extension_build, initial_set);
+		free_list_uint32(initial_set);
 
 		printf("%d: created task for reduct: \n ", id);																		//DEBUG
 		print_active_arguments(reduct);																						//DEBUG
@@ -108,44 +134,57 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 
 #pragma omp task firstprivate(reduct) priority(0)
 		{
-			check_rejection_parallel_recursiv(argument, framework, reduct, isRejected);
+			check_rejection_parallel_recursiv(argument, framework, reduct, isRejected, new_extension_build, output_extension);
 			free_activeArguments(reduct);
+			free_list_uint32(new_extension_build);
 		}
 
-		if (flag_exit != EXIT_FAILURE && *isRejected == true)
-		{
-			printf("%d: preliminary terminated.\n", omp_get_thread_num());													//DEBUG
-		}
+#pragma omp flush(isRejected)
+#pragma omp atomic read
+		isRejected_tmp = *isRejected;
+	} while (flag_exit != EXIT_FAILURE && !isRejected_tmp);
 
-	} while (flag_exit != EXIT_FAILURE && *isRejected == false);
+	if (flag_exit != EXIT_FAILURE && isRejected_tmp)
+	{
+		printf("%d: preliminary terminated.\n", omp_get_thread_num());													//DEBUG
+	}
 
 	free(isSolved);
 	//TODO			solver.free();
 
-	printf("%d: finished task - argument %d ----------------------------------\n", omp_get_thread_num(), argument);													//DEBUG
+	printf("%d: finished task - argument %d ----------------------------------\n", omp_get_thread_num(), argument);		//DEBUG
 	return;
 }
 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-bool ScepticalPRParallel::check_rejection_parallel(uint32_t argument, argFramework_t *framework, activeArgs_t *activeArgs)
+bool ScepticalPRParallel::check_rejection_parallel(uint32_t argument, argFramework_t *framework, activeArgs_t *activeArgs, nodeUInt32_t **proof_extension)
 {
 	bool *isRejected = NULL;
-	isRejected = (bool *)malloc(sizeof * isRejected);
+	isRejected = (bool *)malloc(sizeof *isRejected);
 	if (isRejected == NULL) {
 		printf("Memory allocation failed\n");
 		exit(1);
 	}
-	else {
+	//else {
 		*isRejected = false;
+		nodeUInt32_t *extension_build = create_list_uint32(0);
 
-#pragma omp parallel shared(argument, framework, activeArgs, isRejected)
+#pragma omp parallel shared(argument, framework, activeArgs, isRejected, proof_extension)
 #pragma omp single
 		{
-			check_rejection_parallel_recursiv(argument, framework, activeArgs, isRejected);
+			check_rejection_parallel_recursiv(argument, framework, activeArgs, isRejected, extension_build, proof_extension);
 		}
-	}
+		bool result = *isRejected;
+		free(isRejected);
+		free_list_uint32(extension_build);
 
-	return *isRejected;
+		if ((*proof_extension)->number == 0)
+		{
+			*proof_extension = remove_head_list_uint32(*proof_extension);		//removed added 0 at the beginning
+		}
+	//}
+
+	return result;
 }

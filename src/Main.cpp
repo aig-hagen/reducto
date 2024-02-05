@@ -17,7 +17,7 @@ void AnalyseSolvingAlgorithms(argFramework_t *framework, activeArgs_t *actives, 
 	{
 		uint32_t argument = i;
 		bool isScepticAccepted = !ScepticalPRSequential::check_rejection_per_reduct_recursiv(argument, framework, actives);
-		std::cout << std::boolalpha << "\nsceptic acceptance of " << argument << " : " << isScepticAccepted << std::endl;
+		std::cout << std::boolalpha << "sceptic acceptance of " << argument << " : " << isScepticAccepted << std::endl;
 	}
 	end = omp_get_wtime();
 	run_time_seq_rec = end - start;
@@ -29,7 +29,7 @@ void AnalyseSolvingAlgorithms(argFramework_t *framework, activeArgs_t *actives, 
 	{
 		uint32_t argument = i;
 		bool isScepticAccepted = !ScepticalPRSequential::check_rejection_iterative(argument, framework, actives);
-		std::cout << std::boolalpha << "\nsceptic acceptance of " << argument << " : " << isScepticAccepted << std::endl;
+		std::cout << std::boolalpha << "sceptic acceptance of " << argument << " : " << isScepticAccepted << std::endl;
 	}
 	end = omp_get_wtime();
 	run_time_seq_it = end - start;
@@ -40,9 +40,22 @@ void AnalyseSolvingAlgorithms(argFramework_t *framework, activeArgs_t *actives, 
 	for (uint32_t i = numArgsStart; i < numArgsEnd + 1; i++)
 	{
 		uint32_t argument = i;
-		printf("////////////////////////// ARGUMENT %d //////////////////////////////\n", i);															//DEBUG
-		bool isScepticAccepted = !ScepticalPRParallel::check_rejection_parallel(argument, framework, actives);
-		std::cout << std::boolalpha << "\nsceptic acceptance of " << argument << " : " << isScepticAccepted << std::endl;
+		nodeUInt32_t **proof_extension = NULL;
+		proof_extension = (nodeUInt32_t **)malloc(sizeof * proof_extension);
+		if (proof_extension == NULL) {
+			printf("Memory allocation failed\n");
+			exit(1);
+		}
+		printf("////////////////////////// ARGUMENT %d //////////////////////////////\n", i);
+		bool isScepticAccepted = !ScepticalPRParallel::check_rejection_parallel(argument, framework, actives, proof_extension);
+		std::cout << std::boolalpha << "sceptic acceptance of " << argument << " : " << isScepticAccepted << std::endl;
+		if (!isScepticAccepted)
+		{
+			EXTENSIONSOLVER_CMS::BuildExtension(framework, actives, proof_extension);
+			printf("Extension that proves rejection: ");
+			print_list_uint32((*proof_extension));
+			printf("\n");
+		}
 	}
 	end = omp_get_wtime();
 	run_time_para_rec = end - start;
