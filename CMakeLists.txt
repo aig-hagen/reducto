@@ -34,6 +34,7 @@ set(HEADERS
 	${INCLD}/ExtensionSolver.h 
 	${INCLD}/ExternalSolver.h
 	${INCLD}/InitialSetSolver.h
+	${INCLD}/Parser_iccma.h
 	${INCLD}/ScepticalPRCheck.h
 	${INCLD}/ScepticalPRParallel.h
 	${INCLD}/ScepticalPRSequential.h
@@ -57,6 +58,7 @@ set(SRCFILES
 	${SRC}ExtensionSolver.cpp 
 	${SRC}ExternalSolver_pstreams.cpp
 	${SRC}InitialSetSolver.cpp
+	${SRC}Parser_iccma.cpp
 	${SRC}ScepticalPRCheck.c
 	${SRC}ScepticalPRParallel.cpp
 	${SRC}ScepticalPRSequential.cpp

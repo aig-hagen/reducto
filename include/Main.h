@@ -23,6 +23,7 @@ extern "C" {
 #include "../include/ExtensionSolver.h"
 #include "../include/ExternalSolver.h"
 #include "../include/InitialSetSolver.h"
+#include "../include/Parser_iccma.h"
 #include "../include/ScepticalPRSequential.h"
 #include "../include/ScepticalPRParallel.h"
 

@@ -2,6 +2,9 @@
 #include <cryptominisat.h>
 #include <assert.h>
 #include <vector>
+
+#include <limits.h>
+
 using std::vector;
 using namespace CMSat;
 
@@ -195,8 +198,24 @@ static void test6Args()
 	print_matrix(framework->victims);
 	printf("\n");
 
-	activeArgs_t *actives = initialize_actives(6);
+	activeArgs_t *actives = initialize_actives(framework->number);
 	AnalyseSolvingAlgorithms(framework, actives, 1 ,6);
+}
+
+static void test6ArgsFile()
+{
+	char cwd[PATH_MAX];
+	if (getcwd(cwd, sizeof(cwd)) != NULL) {
+		printf("Current working dir: %s\n", cwd);
+	}
+	else {
+		perror("getcwd() error");
+		exit(1);
+	}
+	argFramework_t *framework = ParserICCMA::parse_af("../../../rsc/examples/example2");
+
+	activeArgs_t *actives = initialize_actives(framework->number);
+	AnalyseSolvingAlgorithms(framework, actives, 1, 6);
 }
 
 static void testArgsALot()
@@ -342,7 +361,8 @@ int main()
 {
 	//test0();
 	//test4Args();
-	test6Args();
+	//test6Args();
+	test6ArgsFile();
 	//testArgsALot();
 	//testCMS();
 	//testExampleCMS();
