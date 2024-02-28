@@ -14,54 +14,64 @@ project ("ParallelSolver" LANGUAGES C CXX)
 
 # Add source to this project's executable.
 set(INCLD "${CMAKE_CURRENT_LIST_DIR}/include")
+set(INCLD_LOGIC "${INCLD}/logic")
+set(INCLD_UTIL "${INCLD}/util")
 set(SRC "${CMAKE_CURRENT_LIST_DIR}/src/")
+set(SRC_LOGIC "${SRC}logic/")
+set(SRC_UTIL "${SRC}util/")
 
 set(HEADERS
 	${INCLD}/Main.h
-	${INCLD}/Actives.h 
-	${INCLD}/AF.h 
-	${INCLD}/Array.h 
-	${INCLD}/Decodings.h 
-	${INCLD}/Encodings.h 
-	${INCLD}/LinkedSparseMatrix.h 
-	${INCLD}/List.h 
-	${INCLD}/ListActives.h 
-	${INCLD}/Matrix.h 
-	${INCLD}/Reduct.h 
-	${INCLD}/SatProblem.h
-	${INCLD}/Decodings_cms.h
-	${INCLD}/Encodings_cms.h 
-	${INCLD}/ExtensionSolver.h 
-	${INCLD}/ExternalSolver.h
-	${INCLD}/InitialSetSolver.h
-	${INCLD}/Parser_iccma.h
-	${INCLD}/ScepticalPRCheck.h
-	${INCLD}/ScepticalPRParallel.h
-	${INCLD}/ScepticalPRSequential.h
+	${INCLD_LOGIC}/Actives.h 
+	${INCLD_LOGIC}/AF.h 
+	${INCLD_LOGIC}/Decodings.h 
+	${INCLD_LOGIC}/Encodings.h 
+	${INCLD_LOGIC}/ListActives.h 
+	${INCLD_LOGIC}/Reduct.h 
+	${INCLD_LOGIC}/SatProblem.h
+	${INCLD_LOGIC}/Decodings_cms.h
+	${INCLD_LOGIC}/Encodings_cms.h 
+	${INCLD_LOGIC}/ExtensionSolver.h 
+	${INCLD_LOGIC}/ExternalSolver.h
+	${INCLD_LOGIC}/InitialSetSolver.h
+	${INCLD_LOGIC}/Parser_iccma.h
+	${INCLD_LOGIC}/ScepticalPRCheck.h
+	${INCLD_LOGIC}/ScepticalPRParallel.h
+	${INCLD_LOGIC}/ScepticalPRSequential.h
+	${INCLD_LOGIC}/Tests.h
+
+	${INCLD_UTIL}/Array.h 
+	${INCLD_UTIL}/LinkedSparseMatrix.h 
+	${INCLD_UTIL}/List.h 
+	${INCLD_UTIL}/Matrix.h
+	${INCLD_UTIL}/Enums.h
 	)
 
 set(SRCFILES
     ${SRC}Main.cpp
-	${SRC}Actives.c 
-	${SRC}AF.c 
-	${SRC}Array.c 
-	${SRC}Decodings.c 
-	${SRC}Encodings.c 
-	${SRC}LinkedSparseMatrix.c 
-	${SRC}List.c 
-	${SRC}ListActives.c 
-	${SRC}Matrix.c 
-	${SRC}Reduct.c 
-	${SRC}SatProblem.c 
-	${SRC}Decodings_cms.cpp
-	${SRC}Encodings_cms.cpp 
-	${SRC}ExtensionSolver.cpp 
-	${SRC}ExternalSolver_pstreams.cpp
-	${SRC}InitialSetSolver.cpp
-	${SRC}Parser_iccma.cpp
-	${SRC}ScepticalPRCheck.c
-	${SRC}ScepticalPRParallel.cpp
-	${SRC}ScepticalPRSequential.cpp
+	${SRC_LOGIC}Actives.c 
+	${SRC_LOGIC}AF.c 
+	${SRC_LOGIC}Decodings.c 
+	${SRC_LOGIC}Encodings.c 
+	${SRC_LOGIC}ListActives.c 
+	${SRC_LOGIC}Reduct.c 
+	${SRC_LOGIC}SatProblem.c 
+	${SRC_LOGIC}Decodings_cms.cpp
+	${SRC_LOGIC}Encodings_cms.cpp 
+	${SRC_LOGIC}ExtensionSolver.cpp 
+	${SRC_LOGIC}ExternalSolver_pstreams.cpp
+	${SRC_LOGIC}InitialSetSolver.cpp
+	${SRC_LOGIC}Parser_iccma.cpp
+	${SRC_LOGIC}ScepticalPRCheck.c
+	${SRC_LOGIC}ScepticalPRParallel.cpp
+	${SRC_LOGIC}ScepticalPRSequential.cpp
+	${SRC_LOGIC}Tests.cpp
+
+	${SRC_UTIL}Array.c
+	${SRC_UTIL}LinkedSparseMatrix.c 
+	${SRC_UTIL}List.c
+	${SRC_UTIL}Matrix.c
+	${SRC_UTIL}Enums.cpp
 	)
 
 set(SOURCES ${SRCFILES} ${HEADERS})
