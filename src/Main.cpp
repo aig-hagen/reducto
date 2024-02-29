@@ -47,7 +47,10 @@ void static print_problems()
 	for (uint32_t i = 0; i < tasks.size(); i++) {
 		for (uint32_t j = 0; j < sems.size(); j++) {
 			string problem = tasks[i] + "-" + sems[j];
-			cout << problem << ",";
+			if (j != sems.size() - 1)
+			{
+				cout << problem << ",";
+			}
 		}
 	}
 	cout << "]\n";
@@ -65,14 +68,14 @@ int main(int argc, char **argv)
 
 	int option_index = 0;
 	int opt = 0;
-	string task, file, fileformat, query;
+	string problem, file, fileformat, query;
 
 	while ((opt = getopt_long_only(argc, argv, "", longopts, &option_index)) != -1) {
 		switch (opt) {
 		case 0:
 			break;
 		case 'p':
-			task = optarg;
+			problem = optarg;
 			break;
 		case 'f':
 			file = optarg;
@@ -108,8 +111,8 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
-	if (task.empty()) {
-		cerr << argv[0] << ": Task must be specified via -p flag\n";
+	if (problem.empty()) {
+		cerr << argv[0] << ": Problem must be specified via -p flag\n";
 		return 1;
 	}
 
@@ -134,6 +137,9 @@ int main(int argc, char **argv)
 
 	activeArgs_t *actives = initialize_actives(framework->number);
 	
+	string task = problem.substr(0, problem.find("-"));
+	problem.erase(0, problem.find("-") + 1);
+	string sem = problem.substr(0, problem.find("-"));
 	switch (Enums::string_to_task(task)) {
 		case DS:
 		{
@@ -151,7 +157,7 @@ int main(int argc, char **argv)
 			}
 			bool skept_accepted = false;
 
-			switch (Enums::string_to_sem(task)) {
+			switch (Enums::string_to_sem(sem)) {
 				case PR:
 				
 					skept_accepted = !ScepticalPRParallel::check_rejection_parallel(argument, framework, actives, proof_extension);

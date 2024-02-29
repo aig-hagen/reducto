@@ -26,12 +26,12 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 	isRejected_tmp = *isRejected;
 	if (isRejected_tmp == true)
 	{
-		printf("%d: preliminary terminated.\n", omp_get_thread_num());																		//DEBUG
-		printf("%d: finished task - argument %d ----------------------------------\n", omp_get_thread_num(), argument);						//DEBUG
+		//printf("%d: preliminary terminated.\n", omp_get_thread_num());																		//DEBUG
+		//printf("%d: finished task - argument %d ----------------------------------\n", omp_get_thread_num(), argument);						//DEBUG
 		return;
 	}
 
-	printf("%d: starting task - argument %d ----------------------------------\n", omp_get_thread_num(), argument);							//DEBUG
+	//printf("%d: starting task - argument %d ----------------------------------\n", omp_get_thread_num(), argument);							//DEBUG
 	//printf("Thread number %d checking argument %d computing state: \n", omp_get_thread_num() , argument);									//DEBUG
 	//print_active_arguments(activeArgs);																									//DEBUG
 	//printf("\n");																															//DEBUG
@@ -53,10 +53,10 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 	isRejected_tmp = *isRejected;
 	if (isRejected_tmp == true)
 	{
-		printf("%d: preliminary terminated.\n", omp_get_thread_num());																		//DEBUG
+		//printf("%d: preliminary terminated.\n", omp_get_thread_num());																		//DEBUG
 		free(isSolved);
 		//TODO			solver.free();
-		printf("%d: finished task - argument %d ----------------------------------\n", omp_get_thread_num(), argument);						//DEBUG
+		//printf("%d: finished task - argument %d ----------------------------------\n", omp_get_thread_num(), argument);						//DEBUG
 		return;
 	}
 
@@ -70,16 +70,16 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 		if (flag_exit == EXIT_FAILURE)
 		{
 			//no more initial sets to calculate after this one
-			printf("%d: no set \n", id);																						//DEBUG
+			//printf("%d: no set \n", id);																						//DEBUG
 			break;
 		}
 		else
 		{
 			initial_set = DecodingCMS::get_set_from_solver(&solver, activeArgs);
 
-			printf("%d: computed initial set: ", id);																			//DEBUG
-			print_list_uint32(initial_set);																						//DEBUG
-			printf("\n");																										//DEBUG
+			//printf("%d: computed initial set: ", id);																			//DEBUG
+			//print_list_uint32(initial_set);																						//DEBUG
+			//printf("\n");																										//DEBUG
 		}
 
 		if (check_rejection(argument, initial_set, framework))
@@ -87,10 +87,10 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 #pragma atomic write
 			*isRejected = true;			
 #pragma omp flush(isRejected)		//maybe flush is not needed since isRejected point so a memory address, which content is changed
-			printf("%d: initial set ", id);																					//DEBUG
-			print_list_uint32(initial_set);																					//DEBUG
-			printf(" rejects argument %d \n", argument);																	//DEBUG
-			printf("%d: finished task - argument %d ----------------------------------\n", omp_get_thread_num(), argument);	//DEBUG
+			//printf("%d: initial set ", id);																					//DEBUG
+			//print_list_uint32(initial_set);																					//DEBUG
+			//printf(" rejects argument %d \n", argument);																	//DEBUG
+			//printf("%d: finished task - argument %d ----------------------------------\n", omp_get_thread_num(), argument);	//DEBUG
 
 			nodeUInt32_t *new_extension_build = ExtendExtension(extension_build, initial_set);
 			free_list_uint32(initial_set);
@@ -101,9 +101,9 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 
 		if (check_terminate_extension_build(argument, initial_set))
 		{
-			printf("%d: path of initial set ", id);																			//DEBUG
-			print_list_uint32(initial_set);																					//DEBUG
-			printf(" aborted\n");																							//DEBUG
+			//printf("%d: path of initial set ", id);																			//DEBUG
+			//print_list_uint32(initial_set);																					//DEBUG
+			//printf(" aborted\n");																							//DEBUG
 
 			continue;
 		}
@@ -113,7 +113,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 		if (reduct->numberActiveArguments < 2)
 		{
 			//there is only 1 active argument, this has to be the argument to check, if not then there should have been a rejection check earlier who did not work
-			printf("%d: only 1 argument left -> skip reduct\n", omp_get_thread_num());																			//DEBUG
+			//printf("%d: only 1 argument left -> skip reduct\n", omp_get_thread_num());																			//DEBUG
 
 			/*if (get_first_active(reduct) != argument)
 			{
@@ -128,9 +128,9 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 		nodeUInt32_t *new_extension_build = ExtendExtension(extension_build, initial_set);
 		free_list_uint32(initial_set);
 
-		printf("%d: created task for reduct: \n ", id);																		//DEBUG
-		print_active_arguments(reduct);																						//DEBUG
-		printf("\n");																										//DEBUG
+		//printf("%d: created task for reduct: \n ", id);																		//DEBUG
+		//print_active_arguments(reduct);																						//DEBUG
+		//printf("\n");																										//DEBUG
 
 #pragma omp task firstprivate(reduct) priority(0)
 		{
@@ -146,13 +146,13 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 
 	if (flag_exit != EXIT_FAILURE && isRejected_tmp)
 	{
-		printf("%d: preliminary terminated.\n", omp_get_thread_num());													//DEBUG
+		//printf("%d: preliminary terminated.\n", omp_get_thread_num());													//DEBUG
 	}
 
 	free(isSolved);
 	//TODO			solver.free();
 
-	printf("%d: finished task - argument %d ----------------------------------\n", omp_get_thread_num(), argument);		//DEBUG
+	//printf("%d: finished task - argument %d ----------------------------------\n", omp_get_thread_num(), argument);		//DEBUG
 	return;
 }
 

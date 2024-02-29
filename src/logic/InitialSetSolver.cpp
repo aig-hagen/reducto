@@ -34,7 +34,7 @@ uint8_t InitialSetSolver::calculate_next_solution(argFramework_t *framework, act
 {
 	if (*isSolved)
 	{
-		printf("%d: added complement clause \n", omp_get_thread_num());																			//DEBUG
+		//printf("%d: added complement clause \n", omp_get_thread_num());																			//DEBUG
 		Encodings_CMS::add_complement_clause(solver, activeArgs);
 	}
 
