@@ -31,7 +31,7 @@ void static print_version()
 
 void static print_formats()
 {
-	cout << "[ICCMA'23]\n";
+	cout << "[.i23]\n";
 }
 
 /*===========================================================================================================================================================*/
@@ -124,7 +124,7 @@ int main(int argc, char **argv)
 	}
 
 	argFramework_t *framework = NULL;
-	if (fileformat == "ICCMA") {
+	if (fileformat == ".i23") {
 		framework = ParserICCMA::parse_af(file);
 	}
 	else {
