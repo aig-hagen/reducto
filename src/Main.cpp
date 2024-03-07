@@ -126,8 +126,9 @@ int main(int argc, char **argv)
 	}
 
 	if (fileformat.empty()) {
-		cerr << argv[0] << ": File format must be specified via -fo flag\n";
-		return 1;
+		fileformat = file.substr(file.find_last_of(".") + 1, file.length() - file.find_last_of(".") - 1);
+		/*cerr << argv[0] << ": File format must be specified via -fo flag\n";
+		return 1;*/
 	}
 
 	argFramework_t *framework = NULL;
