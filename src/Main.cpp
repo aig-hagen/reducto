@@ -51,6 +51,10 @@ void static print_problems()
 			{
 				cout << problem << ",";
 			}
+			else
+			{
+				cout << problem;
+			}
 		}
 	}
 	cout << "]\n";
