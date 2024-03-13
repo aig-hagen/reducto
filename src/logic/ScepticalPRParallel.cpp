@@ -171,7 +171,7 @@ bool ScepticalPRParallel::check_rejection_parallel(uint32_t argument, argFramewo
 		*isRejected = false;
 		nodeUInt32_t *extension_build = create_list_uint32(0);
 
-		if (numCores != 0)
+		if (numCores > 0)
 		{
 			omp_set_num_threads(numCores);
 		}
