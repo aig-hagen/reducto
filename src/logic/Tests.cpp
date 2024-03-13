@@ -50,7 +50,7 @@ void AnalyseSolvingAlgorithms(argFramework_t *framework, activeArgs_t *actives, 
 			exit(1);
 		}
 		printf("////////////////////////// ARGUMENT %d //////////////////////////////\n", i);
-		bool isScepticAccepted = !ScepticalPRParallel::check_rejection_parallel(argument, framework, actives, proof_extension);
+		bool isScepticAccepted = !ScepticalPRParallel::check_rejection_parallel(argument, framework, actives, proof_extension, NUM_CORES_TESTS);
 		std::cout << std::boolalpha << "sceptic acceptance of " << argument << " : " << isScepticAccepted << std::endl;
 		if (!isScepticAccepted)
 		{

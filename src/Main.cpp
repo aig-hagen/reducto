@@ -165,7 +165,7 @@ int main(int argc, char **argv)
 			switch (Enums::string_to_sem(sem)) {
 				case PR:
 				
-					skept_accepted = !ScepticalPRParallel::check_rejection_parallel(argument, framework, actives, proof_extension);
+					skept_accepted = !ScepticalPRParallel::check_rejection_parallel(argument, framework, actives, proof_extension, NUM_CORES);
 					break;
 				default:
 					cerr << argv[0] << ": Unsupported semantics\n";
@@ -175,7 +175,7 @@ int main(int argc, char **argv)
 			cout << (skept_accepted ? "YES" : "NO") << "\n";
 			if (!skept_accepted)
 			{
-				EXTENSIONSOLVER_CMS::BuildExtension(framework, actives, proof_extension);
+				//EXTENSIONSOLVER_CMS::BuildExtension(framework, actives, proof_extension);
 				printf("w ");
 				print_list_elements_uint32((*proof_extension));
 				printf("\n");

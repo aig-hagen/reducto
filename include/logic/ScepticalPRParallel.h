@@ -33,8 +33,9 @@ public:
 	/// <param name="framework">The abstract argumentation framework, specifying the underlying attack relations between the arguments.</param>
 	/// <param name="activeArgs">The active arguments of the current state of the framework.</param>
 	/// <param name="proof_extension"> Extension proving, that the argument cannot be sceptically accepted.</param>
+	/// <param name="numCores"> Number of cores requested to be used to solve the problem. Actual number can be lower depending on the OS scheduler.
 	/// <returns>TRUE iff the sceptical acceptance was rejected. FALSE otherwise.</returns>
-	static bool check_rejection_parallel(uint32_t argument, argFramework_t *framework, activeArgs_t *activeArgs, nodeUInt32_t **proof_extension);
+	static bool check_rejection_parallel(uint32_t argument, argFramework_t *framework, activeArgs_t *activeArgs, nodeUInt32_t **proof_extension, uint8_t numCores);
 };
 
 #endif

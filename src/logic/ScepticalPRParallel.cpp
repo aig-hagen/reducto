@@ -159,7 +159,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-bool ScepticalPRParallel::check_rejection_parallel(uint32_t argument, argFramework_t *framework, activeArgs_t *activeArgs, nodeUInt32_t **proof_extension)
+bool ScepticalPRParallel::check_rejection_parallel(uint32_t argument, argFramework_t *framework, activeArgs_t *activeArgs, nodeUInt32_t **proof_extension, uint8_t numCores)
 {
 	bool *isRejected = NULL;
 	isRejected = (bool *)malloc(sizeof *isRejected);
@@ -171,6 +171,11 @@ bool ScepticalPRParallel::check_rejection_parallel(uint32_t argument, argFramewo
 		*isRejected = false;
 		nodeUInt32_t *extension_build = create_list_uint32(0);
 
+		if (numCores != 0)
+		{
+			omp_set_num_threads(numCores);
+		}
+		
 #pragma omp parallel shared(argument, framework, activeArgs, isRejected, proof_extension)
 #pragma omp single
 		{

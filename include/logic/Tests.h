@@ -28,6 +28,8 @@ extern "C" {
 #include "ScepticalPRSequential.h"
 #include "ScepticalPRParallel.h"
 
+constexpr auto NUM_CORES_TESTS = 0;
+
 using namespace std;
 
 class TestCases {
