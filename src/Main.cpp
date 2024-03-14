@@ -187,7 +187,13 @@ int main(int argc, char **argv)
 			return 1;
 	}
 
-	/*TestCases::run_Tests();*/
-
 	return 0;
 }
+
+//int main(int argc, char **argv)
+//{
+//
+//	TestCases::run_Tests();
+//
+//	return 0;
+//}

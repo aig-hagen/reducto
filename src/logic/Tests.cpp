@@ -226,7 +226,7 @@ static void test6ArgsFile()
 		perror("getcwd() error");
 		exit(1);
 	}
-	argFramework_t *framework = ParserICCMA::parse_af("../../../rsc/examples/example2");
+	argFramework_t *framework = ParserICCMA::parse_af("./../../../rsc/examples/example2.i23");
 
 	activeArgs_t *actives = initialize_actives(framework->number);
 	AnalyseSolvingAlgorithms(framework, actives, 1, 6);
