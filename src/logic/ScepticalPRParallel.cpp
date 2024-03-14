@@ -35,7 +35,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 	//printf("Thread number %d checking argument %d computing state: \n", omp_get_thread_num() , argument);									//DEBUG
 	//print_active_arguments(activeArgs);																									//DEBUG
 	//printf("\n");																															//DEBUG
-	int id = omp_get_thread_num();																											//DEBUG
+	//int id = omp_get_thread_num();																											//DEBUG
 
 	bool *isSolved = NULL;
 	isSolved = (bool *)malloc(sizeof * isSolved);
@@ -144,10 +144,10 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 		isRejected_tmp = *isRejected;
 	} while (flag_exit != EXIT_FAILURE && !isRejected_tmp);
 
-	if (flag_exit != EXIT_FAILURE && isRejected_tmp)
-	{
-		//printf("%d: preliminary terminated.\n", omp_get_thread_num());													//DEBUG
-	}
+	//if (flag_exit != EXIT_FAILURE && isRejected_tmp)
+	//{
+	//	printf("%d: preliminary terminated.\n", omp_get_thread_num());													//DEBUG
+	//}
 
 	free(isSolved);
 	//TODO			solver.free();

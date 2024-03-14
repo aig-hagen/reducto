@@ -10,6 +10,38 @@ using namespace CMSat;
 
 using namespace std;
 
+void static runParallel(int numArgsStart, int numArgsEnd, argFramework_t *framework, activeArgs_t *actives, double &run_time_para_rec)
+{
+	double start, end;
+	start = omp_get_wtime();
+	for (uint32_t i = numArgsStart; i < numArgsEnd + 1; i++)
+	{
+		uint32_t argument = i;
+		nodeUInt32_t **proof_extension = NULL;
+		proof_extension = (nodeUInt32_t **)malloc(sizeof * proof_extension);
+		if (proof_extension == NULL) {
+			printf("Memory allocation failed\n");
+			exit(1);
+		}
+		printf("////////////////////////// ARGUMENT %d //////////////////////////////\n", i);
+		bool isScepticAccepted = !ScepticalPRParallel::check_rejection_parallel(argument, framework, actives, proof_extension, NUM_CORES_TESTS);
+		std::cout << std::boolalpha << "sceptic acceptance of " << argument << " : " << isScepticAccepted << std::endl;
+		if (!isScepticAccepted)
+		{
+			EXTENSIONSOLVER_CMS::BuildExtension(framework, actives, proof_extension);
+			printf("Extension that proves rejection: ");
+			print_list_uint32((*proof_extension));
+			printf("\n");
+		}
+	}
+	end = omp_get_wtime();
+	run_time_para_rec = end - start;
+	printf("Compute Time: %f seconds\n", run_time_para_rec);
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
 void AnalyseSolvingAlgorithms(argFramework_t *framework, activeArgs_t *actives, int numArgsStart, int numArgsEnd)
 {
 	double start, end, run_time_seq_rec, run_time_seq_it, run_time_para_rec, diff_para_rec_seq_rec, diff_para_rec_seq_it;
@@ -39,30 +71,7 @@ void AnalyseSolvingAlgorithms(argFramework_t *framework, activeArgs_t *actives, 
 	printf("Compute Time: %f seconds\n", run_time_seq_it);
 
 	printf("==================== parallel recursive ==========================\n");
-	start = omp_get_wtime();
-	for (uint32_t i = numArgsStart; i < numArgsEnd + 1; i++)
-	{
-		uint32_t argument = i;
-		nodeUInt32_t **proof_extension = NULL;
-		proof_extension = (nodeUInt32_t **)malloc(sizeof * proof_extension);
-		if (proof_extension == NULL) {
-			printf("Memory allocation failed\n");
-			exit(1);
-		}
-		printf("////////////////////////// ARGUMENT %d //////////////////////////////\n", i);
-		bool isScepticAccepted = !ScepticalPRParallel::check_rejection_parallel(argument, framework, actives, proof_extension, NUM_CORES_TESTS);
-		std::cout << std::boolalpha << "sceptic acceptance of " << argument << " : " << isScepticAccepted << std::endl;
-		if (!isScepticAccepted)
-		{
-			EXTENSIONSOLVER_CMS::BuildExtension(framework, actives, proof_extension);
-			printf("Extension that proves rejection: ");
-			print_list_uint32((*proof_extension));
-			printf("\n");
-		}
-	}
-	end = omp_get_wtime();
-	run_time_para_rec = end - start;
-	printf("Compute Time: %f seconds\n", run_time_para_rec);
+	runParallel(numArgsStart, numArgsEnd, framework, actives, run_time_para_rec);
 	diff_para_rec_seq_rec = run_time_para_rec - run_time_seq_rec;
 	printf("Difference to sequential recursive: %f seconds, meaning %.2f%% \n", diff_para_rec_seq_rec, diff_para_rec_seq_rec / run_time_seq_rec * 100);
 	diff_para_rec_seq_it = run_time_para_rec - run_time_seq_it;
@@ -383,13 +392,32 @@ static void testExampleCMS()
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
+static void testFile()
+{
+	char cwd[PATH_MAX];
+	if (getcwd(cwd, sizeof(cwd)) != NULL) {
+		printf("Current working dir: %s\n", cwd);
+	}
+	else {
+		perror("getcwd() error");
+		exit(1);
+	}
+	argFramework_t *framework = ParserICCMA::parse_af("/home/jsander/solvers/ICCMA23/benchmarks/main/afinput_exp_cycles_indvary2_step1_batch_yyy06.i23");
+
+	activeArgs_t *actives = initialize_actives(framework->number);
+
+	double runtime = 0;
+	runParallel(37, 37, framework, actives, runtime);
+}
+
 void TestCases::run_Tests()
 {
 	//test0();
 	//test4Args();
 	//test6Args();
-	test6ArgsFile();
+	//test6ArgsFile();
 	//testArgsALot();
 	//testCMS();
 	//testExampleCMS();
+	testFile();
 }
