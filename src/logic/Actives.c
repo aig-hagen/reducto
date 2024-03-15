@@ -107,7 +107,9 @@ uint8_t free_activeArguments(activeArgs_t *activeArguments)
 		return EXIT_FAILURE;
 	}
 
+	free_array(activeArguments->encodingToArgument);
 	free(activeArguments);
+	
 	return EXIT_SUCCESS;
 }
 

@@ -48,6 +48,7 @@ extern "C" {
 	#include "../include/util/LinkedSparseMatrix.h"
 	#include "../include/util/List.h"
 	#include "../include/util/Matrix.h"
+	#include "../include/util/MemoryWatchDog.h"
 }
 
 #include "../include/logic/ExtensionSolver.h"

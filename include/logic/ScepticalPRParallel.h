@@ -14,6 +14,7 @@ extern "C" {
 #include "ScepticalPRCheck.h"
 
 #include "../util/List.h"
+#include "../util/MemoryWatchDog.h"
 }
 
 #include "Encodings_cms.h"

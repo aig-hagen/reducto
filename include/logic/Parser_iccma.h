@@ -9,8 +9,11 @@
 #include <fstream>			
 #include <algorithm>
 
+#include <omp.h>
+
 extern "C" {
 	#include "AF.h"
+	#include "../util/MemoryWatchDog.h"
 }
 
 using namespace std;

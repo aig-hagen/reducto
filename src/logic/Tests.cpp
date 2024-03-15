@@ -23,6 +23,8 @@ void static runParallel(int numArgsStart, int numArgsEnd, argFramework_t *framew
 			printf("Memory allocation failed\n");
 			exit(1);
 		}
+		//printf("%d: ------- extension allocated --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());												//DEBUG
+
 		printf("////////////////////////// ARGUMENT %d //////////////////////////////\n", i);
 		bool isScepticAccepted = !ScepticalPRParallel::check_rejection_parallel(argument, framework, actives, proof_extension, NUM_CORES_TESTS);
 		std::cout << std::boolalpha << "sceptic acceptance of " << argument << " : " << isScepticAccepted << std::endl;
@@ -402,9 +404,16 @@ static void testFile()
 		perror("getcwd() error");
 		exit(1);
 	}
+
+	//printf("%d: ------- program started --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());															//DEBUG
+
 	argFramework_t *framework = ParserICCMA::parse_af("/home/jsander/solvers/ICCMA23/benchmarks/main/afinput_exp_cycles_indvary2_step1_batch_yyy06.i23");
 
+	//printf("%d: ------- framework initialized --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());													//DEBUG
+
 	activeArgs_t *actives = initialize_actives(framework->number);
+
+	//printf("%d: ------- actives initialized --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());														//DEBUG
 
 	double runtime = 0;
 	runParallel(37, 37, framework, actives, runtime);

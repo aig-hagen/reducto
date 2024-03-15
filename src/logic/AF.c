@@ -167,6 +167,7 @@ argFramework_t* initialize_framework(argumentInitTemp_t *head)
 {
 	argFramework_t *framework = NULL;
 	framework = (argFramework_t*) malloc(sizeof *framework);
+	//printf("%d: ------- framework allocated --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());							//DEBUG
 	if (framework == NULL) {
 		printf("Memory allocation failed\n");
 		exit(1);
@@ -174,8 +175,11 @@ argFramework_t* initialize_framework(argumentInitTemp_t *head)
 	else {
 		framework->number = countArguments(head);
 		framework->attackers = initializeAttackers(head, framework->number);
+		//printf("%d: ------- attackers initialized --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());					//DEBUG
 		framework->victims = initializeVictims(head, framework->number);
+		//printf("%d: ------- victims initialized --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());						//DEBUG
 		freeInitializationMemory(head);
+		//printf("%d: ------- free initialization memory  --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());				//DEBUG
 
 		return framework;
 	}

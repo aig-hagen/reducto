@@ -26,6 +26,7 @@ static vector<Lit> add_rejected_clauses(SATSolver *solver, argFramework_t *frame
 	non_simultaneity_clause.push_back(get_literal_rejected(activeArgs, argument, true));
 	non_simultaneity_clause.push_back(get_literal_accepted(activeArgs, argument, true));
 	(*solver).add_clause(non_simultaneity_clause);
+	non_simultaneity_clause.clear();
 
 	//Part III: constitutes that if an argument 'a' is rejected, one of its attackers must be accepted
 	//create disjunction
@@ -45,6 +46,7 @@ static void add_rejected_clauses_per_attacker(SATSolver *solver, activeArgs_t *a
 	non_simultaneity_with_attacker_clause.push_back(get_literal_rejected(activeArgs, argument, false));
 	non_simultaneity_with_attacker_clause.push_back(get_literal_accepted(activeArgs, attacker, true));
 	(*solver).add_clause(non_simultaneity_with_attacker_clause);
+	non_simultaneity_with_attacker_clause.clear();
 
 	//Part III: constitutes that if an argument 'a' is rejected, one of its attackers must be accepted
 	//create disjunction
@@ -65,6 +67,7 @@ static void add_conflict_free_per_attacker(SATSolver *solver, activeArgs_t *acti
 		conflictfree_clause.push_back(get_literal_accepted(activeArgs, attacker, true));
 	}
 	(*solver).add_clause(conflictfree_clause);
+	conflictfree_clause.clear();
 }
 
 /*===========================================================================================================================================================*/
@@ -85,6 +88,7 @@ static void add_defense_per_attacker(SATSolver *solver, activeArgs_t *activeArgs
 	defense_clause.push_back(get_literal_accepted(activeArgs, argument, true));
 	defense_clause.push_back(get_literal_rejected(activeArgs, attacker, false));
 	(*solver).add_clause(defense_clause);
+	defense_clause.clear();
 }
 
 /*===========================================================================================================================================================*/
@@ -108,6 +112,7 @@ static void add_admissible(SATSolver *solver, argFramework_t *framework, activeA
 	}
 
 	(*solver).add_clause(rejection_reason_clause);
+	rejection_reason_clause.clear();
 }
 
 /*===========================================================================================================================================================*/
@@ -137,6 +142,7 @@ void Encodings_CMS::add_clauses_nonempty_admissible_set(SATSolver *solver, argFr
 		add_admissible(solver, framework, activeArgs, currentArgument);
 	}
 	(*solver).add_clause(non_empty_clause);
+	non_empty_clause.clear();
 }
 
 /*===========================================================================================================================================================*/
@@ -155,4 +161,5 @@ void Encodings_CMS::add_complement_clause(SATSolver *solver, activeArgs_t *activ
 	}
 
 	(*solver).add_clause(complement_clause);
+	complement_clause.clear();
 }

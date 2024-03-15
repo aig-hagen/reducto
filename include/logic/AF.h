@@ -4,7 +4,10 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <omp.h>
+
 #include "Actives.h"
+
 #include "../util/List.h"
 #include "../util/Matrix.h"
 #include "../util/LinkedSparseMatrix.h"
