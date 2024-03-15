@@ -44,6 +44,7 @@ set(HEADERS
 	${INCLD_UTIL}/LinkedSparseMatrix.h 
 	${INCLD_UTIL}/List.h 
 	${INCLD_UTIL}/Matrix.h
+	${INCLD_UTIL}/MemoryWatchDog.h 
 	${INCLD_UTIL}/Enums.h
 	)
 
@@ -71,6 +72,7 @@ set(SRCFILES
 	${SRC_UTIL}LinkedSparseMatrix.c 
 	${SRC_UTIL}List.c
 	${SRC_UTIL}Matrix.c
+	${SRC_UTIL}MemoryWatchDog.c
 	${SRC_UTIL}Enums.cpp
 	)
 
