@@ -165,6 +165,7 @@ static  uint32_t freeInitializationMemory(argumentInitTemp_t *head)
 
 argFramework_t* initialize_framework(argumentInitTemp_t *head)
 {
+	long mem_base = get_mem_usage();																									//DEBUG
 	argFramework_t *framework = NULL;
 	framework = (argFramework_t*) malloc(sizeof *framework);
 	//printf("%d: ------- framework allocated --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());							//DEBUG
@@ -178,9 +179,10 @@ argFramework_t* initialize_framework(argumentInitTemp_t *head)
 		//printf("%d: ------- attackers initialized --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());					//DEBUG
 		framework->victims = initializeVictims(head, framework->number);
 		//printf("%d: ------- victims initialized --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());						//DEBUG
+		//printf("Memory space of initialized framework: %ld [kB]\n", get_mem_usage() - mem_base);												//DEBUG
 		freeInitializationMemory(head);
 		//printf("%d: ------- free initialization memory  --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());				//DEBUG
-
+		
 		return framework;
 	}
 }

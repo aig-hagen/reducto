@@ -407,7 +407,7 @@ static void testFile()
 
 	//printf("%d: ------- program started --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());															//DEBUG
 
-	argFramework_t *framework = ParserICCMA::parse_af("/home/jsander/solvers/ICCMA23/benchmarks/main/afinput_exp_cycles_indvary2_step1_batch_yyy06.i23");
+	argFramework_t *framework = ParserICCMA::parse_af("/home/jsander/solvers/ICCMA23/benchmarks/main/WS_100_6_10_30.i23");
 
 	//printf("%d: ------- framework initialized --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());													//DEBUG
 
@@ -416,7 +416,7 @@ static void testFile()
 	//printf("%d: ------- actives initialized --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());														//DEBUG
 
 	double runtime = 0;
-	runParallel(37, 37, framework, actives, runtime);
+	runParallel(74, 74, framework, actives, runtime);
 }
 
 void TestCases::run_Tests()

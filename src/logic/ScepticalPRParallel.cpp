@@ -17,8 +17,9 @@ static nodeUInt32_t *ExtendExtension(nodeUInt32_t *extension_build, nodeUInt32_t
 /*===========================================================================================================================================================*/
 
 static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t *framework, activeArgs_t *activeArgs, bool *isRejected,
-	nodeUInt32_t *extension_build, nodeUInt32_t **output_extension, int *num_tasks, int *num_tasks_max)
+	nodeUInt32_t *extension_build, nodeUInt32_t **output_extension)
 {
+	//, int *num_tasks, int *num_tasks_max
 	int id = omp_get_thread_num();
 	bool isRejected_tmp = false;
 
@@ -183,24 +184,24 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 		free_activeArguments(reduct);
 
 
-#pragma atomic write
-		*num_tasks = *num_tasks + 1;
-#pragma omp flush(num_tasks)
+//#pragma atomic write
+//		*num_tasks = *num_tasks + 1;
+//#pragma omp flush(num_tasks)
 
-		int tmp_num_tasks, tmp_num_tasks_max;
-#pragma omp atomic read
-			tmp_num_tasks = *num_tasks;
-#pragma omp flush(num_tasks_max)
-#pragma omp atomic read
-			tmp_num_tasks_max = *num_tasks_max;
+//		int tmp_num_tasks, tmp_num_tasks_max;
+//#pragma omp atomic read
+//			tmp_num_tasks = *num_tasks;
+//#pragma omp flush(num_tasks_max)
+//#pragma omp atomic read
+//			tmp_num_tasks_max = *num_tasks_max;
 
-		if (tmp_num_tasks > tmp_num_tasks_max)
-		{
-#pragma atomic write
-			*num_tasks_max = tmp_num_tasks;
-
-			printf("%d: ------- New max Number of currently open tasks:  %d\n", id, tmp_num_tasks_max);
-		}
+//		if (tmp_num_tasks > tmp_num_tasks_max)
+//		{
+//#pragma atomic write
+//			*num_tasks_max = tmp_num_tasks;
+//
+//			printf("%d: ------- New max Number of currently open tasks:  %d\n", id, tmp_num_tasks_max);
+//		}
 
 		//printf("%d: ------- Number of currently open tasks:  %d\n", id, tmp_num_tasks);
 
@@ -209,13 +210,13 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 	 priority(0) //firstprivate(new_extension_build) not working untied // depend(in: argument, framework, activeArgs) depend(inout: isRejected, new_extension_build) depend(out: output_extension)
 		{
 			//printf("%d: ------- task started --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());								//DEBUG
-			check_rejection_parallel_recursiv(argument, framework, activeArgs, isRejected, new_extension_build, output_extension, num_tasks, num_tasks_max);
+			check_rejection_parallel_recursiv(argument, framework, activeArgs, isRejected, new_extension_build, output_extension); //, num_tasks, num_tasks_max
 			free_list_uint32(new_extension_build);
 			//printf("%d: ------- extension freed --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());								//DEBUG
 			int tmp_num_tasks = 0;
-#pragma atomic write
-			*num_tasks = *num_tasks - 1;
-#pragma omp flush(num_tasks)
+//#pragma atomic write
+//			*num_tasks = *num_tasks - 1;
+//#pragma omp flush(num_tasks)
 //#pragma omp atomic read
 			//tmp_num_tasks = *num_tasks;
 
@@ -270,7 +271,7 @@ bool ScepticalPRParallel::check_rejection_parallel(uint32_t argument, argFramewo
 		exit(1);
 	}
 
-	printf("%d: ------- isRejected allocated --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());									//DEBUG
+	//printf("%d: ------- isRejected allocated --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());									//DEBUG
 
 	*isRejected = false;
 
@@ -295,18 +296,18 @@ bool ScepticalPRParallel::check_rejection_parallel(uint32_t argument, argFramewo
 	}
 	*num_tasks_max = 0;
 
-#pragma omp parallel shared(argument, framework, activeArgs, isRejected, proof_extension, num_tasks, num_tasks_max)
+#pragma omp parallel shared(argument, framework, activeArgs, isRejected, proof_extension)   //, num_tasks, num_tasks_max
 #pragma omp single
 	{
-		printf("%d: ------- started omp parallel -- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());								//DEBUG
+		// printf("%d: ------- started omp parallel -- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());								//DEBUG
 
-		check_rejection_parallel_recursiv(argument, framework, activeArgs, isRejected, NULL, proof_extension, num_tasks, num_tasks_max);
+		check_rejection_parallel_recursiv(argument, framework, activeArgs, isRejected, NULL, proof_extension);					// , num_tasks, num_tasks_max
 	}
 	
 	bool result = *isRejected;
 	free(isRejected);
 
-	printf("%d: ------- finished program -- voluntary context switches: %ld; involuntary context switches: %ld; memory usage: %ld",
-		get_ctxt_switches_volun(), get_ctxt_switches_involun(), get_mem_usage());																 //DEBUG
+	/*printf("Finished program - voluntary context switches: %ld - involuntary context switches: %ld - memory usage: %ld [kB]\n",
+		get_ctxt_switches_volun(), get_ctxt_switches_involun(), get_mem_usage());*/																 //DEBUG
 	return result;
 }

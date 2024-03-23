@@ -47,6 +47,7 @@ argFramework_t* ParserICCMA::parse_af(string file)
 	uint32_t numArgs = std::stoi(word);
 	argumentInitTemp_t *head = set_up_initialization(numArgs);
 	//printf("%d: ------- setup initialization framework --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());						//DEBUG
+	long mem_base = get_mem_usage();																											//DEBUG
 
 	uint32_t attacker, victim;
 	while (!input.eof()) {
@@ -62,6 +63,7 @@ argFramework_t* ParserICCMA::parse_af(string file)
 
 	input.close();
 	//printf("%d: ------- finished reading file --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());								//DEBUG
+	//printf("Memory space needed to process AF as input: %ld [kB]\n", get_mem_usage() - mem_base);													//DEBUG
 
 	return initialize_framework(head);
 }
