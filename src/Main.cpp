@@ -140,7 +140,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	long mem_base = get_mem_usage();																									//DEBUG
+	//long mem_base = get_mem_usage();																										//DEBUG
 	activeArgs_t *actives = initialize_actives(framework->number);
 	//printf("Memory space of initialized active arguments: %ld [kB]\n", get_mem_usage() - mem_base);										//DEBUG
 	
@@ -177,7 +177,10 @@ int main(int argc, char **argv)
 			cout << (skept_accepted ? "YES" : "NO") << "\n";
 			if (!skept_accepted)
 			{
-				//EXTENSIONSOLVER_CMS::BuildExtension(framework, actives, proof_extension);
+				/*if (*proof_extension != NULL)
+				{
+					EXTENSIONSOLVER_CMS::BuildExtension(framework, actives, proof_extension);
+				}*/
 				printf("w ");
 				print_list_elements_uint32((*proof_extension));
 				printf("\n");

@@ -34,7 +34,12 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 	}
 
 	//printf("%d: starting task - argument %d ----------------------------------\n", id, argument);												//DEBUG
-	//printf("Thread number %d checking argument %d computing state: \n", omp_get_thread_num() , argument);										//DEBUG
+	//printf("Thread number %d checking argument %d\n", omp_get_thread_num() , argument);														//DEBUG
+	//printf("Extension so far:");																												//DEBUG
+	//print_list_uint32((extension_build));																										//DEBUG
+	//printf("\n");																																//DEBUG
+	
+	//printf("Current active arguments:");
 	//print_active_arguments(activeArgs);																										//DEBUG
 	//printf("\n");																																//DEBUG
 																																				//DEBUG
@@ -58,7 +63,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 	if (reduct->numberActiveArguments < 2)
 	{
 		//there is only 1 active argument, this has to be the argument to check, if not then there should have been a rejection check earlier who did not work
-		//printf("%d: only 1 argument left -> skip reduct\n", omp_get_thread_num());															//DEBUG
+		//printf("%d: only 1 argument left -> check self-attack + skip reduct\n", omp_get_thread_num());															//DEBUG
 
 		/*if (get_first_active(reduct) != argument)
 		{
@@ -66,6 +71,20 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 			exit(1);
 		}*/
 
+		if (framework->attackers->content[argument][argument] != 0)
+		{
+			//printf("%d: argument is attacking itself\n", omp_get_thread_num());
+#pragma atomic write
+			*isRejected = true;
+#pragma omp flush(isRejected)		//maybe flush is not needed since isRejected point so a memory address, which content is changed
+		}
+
+		//free_activeArguments(reduct);
+		//printf("%d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
+
+#pragma atomic write
+		*output_extension = NULL;
+		
 		return;
 	}
 
@@ -111,19 +130,52 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 		{
 			//no more initial sets to calculate after this one
 			//printf("%d: no set \n", id);																										//DEBUG
+			//no initial set found check for self-attacking argument
+			if (framework->attackers->content[argument][argument] != 0)
+			{
+				//argument attacks itself
+#pragma atomic write
+				*isRejected = true;
+#pragma omp flush(isRejected)		//maybe flush is not needed since isRejected point so a memory address, which content is changed
+				free_activeArguments(reduct);
+				//printf("%d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
+
+#pragma atomic write
+					*output_extension = NULL;
+
+				return;
+			}
+
 			break;
 		}
-		else
+
+		initial_set = DecodingCMS::get_set_from_solver(solver, reduct);
+		//printf("%d: ------- initial set allocated --- memory usage: %ld\n", id, get_mem_usage());											//DEBUG
+
+		//printf("%d: computed initial set: ", id);																							//DEBUG
+		//print_list_uint32(initial_set);																									//DEBUG
+		//printf("\n");																														//DEBUG
+		
+		if (initial_set == NULL)
 		{
-			initial_set = DecodingCMS::get_set_from_solver(solver, reduct);
-			//printf("%d: ------- initial set allocated --- memory usage: %ld\n", id, get_mem_usage());											//DEBUG
+			//initial set is empty check for self-attacking argument
+			if (framework->attackers->content[argument][argument] != 0)
+			{
+				//argument attacks itself
+#pragma atomic write
+				*isRejected = true;
+#pragma omp flush(isRejected)		//maybe flush is not needed since isRejected point so a memory address, which content is changed
+				free_activeArguments(reduct);
+				//printf("%d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
+#pragma atomic write
+				*output_extension = NULL;
 
-			//printf("%d: computed initial set: ", id);																							//DEBUG
-			//print_list_uint32(initial_set);																									//DEBUG
-			//printf("\n");																														//DEBUG
+				return;
+			}
+
+			continue;
 		}
-
-		if (check_rejection(argument, initial_set, framework))
+		else if (check_rejection(argument, initial_set, framework))
 		{
 #pragma atomic write
 			*isRejected = true;			
@@ -156,8 +208,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 			delete solver;
 			return;
 		}
-
-		if (check_terminate_extension_build(argument, initial_set))
+		else if (check_terminate_extension_build(argument, initial_set))
 		{
 			//printf("%d: path of initial set ", id);																							//DEBUG
 			//print_list_uint32(initial_set);																									//DEBUG
@@ -206,8 +257,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 		//printf("%d: ------- Number of currently open tasks:  %d\n", id, tmp_num_tasks);
 
 #pragma omp task \
-	 untied \
-	 priority(0) //firstprivate(new_extension_build) not working untied // depend(in: argument, framework, activeArgs) depend(inout: isRejected, new_extension_build) depend(out: output_extension)
+	 priority(0) //firstprivate(new_extension_build) not working with untied // depend(in: argument, framework, activeArgs) depend(inout: isRejected, new_extension_build) depend(out: output_extension)
 		{
 			//printf("%d: ------- task started --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());								//DEBUG
 			check_rejection_parallel_recursiv(argument, framework, activeArgs, isRejected, new_extension_build, output_extension); //, num_tasks, num_tasks_max
@@ -246,7 +296,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 
 	//if (flag_exit != EXIT_FAILURE && isRejected_tmp)																							//DEBUG
 	//{																																			//DEBUG
-		//printf("%d: preliminary terminated.\n", id);																							//DEBUG
+	//	printf("%d: preliminary terminated.\n", id);																							//DEBUG
 	//}																																			//DEBUG
 
 	free(isSolved);

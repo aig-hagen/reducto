@@ -30,10 +30,24 @@ void static runParallel(int numArgsStart, int numArgsEnd, argFramework_t *framew
 		std::cout << std::boolalpha << "sceptic acceptance of " << argument << " : " << isScepticAccepted << std::endl;
 		if (!isScepticAccepted)
 		{
-			EXTENSIONSOLVER_CMS::BuildExtension(framework, actives, proof_extension);
-			printf("Extension that proves rejection: ");
-			print_list_uint32((*proof_extension));
-			printf("\n");
+			if (*proof_extension == NULL)
+			{
+				if (framework->attackers->content[argument][argument] != 0)
+				{
+					printf("Argument attacks itself.\n");
+				}
+				else
+				{
+					printf("No Extension found\n");
+				}
+			}
+			else
+			{
+				EXTENSIONSOLVER_CMS::BuildExtension(framework, actives, proof_extension);
+				printf("Extension that proves rejection: ");
+				print_list_uint32((*proof_extension));
+				printf("\n");
+			}
 		}
 	}
 	end = omp_get_wtime();
@@ -173,6 +187,28 @@ static void test0()
 	printf("Initial set 2 = ");
 	print_list_uint32(initial_set2);
 	printf("\n");
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
+static void testSelfAttack()
+{
+	argumentInitTemp_t *head = set_up_initialization(3);
+	add_attack(head, 1, 1);
+	add_attack(head, 2, 1);
+	add_attack(head, 3, 2);
+	argFramework_t *framework = initialize_framework(head);
+
+	printf("Attackers\n");
+	print_matrix(framework->attackers);
+
+	printf("Victims\n");
+	print_matrix(framework->victims);
+	printf("\n");
+
+	activeArgs_t *actives = initialize_actives(3);
+	AnalyseSolvingAlgorithms(framework, actives, 1, 1);
 }
 
 /*===========================================================================================================================================================*/
@@ -407,7 +443,7 @@ static void testFile()
 
 	//printf("%d: ------- program started --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());															//DEBUG
 
-	argFramework_t *framework = ParserICCMA::parse_af("/home/jsander/solvers/ICCMA23/benchmarks/main/WS_100_6_10_30.i23");
+	argFramework_t *framework = ParserICCMA::parse_af("/home/jsander/solvers/ICCMA23/benchmarks/main/WS_400_8_30_30.i23");
 
 	//printf("%d: ------- framework initialized --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());													//DEBUG
 
@@ -416,17 +452,18 @@ static void testFile()
 	//printf("%d: ------- actives initialized --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());														//DEBUG
 
 	double runtime = 0;
-	runParallel(74, 74, framework, actives, runtime);
+	runParallel(18, 18, framework, actives, runtime);
 }
 
 void TestCases::run_Tests()
 {
 	//test0();
+	testSelfAttack();
 	//test4Args();
 	//test6Args();
 	//test6ArgsFile();
 	//testArgsALot();
 	//testCMS();
 	//testExampleCMS();
-	testFile();
+	//testFile();
 }

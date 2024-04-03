@@ -206,7 +206,7 @@ void print_active_arguments(activeArgs_t *activeArguments)
 {
 	printf("=== active Arguments ===\n");
 	printf("Number of active arguments: %d\n", activeArguments->numberActiveArguments);
-	print_matrix(activeArguments->matrix);
-	printf("\n- encodings -\n");
+	//print_matrix(activeArguments->matrix);
+	//printf("\n- encodings -\n");
 	print_array(activeArguments->encodingToArgument);
 }
