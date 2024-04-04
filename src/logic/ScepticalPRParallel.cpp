@@ -164,15 +164,19 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 				//argument attacks itself
 #pragma atomic write
 				*isRejected = true;
-#pragma omp flush(isRejected)		//maybe flush is not needed since isRejected point so a memory address, which content is changed
-				free_activeArguments(reduct);
-				//printf("%d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
+#pragma omp flush(isRejected)		//maybe flush is not needed since isRejected points to a memory address, which content is changed
 #pragma atomic write
 				*output_extension = NULL;
 
+				free_activeArguments(reduct);
+				//printf("%d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
+				free_list_uint32(initial_set);
+				//printf("%d: ------- initial set freed --- memory usage: %ld\n", id, get_mem_usage());												//DEBUG
 				return;
 			}
 
+			free_list_uint32(initial_set);
+			//printf("%d: ------- initial set freed --- memory usage: %ld\n", id, get_mem_usage());												//DEBUG
 			continue;
 		}
 		else if (check_rejection(argument, initial_set, framework))
@@ -188,14 +192,12 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 			nodeUInt32_t *new_extension_build;
 			if (extension_build == NULL)
 			{
-				new_extension_build = initial_set;
+				new_extension_build = copy_list_uint32(initial_set);
 			}
 			else
 			{
 				new_extension_build = ExtendExtension(extension_build, initial_set);
 				//printf("%d: ------- new extension allocated to extend --- memory usage: %ld\n", id, get_mem_usage());							//DEBUG
-				free_list_uint32(initial_set);
-				//printf("%d: ------- initial set freed --- memory usage: %ld\n", id, get_mem_usage());											//DEBUG
 			}
 			
 #pragma atomic write
@@ -206,6 +208,8 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 			free_activeArguments(reduct);
 			//printf("%d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
 			delete solver;
+			free_list_uint32(initial_set);
+			//printf("%d: ------- initial set freed --- memory usage: %ld\n", id, get_mem_usage());												//DEBUG
 			return;
 		}
 		else if (check_terminate_extension_build(argument, initial_set))
@@ -214,6 +218,8 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 			//print_list_uint32(initial_set);																									//DEBUG
 			//printf(" aborted\n");																												//DEBUG
 
+			free_list_uint32(initial_set);
+			//printf("%d: ------- initial set freed --- memory usage: %ld\n", id, get_mem_usage());												//DEBUG
 			continue;
 		}
 
@@ -222,17 +228,17 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 		if (extension_build == NULL)
 		{
 			//nodeUInt32_t *extension_build = create_list_uint32(0);
-			new_extension_build = initial_set;
+			new_extension_build = copy_list_uint32(initial_set);
 		}
 		else
 		{
 			new_extension_build = ExtendExtension(extension_build, initial_set);
 			//printf("%d: ------- new extension allocated to extend --- memory usage: %ld\n", id, get_mem_usage());								//DEBUG
-			free_list_uint32(initial_set);
-			//printf("%d: ------- initial set freed --- memory usage: %ld\n", id, get_mem_usage());												//DEBUG
 		}
 
 		free_activeArguments(reduct);
+		free_list_uint32(initial_set);
+		//printf("%d: ------- initial set freed --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
 
 
 //#pragma atomic write
@@ -263,7 +269,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 			check_rejection_parallel_recursiv(argument, framework, activeArgs, isRejected, new_extension_build, output_extension); //, num_tasks, num_tasks_max
 			free_list_uint32(new_extension_build);
 			//printf("%d: ------- extension freed --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());								//DEBUG
-			int tmp_num_tasks = 0;
+			//int tmp_num_tasks = 0;																											//DEBUG
 //#pragma atomic write
 //			*num_tasks = *num_tasks - 1;
 //#pragma omp flush(num_tasks)
@@ -301,9 +307,9 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 
 	free(isSolved);
 	//printf("%d: ------- isSolved freed --- memory usage: %ld\n", id, get_mem_usage());														//DEBUG
+	delete solver;
 	free_activeArguments(reduct);
 	//printf("%d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());															//DEBUG
-	delete solver;
 
 	//printf("%d: finished task - argument %d ----------------------------------\n", omp_get_thread_num(), argument);							//DEBUG
 	return;
