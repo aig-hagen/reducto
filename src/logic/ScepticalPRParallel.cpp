@@ -330,21 +330,21 @@ bool ScepticalPRParallel::check_rejection_parallel(uint32_t argument, argFramewo
 		omp_set_num_threads(numCores);
 	}
 	
-	int *num_tasks = NULL;
+	/*int *num_tasks = NULL;
 	num_tasks = (int *)malloc(sizeof * num_tasks);
 	if (num_tasks == NULL) {
 		printf("Memory allocation failed\n");
 		exit(1);
 	}
-	*num_tasks = 0;
+	*num_tasks = 0;*/
 
-	int *num_tasks_max = NULL;
+	/*int *num_tasks_max = NULL;
 	num_tasks_max = (int *)malloc(sizeof * num_tasks_max);
 	if (num_tasks_max == NULL) {
 		printf("Memory allocation failed\n");
 		exit(1);
 	}
-	*num_tasks_max = 0;
+	*num_tasks_max = 0;*/
 
 #pragma omp parallel shared(argument, framework, activeArgs, isRejected, proof_extension)   //, num_tasks, num_tasks_max
 #pragma omp single
