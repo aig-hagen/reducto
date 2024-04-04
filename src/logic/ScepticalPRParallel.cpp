@@ -48,13 +48,13 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 	if (extension_build == NULL)
 	{
 		reduct = copy_active_arguments(activeArgs);
-		//printf("%d: ------- reduct copied --- memory usage: %ld\n", id, get_mem_usage());														//DEBUG
+		printf("51: %d: ------- reduct copied --- memory usage: %ld\n", id, get_mem_usage());														//DEBUG
 	}
 	else
 	{
 		//printf("%d: ------- before new reduct allocated --- memory usage: %ld\n", id, get_mem_usage());										//DEBUG
 		reduct = get_reduct_set(activeArgs, framework, extension_build);
-		//printf("%d: ------- new reduct allocated --- memory usage: %ld\n", id, get_mem_usage());												//DEBUG
+		printf("57: %d: ------- new reduct allocated --- memory usage: %ld\n", id, get_mem_usage());												//DEBUG
 		//printf("%d: created reduct: \n ", id);																								//DEBUG
 		//print_active_arguments(reduct);																										//DEBUG
 		//printf("\n");																															//DEBUG
@@ -79,12 +79,12 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 #pragma omp flush(isRejected)		//maybe flush is not needed since isRejected point so a memory address, which content is changed
 		}
 
-		//free_activeArguments(reduct);
-		//printf("%d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
-
 #pragma atomic write
 		*output_extension = NULL;
 		
+		free_activeArguments(reduct);
+		printf("86: %d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());														//DEBUG
+
 		return;
 	}
 
@@ -112,7 +112,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 		free(isSolved);
 		//printf("%d: ------- isSolved freed --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
 		free_activeArguments(reduct);
-		//printf("%d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());														//DEBUG
+		printf("115: %d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());														//DEBUG
 		delete solver;
 		//printf("%d: finished task - argument %d ----------------------------------\n", omp_get_thread_num(), argument);						//DEBUG
 		return;
@@ -138,11 +138,18 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 				*isRejected = true;
 #pragma omp flush(isRejected)		//maybe flush is not needed since isRejected point so a memory address, which content is changed
 				free_activeArguments(reduct);
-				//printf("%d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
+				printf("141: %d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
 
 #pragma atomic write
 					*output_extension = NULL;
 
+				//printf("%d: preliminary terminated.\n", omp_get_thread_num());																		//DEBUG
+				free(isSolved);
+				//printf("%d: ------- isSolved freed --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
+				free_activeArguments(reduct);
+				printf("150: %d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());														//DEBUG
+				delete solver;
+				//printf("%d: finished task - argument %d ----------------------------------\n", omp_get_thread_num(), argument);						//DEBUG
 				return;
 			}
 
@@ -169,7 +176,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 				*output_extension = NULL;
 
 				free_activeArguments(reduct);
-				//printf("%d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
+				printf("179: %d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
 				free_list_uint32(initial_set);
 				//printf("%d: ------- initial set freed --- memory usage: %ld\n", id, get_mem_usage());												//DEBUG
 				return;
@@ -206,7 +213,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 			free(isSolved);
 			//printf("%d: ------- isSolved freed --- memory usage: %ld\n", id, get_mem_usage());												//DEBUG
 			free_activeArguments(reduct);
-			//printf("%d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
+			printf("216: %d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
 			delete solver;
 			free_list_uint32(initial_set);
 			//printf("%d: ------- initial set freed --- memory usage: %ld\n", id, get_mem_usage());												//DEBUG
@@ -237,6 +244,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 		}
 
 		free_activeArguments(reduct);
+		printf("247: %d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());															//DEBUG
 		free_list_uint32(initial_set);
 		//printf("%d: ------- initial set freed --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
 
@@ -263,7 +271,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 		//printf("%d: ------- Number of currently open tasks:  %d\n", id, tmp_num_tasks);
 
 #pragma omp task \
-	 priority(0) //firstprivate(new_extension_build) not working with untied // depend(in: argument, framework, activeArgs) depend(inout: isRejected, new_extension_build) depend(out: output_extension)
+	priority(0) //firstprivate(new_extension_build) not working with untied // depend(in: argument, framework, activeArgs) depend(inout: isRejected, new_extension_build) depend(out: output_extension)
 		{
 			//printf("%d: ------- task started --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());								//DEBUG
 			check_rejection_parallel_recursiv(argument, framework, activeArgs, isRejected, new_extension_build, output_extension); //, num_tasks, num_tasks_max
@@ -283,13 +291,13 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 		if (extension_build == NULL)
 		{
 			reduct = copy_active_arguments(activeArgs);
-			//printf("%d: ------- reduct copied --- memory usage: %ld\n", id, get_mem_usage());														//DEBUG
+			printf("294: %d: ------- reduct copied --- memory usage: %ld\n", id, get_mem_usage());														//DEBUG
 		}
 		else
 		{
 			//printf("%d: ------- before new reduct allocated --- memory usage: %ld\n", id, get_mem_usage());										//DEBUG
 			reduct = get_reduct_set(activeArgs, framework, extension_build);
-			//printf("%d: ------- new reduct allocated --- memory usage: %ld\n", id, get_mem_usage());												//DEBUG
+			printf("300: %d: ------- new reduct allocated --- memory usage: %ld\n", id, get_mem_usage());												//DEBUG
 			//printf("%d: created reduct: \n ", id);																								//DEBUG
 			//print_active_arguments(reduct);																										//DEBUG
 			//printf("\n");																															//DEBUG
@@ -309,7 +317,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 	//printf("%d: ------- isSolved freed --- memory usage: %ld\n", id, get_mem_usage());														//DEBUG
 	delete solver;
 	free_activeArguments(reduct);
-	//printf("%d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());															//DEBUG
+	printf("320: %d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());															//DEBUG
 
 	//printf("%d: finished task - argument %d ----------------------------------\n", omp_get_thread_num(), argument);							//DEBUG
 	return;

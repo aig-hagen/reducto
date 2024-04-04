@@ -102,11 +102,7 @@ uint8_t deactivate_argument(activeArgs_t *activeArguments, uint32_t argument)
 
 uint8_t free_activeArguments(activeArgs_t *activeArguments)
 {
-	if (free_matrix(activeArguments->matrix) == EXIT_FAILURE)
-	{
-		return EXIT_FAILURE;
-	}
-
+	free_matrix(activeArguments->matrix);
 	free_array(activeArguments->encodingToArgument);
 	free(activeArguments);
 	
