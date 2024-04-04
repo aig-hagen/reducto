@@ -185,6 +185,15 @@ int main(int argc, char **argv)
 				print_list_elements_uint32((*proof_extension));
 				printf("\n");
 			}
+
+			//free allocated memory
+			free_matrix(framework->attackers);
+			free_matrix(framework->victims);
+			free(framework);
+			free_activeArguments(actives);
+			free_list_uint32(*proof_extension);
+			free(proof_extension);
+
 			break;
 		}
 		default:
