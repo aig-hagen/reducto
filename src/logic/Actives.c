@@ -33,6 +33,7 @@ activeArgs_t *copy_active_arguments(activeArgs_t *original)
 		activeArgs->matrix->content[idxArgument][2] = original->matrix->content[idxArgument][2];
 	}
 
+	free_array(activeArgs->encodingToArgument);
 	activeArgs->encodingToArgument = copy_array(original->encodingToArgument);
 
 	return activeArgs;

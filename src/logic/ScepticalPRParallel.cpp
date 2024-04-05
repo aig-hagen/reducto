@@ -48,13 +48,13 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 	if (extension_build == NULL)
 	{
 		reduct = copy_active_arguments(activeArgs);
-		printf("51: %d: ------- reduct copied --- memory usage: %ld\n", id, get_mem_usage());														//DEBUG
+		printf("51: %d: ------- reduct copied --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
 	}
 	else
 	{
 		//printf("%d: ------- before new reduct allocated --- memory usage: %ld\n", id, get_mem_usage());										//DEBUG
 		reduct = get_reduct_set(activeArgs, framework, extension_build);
-		printf("57: %d: ------- new reduct allocated --- memory usage: %ld\n", id, get_mem_usage());												//DEBUG
+		printf("57: %d: ------- new reduct allocated --- memory usage: %ld\n", id, get_mem_usage());											//DEBUG
 		//printf("%d: created reduct: \n ", id);																								//DEBUG
 		//print_active_arguments(reduct);																										//DEBUG
 		//printf("\n");																															//DEBUG
@@ -271,6 +271,8 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 		//printf("%d: ------- Number of currently open tasks:  %d\n", id, tmp_num_tasks);
 
 #pragma omp task \
+	private(id, isRejected_tmp, isSolved , numVars, flag_exit, initial_set, solver, reduct) \
+	shared(argument, framework, activeArgs, isRejected, new_extension_build, output_extension) \
 	priority(0) //firstprivate(new_extension_build) not working with untied // depend(in: argument, framework, activeArgs) depend(inout: isRejected, new_extension_build) depend(out: output_extension)
 		{
 			//printf("%d: ------- task started --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());								//DEBUG

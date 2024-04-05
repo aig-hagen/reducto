@@ -191,7 +191,10 @@ int main(int argc, char **argv)
 			free_matrix(framework->victims);
 			free(framework);
 			free_activeArguments(actives);
-			free_list_uint32(*proof_extension);
+			if (*proof_extension != NULL)
+			{
+				free_list_uint32(*proof_extension);
+			}
 			free(proof_extension);
 
 			break;
