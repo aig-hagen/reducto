@@ -40,3 +40,5 @@ public:
 };
 
 #endif
+
+static void TerminateRejectingQueryEmptyExtention(bool *isRejected, activeArgs_t *reduct, nodeUInt32_t **output_extension, bool *isSolved, CMSat::SATSolver *solver);

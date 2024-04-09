@@ -16,6 +16,30 @@ static nodeUInt32_t *ExtendExtension(nodeUInt32_t *extension_build, nodeUInt32_t
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
+void TerminateRejectingQueryEmptyExtention(bool *isRejected, activeArgs_t *reduct, nodeUInt32_t **output_extension, bool *isSolved, bool *isFirstCalculation, CMSat::SATSolver *solver)
+{
+#pragma atomic write
+	*isRejected = true;
+#pragma omp flush(isRejected)		//maybe flush is not needed since isRejected point so a memory address, which content is changed
+	
+#pragma atomic write
+	*output_extension = NULL;
+
+	//printf("%d: preliminary terminated.\n", omp_get_thread_num());																		//DEBUG
+	free_activeArguments(reduct);
+	//printf("%d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
+	free(isSolved);
+	//printf("%d: ------- isSolved freed --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
+	free(isFirstCalculation);
+	//printf("%d: ------- isFirstCalculation freed --- memory usage: %ld\n", id, get_mem_usage());											//DEBUG
+	delete solver;
+	//printf("%d: finished task - argument %d ----------------------------------\n", omp_get_thread_num(), argument);						//DEBUG
+	return;
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
 static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t *framework, activeArgs_t *activeArgs, bool *isRejected,
 	nodeUInt32_t *extension_build, nodeUInt32_t **output_extension)
 {
@@ -88,10 +112,14 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 		return;
 	}
 
-
+	//flag used to signal that clauses need to be extended
 	bool *isSolved = NULL;
 	isSolved = (bool *)malloc(sizeof * isSolved);
 	*isSolved = false;
+	//flag used to signal that reduct has only empty set as admissible set
+	bool *isFirstCalculation = NULL;
+	isFirstCalculation = (bool *)malloc(sizeof * isFirstCalculation);
+	*isFirstCalculation = true;
 	//printf("%d: ------- isSolved allocated --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
 	
 	uint32_t numVars = (2 * reduct->numberActiveArguments) + 1;
@@ -111,6 +139,8 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 		//printf("%d: preliminary terminated.\n", omp_get_thread_num());																		//DEBUG
 		free(isSolved);
 		//printf("%d: ------- isSolved freed --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
+		free(isFirstCalculation);
+		//printf("%d: ------- isFirstCalculation freed --- memory usage: %ld\n", id, get_mem_usage());											//DEBUG
 		free_activeArguments(reduct);
 		//printf("115: %d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());														//DEBUG
 		delete solver;
@@ -130,31 +160,24 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 		{
 			//no more initial sets to calculate after this one
 			//printf("%d: no set \n", id);																										//DEBUG
-			//no initial set found check for self-attacking argument
+			//no initial set found -> check for self-attacking argument
 			if (framework->attackers->content[argument][argument] != 0)
 			{
 				//argument attacks itself
-#pragma atomic write
-				*isRejected = true;
-#pragma omp flush(isRejected)		//maybe flush is not needed since isRejected point so a memory address, which content is changed
-				free_activeArguments(reduct);
-				//printf("141: %d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
-
-#pragma atomic write
-					*output_extension = NULL;
-
-				//printf("%d: preliminary terminated.\n", omp_get_thread_num());																		//DEBUG
-				free(isSolved);
-				//printf("%d: ------- isSolved freed --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
-				free_activeArguments(reduct);
-				//printf("150: %d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());														//DEBUG
-				delete solver;
-				//printf("%d: finished task - argument %d ----------------------------------\n", omp_get_thread_num(), argument);						//DEBUG
-				return;
+				return TerminateRejectingQueryEmptyExtention(isRejected, reduct, output_extension, isSolved, isFirstCalculation, solver);
+			}
+			else if (isFirstCalculation)
+			{
+				//since this is the first calculation and no IS was found, this reduct has only the empty set as an admissible set, therefore the extension_build is complete
+				// and since only extensions not containing the query argument proceed in the calculation, extension_build cannot contain the query argument, so that there exists
+				// an extension not containing the query argument, so that the argument gets sceptical rejected
+				return TerminateRejectingQueryEmptyExtention(isRejected, reduct, output_extension, isSolved, isFirstCalculation, solver);
 			}
 
 			break;
 		}
+
+		*isFirstCalculation = false;
 
 		initial_set = DecodingCMS::get_set_from_solver(solver, reduct);
 		//printf("%d: ------- initial set allocated --- memory usage: %ld\n", id, get_mem_usage());											//DEBUG
@@ -177,6 +200,11 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 
 				free_activeArguments(reduct);
 				//printf("179: %d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
+				free(isSolved);
+				//printf("%d: ------- isSolved freed --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
+				free(isFirstCalculation);
+				//printf("%d: ------- isFirstCalculation freed --- memory usage: %ld\n", id, get_mem_usage());											//DEBUG
+				delete solver;
 				free_list_uint32(initial_set);
 				//printf("%d: ------- initial set freed --- memory usage: %ld\n", id, get_mem_usage());												//DEBUG
 				return;
@@ -212,6 +240,8 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 
 			free(isSolved);
 			//printf("%d: ------- isSolved freed --- memory usage: %ld\n", id, get_mem_usage());												//DEBUG
+			free(isFirstCalculation);
+			//printf("%d: ------- isFirstCalculation freed --- memory usage: %ld\n", id, get_mem_usage());											//DEBUG
 			free_activeArguments(reduct);
 			//printf("216: %d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
 			delete solver;
@@ -271,7 +301,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 		//printf("%d: ------- Number of currently open tasks:  %d\n", id, tmp_num_tasks);
 
 #pragma omp task \
-	private(id, isRejected_tmp, isSolved , numVars, flag_exit, initial_set, solver, reduct) \
+	private(id, isRejected_tmp, isSolved , isFirstCalculation , numVars, flag_exit, initial_set, solver, reduct) \
 	shared(argument, framework, activeArgs, isRejected, new_extension_build, output_extension) \
 	priority(0) //firstprivate(new_extension_build) not working with untied // depend(in: argument, framework, activeArgs) depend(inout: isRejected, new_extension_build) depend(out: output_extension)
 		{
@@ -317,6 +347,8 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 
 	free(isSolved);
 	//printf("%d: ------- isSolved freed --- memory usage: %ld\n", id, get_mem_usage());														//DEBUG
+	free(isFirstCalculation);
+	//printf("%d: ------- isFirstCalculation freed --- memory usage: %ld\n", id, get_mem_usage());											//DEBUG
 	delete solver;
 	free_activeArguments(reduct);
 	//printf("320: %d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());															//DEBUG
