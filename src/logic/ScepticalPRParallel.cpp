@@ -16,14 +16,26 @@ static nodeUInt32_t *ExtendExtension(nodeUInt32_t *extension_build, nodeUInt32_t
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-void TerminateRejectingQueryEmptyExtention(bool *isRejected, activeArgs_t *reduct, nodeUInt32_t **output_extension, bool *isSolved, bool *isFirstCalculation, CMSat::SATSolver *solver)
+void TerminateRejectingQueryEmptyExtention(bool *isRejected, activeArgs_t *reduct, 
+	nodeUInt32_t **output_extension, nodeUInt32_t *extension_build,
+	bool *isSolved, bool *isFirstCalculation, 
+	CMSat::SATSolver *solver)
 {
 #pragma atomic write
 	*isRejected = true;
 #pragma omp flush(isRejected)		//maybe flush is not needed since isRejected point so a memory address, which content is changed
 	
+	if (extension_build == NULL)
+	{
 #pragma atomic write
-	*output_extension = NULL;
+		*output_extension = NULL;
+	}
+	else
+	{
+		nodeUInt32_t * new_extension_build = copy_list_uint32(extension_build);
+#pragma atomic write
+		*output_extension = new_extension_build;
+	}
 
 	//printf("%d: preliminary terminated.\n", omp_get_thread_num());																		//DEBUG
 	free_activeArguments(reduct);
@@ -164,14 +176,14 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 			if (framework->attackers->content[argument][argument] != 0)
 			{
 				//argument attacks itself
-				return TerminateRejectingQueryEmptyExtention(isRejected, reduct, output_extension, isSolved, isFirstCalculation, solver);
+				return TerminateRejectingQueryEmptyExtention(isRejected, reduct, output_extension, NULL, isSolved, isFirstCalculation, solver);
 			}
-			else if (isFirstCalculation)
+			else if (*isFirstCalculation)
 			{
 				//since this is the first calculation and no IS was found, this reduct has only the empty set as an admissible set, therefore the extension_build is complete
 				// and since only extensions not containing the query argument proceed in the calculation, extension_build cannot contain the query argument, so that there exists
 				// an extension not containing the query argument, so that the argument gets sceptical rejected
-				return TerminateRejectingQueryEmptyExtention(isRejected, reduct, output_extension, isSolved, isFirstCalculation, solver);
+				return TerminateRejectingQueryEmptyExtention(isRejected, reduct, output_extension, extension_build, isSolved, isFirstCalculation, solver);
 			}
 
 			break;

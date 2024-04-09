@@ -443,7 +443,7 @@ static void testFile()
 
 	//printf("%d: ------- program started --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());															//DEBUG
 
-	argFramework_t *framework = ParserICCMA::parse_af("/home/jsander/.vs/ParallelSolver/rsc/examples/example3.i23");
+	argFramework_t *framework = ParserICCMA::parse_af("/home/jsander/.vs/ParallelSolver/rsc/examples/example2.i23");
 
 	//printf("%d: ------- framework initialized --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());													//DEBUG
 
@@ -452,7 +452,7 @@ static void testFile()
 	//printf("%d: ------- actives initialized --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());														//DEBUG
 
 	double runtime = 0;
-	runParallel(1, 1, framework, actives, runtime);
+	runParallel(3, 3, framework, actives, runtime);
 }
 
 void TestCases::run_Tests()
