@@ -13,6 +13,7 @@
 #include "SatProblem.h"
 
 #include "../util/List.h"
+#include "../util/MemoryWatchDog.h"
 
 	/// <summary>
 	/// Checks if a query about the sceptical acceptance of a specified argument can be rejected using the specified initial set. This is the

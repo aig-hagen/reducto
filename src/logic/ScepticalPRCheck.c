@@ -2,6 +2,7 @@
 
 bool check_rejection(uint32_t argument, nodeUInt32_t *initial_set, argFramework_t *framework)
 {
+	//printf("%d: ------- check rejection --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());												//DEBUG
 	nodeUInt32_t *currentArgument = initial_set;
 	//iterate through arguments in the initial set
 	while (currentArgument != NULL)
@@ -36,6 +37,7 @@ bool check_rejection(uint32_t argument, nodeUInt32_t *initial_set, argFramework_
 
 bool check_terminate_extension_build(uint32_t argument, nodeUInt32_t *initial_set)
 {
+	//printf("%d: ------- check termination of extension --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());								//DEBUG
 	nodeUInt32_t *currentArgument = initial_set;
 	//iterate through arguments in the initial set
 	while (currentArgument != NULL)

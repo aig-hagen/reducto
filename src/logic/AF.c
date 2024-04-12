@@ -165,7 +165,8 @@ static  uint32_t freeInitializationMemory(argumentInitTemp_t *head)
 
 argFramework_t* initialize_framework(argumentInitTemp_t *head)
 {
-	long mem_base = get_mem_usage();																									//DEBUG
+	//float start_time = omp_get_wtime();																								//DEBUG
+	//long mem_base = get_mem_usage();																									//DEBUG
 	argFramework_t *framework = NULL;
 	framework = (argFramework_t*) malloc(sizeof *framework);
 	//printf("%d: ------- framework allocated --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());							//DEBUG
@@ -175,14 +176,39 @@ argFramework_t* initialize_framework(argumentInitTemp_t *head)
 	}
 	else {
 		framework->number = countArguments(head);
-		framework->attackers = initializeAttackers(head, framework->number);
-		//printf("%d: ------- attackers initialized --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());					//DEBUG
-		framework->victims = initializeVictims(head, framework->number);
-		//printf("%d: ------- victims initialized --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());						//DEBUG
-		//printf("Memory space of initialized framework: %ld [kB]\n", get_mem_usage() - mem_base);												//DEBUG
+
+		matrix_t *attackers, *victims;
+		uint32_t numArgs = framework->number;
+
+#pragma omp parallel firstprivate(head, numArgs) shared(attackers, victims)
+		{
+			//printf("Number of threads: %d\n", omp_get_num_threads());																		//DEBUG
+#pragma omp single nowait
+			{
+				//printf("%d: Started initializing attackers\n", omp_get_thread_num());														//DEBUG
+				attackers = initializeAttackers(head, numArgs);
+				//printf("%d: ------- attackers initialized --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());				//DEBUG
+				//printf("%d: Finished initializing attackers\n", omp_get_thread_num());														//DEBUG
+			}
+
+#pragma omp single nowait
+			{
+				//printf("%d: Started initializing victims\n", omp_get_thread_num());															//DEBUG
+				victims = initializeVictims(head, numArgs);
+				//printf("%d: ------- victims initialized --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());					//DEBUG
+				//printf("%d: Finished initializing victims\n", omp_get_thread_num());														//DEBUG
+			}
+		}
+
+		framework->attackers = attackers;
+		framework->victims = victims;
+		//printf("Memory space of initialized framework: %ld [kB]\n", get_mem_usage() - mem_base);											//DEBUG
 		freeInitializationMemory(head);
-		//printf("%d: ------- free initialization memory  --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());				//DEBUG
+		//printf("%d: ------- free initialization memory  --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());					//DEBUG
 		
+		//float end_time = omp_get_wtime();																									//DEBUG
+		//float duration = end_time - start_time;																							//DEBUG
+		//printf("Initializing framework: %.2f s\n", duration);																				//DEBUG
 		return framework;
 	}
 }

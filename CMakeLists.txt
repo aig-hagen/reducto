@@ -89,6 +89,10 @@ if(OpenMP_CXX_FOUND)
     target_link_libraries(ParallelSolver PUBLIC OpenMP::OpenMP_CXX)
 endif()
 
+if(OpenMP_C_FOUND)
+    target_link_libraries(ParallelSolver PUBLIC OpenMP::OpenMP_C)
+endif()
+
 # --- pstreams ---
 set(LIB_PSTREAMS "${CMAKE_CURRENT_LIST_DIR}/lib/pstreams-1.0.3")
 

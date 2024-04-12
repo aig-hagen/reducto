@@ -443,7 +443,14 @@ static void testFile()
 
 	//printf("%d: ------- program started --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());															//DEBUG
 
-	argFramework_t *framework = ParserICCMA::parse_af("/home/jsander/.vs/ParallelSolver/rsc/examples/example2.i23");
+	double start, end, parse_af_time;
+	start = omp_get_wtime();
+
+	argFramework_t *framework = ParserICCMA::parse_af("/home/jsander/solvers/ICCMA23/benchmarks/main/ER_200_30_5.i23");
+
+	end = omp_get_wtime();
+	parse_af_time = end - start;
+	printf("Time to parse + initialize AF: %f seconds\n", parse_af_time);
 
 	//printf("%d: ------- framework initialized --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());													//DEBUG
 
@@ -452,7 +459,7 @@ static void testFile()
 	//printf("%d: ------- actives initialized --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());														//DEBUG
 
 	double runtime = 0;
-	runParallel(3, 3, framework, actives, runtime);
+	runParallel(95, 95, framework, actives, runtime);
 }
 
 void TestCases::run_Tests()
@@ -465,5 +472,5 @@ void TestCases::run_Tests()
 	//testArgsALot();
 	//testCMS();
 	//testExampleCMS();
-	testFile();
+	//testFile();
 }

@@ -125,6 +125,8 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
+	//printf("Set file format\n");																										//DEBUG
+
 	if (fileformat.empty()) {
 		fileformat = file.substr(file.find_last_of(".") + 1, file.length() - file.find_last_of(".") - 1);
 		/*cerr << argv[0] << ": File format must be specified via -fo flag\n";

@@ -276,8 +276,8 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 		nodeUInt32_t *new_extension_build;
 		if (extension_build == NULL)
 		{
-			//nodeUInt32_t *extension_build = create_list_uint32(0);
 			new_extension_build = copy_list_uint32(initial_set);
+			//printf("%d: ------- extension copied --- memory usage: %ld\n", id, get_mem_usage());												//DEBUG
 		}
 		else
 		{
@@ -286,7 +286,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 		}
 
 		free_activeArguments(reduct);
-		//printf("247: %d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());															//DEBUG
+		//printf("247: %d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
 		free_list_uint32(initial_set);
 		//printf("%d: ------- initial set freed --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
 
@@ -374,6 +374,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 
 bool ScepticalPRParallel::check_rejection_parallel(uint32_t argument, argFramework_t *framework, activeArgs_t *activeArgs, nodeUInt32_t **proof_extension, uint8_t numCores)
 {
+	//float start_time = omp_get_wtime();																											//DEBUG
 	bool *isRejected = NULL;
 	isRejected = (bool *)malloc(sizeof *isRejected);
 	if (isRejected == NULL) {
@@ -409,7 +410,9 @@ bool ScepticalPRParallel::check_rejection_parallel(uint32_t argument, argFramewo
 #pragma omp parallel shared(argument, framework, activeArgs, isRejected, proof_extension)   //, num_tasks, num_tasks_max
 #pragma omp single
 	{
-		// printf("%d: ------- started omp parallel -- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());								//DEBUG
+		//printf("Number of threads: %d\n", omp_get_num_threads());																				//DEBUG
+
+		//printf("%d: ------- started omp parallel -- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());								//DEBUG
 
 		check_rejection_parallel_recursiv(argument, framework, activeArgs, isRejected, NULL, proof_extension);					// , num_tasks, num_tasks_max
 	}
@@ -419,5 +422,9 @@ bool ScepticalPRParallel::check_rejection_parallel(uint32_t argument, argFramewo
 
 	/*printf("Finished program - voluntary context switches: %ld - involuntary context switches: %ld - memory usage: %ld [kB]\n",
 		get_ctxt_switches_volun(), get_ctxt_switches_involun(), get_mem_usage());*/																 //DEBUG
+	//float end_time = omp_get_wtime();																											//DEBUG
+	//float duration = end_time - start_time;																									//DEBUG
+	//printf("Solving framework: %.2f s\n", duration);																							//DEBUG
+
 	return result;
 }
