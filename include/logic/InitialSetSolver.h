@@ -15,16 +15,15 @@ extern "C" {
 #include "../util/List.h"
 }
 
-#include "Encodings_cms.h"
+#include "Encodings_SatSolver.h"
 #include "ExternalSolver.h"
 
-using namespace CMSat;
 
 class InitialSetSolver {
 public:
 
 	static uint8_t calculate_next_solution(argFramework_t *framework, activeArgs_t *activeArgs, SATProblem_t *problem);
-	static uint8_t calculate_next_solution(argFramework_t *framework, activeArgs_t *activeArgs, SATSolver *solver, bool *isSolved);
+	static uint8_t calculate_next_solution(argFramework_t *framework, activeArgs_t *activeArgs, SatSolver *solver, bool *isSolved);
 };
 
 #endif

@@ -29,7 +29,10 @@ extern "C" {
 #include "ScepticalPRSequential.h"
 #include "ScepticalPRParallel.h"
 
+#include "../util/Enums.h"
+
 constexpr auto NUM_CORES_TESTS = 0;
+constexpr auto SOLVER_TEST = SOLVERS::CMS;
 
 using namespace std;
 

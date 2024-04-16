@@ -11,11 +11,16 @@ extern "C" {
 	#include "../util/List.h"
 }
 
-#include "Encodings_cms.h"
+#include "Encodings_SatSolver.h"
 #include "InitialSetSolver.h"
-#include "Decodings_cms.h"
+#include "Decodings_SatSolver.h"
+#include "SatSolver.h"
+#include "SatSolver_cms.h"
+#include "SatSolver_cadical.h"
 
-#include <cryptominisat.h>
+#include "../util/Enums.h"
+
+
 #include <vector>
 
 using namespace CMSat;
@@ -29,7 +34,7 @@ public:
 	/// <param name="framework"></param>
 	/// <param name="activeArgs"></param>
 	/// <param name="extension"></param>
-	static void BuildExtension(argFramework_t *framework, activeArgs_t *activeArgs, nodeUInt32_t **extension);
+	static void BuildExtension(argFramework_t *framework, activeArgs_t *activeArgs, nodeUInt32_t **extension, SOLVERS solver_type);
 };
 
 #endif

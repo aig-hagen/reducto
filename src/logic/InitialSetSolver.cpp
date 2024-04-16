@@ -30,17 +30,15 @@ uint8_t InitialSetSolver::calculate_next_solution(argFramework_t *framework, act
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-uint8_t InitialSetSolver::calculate_next_solution(argFramework_t *framework, activeArgs_t *activeArgs, SATSolver *solver, bool *isSolved)
+uint8_t InitialSetSolver::calculate_next_solution(argFramework_t *framework, activeArgs_t *activeArgs, SatSolver *solver, bool *isSolved)
 {
 	if (*isSolved)
 	{
 		//printf("%d: added complement clause \n", omp_get_thread_num());																			//DEBUG
-		Encodings_CMS::add_complement_clause(solver, activeArgs);
+		Encodings_SatSolver::add_complement_clause(solver, activeArgs);
 	}
 
-	lbool ret = (*solver).solve();
-	bool foundSet = (ret == l_True);
 	*isSolved = true;
 
-	return foundSet? EXIT_SUCCESS : EXIT_FAILURE;
+	return (*solver).solve() ? EXIT_SUCCESS : EXIT_FAILURE;
 }

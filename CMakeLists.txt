@@ -29,13 +29,16 @@ set(HEADERS
 	${INCLD_LOGIC}/ListActives.h 
 	${INCLD_LOGIC}/Reduct.h 
 	${INCLD_LOGIC}/SatProblem.h
-	${INCLD_LOGIC}/Decodings_cms.h
-	${INCLD_LOGIC}/Encodings_cms.h 
+	${INCLD_LOGIC}/ScepticalPRCheck.h
+	${INCLD_LOGIC}/Decodings_SatSolver.h
+	${INCLD_LOGIC}/Encodings_SatSolver.h 
 	${INCLD_LOGIC}/ExtensionSolver.h 
 	${INCLD_LOGIC}/ExternalSolver.h
 	${INCLD_LOGIC}/InitialSetSolver.h
 	${INCLD_LOGIC}/Parser_iccma.h
-	${INCLD_LOGIC}/ScepticalPRCheck.h
+	${INCLD_LOGIC}/SatSolver.h
+	${INCLD_LOGIC}/SatSolver_cadical.h
+	${INCLD_LOGIC}/SatSolver_cms.h
 	${INCLD_LOGIC}/ScepticalPRParallel.h
 	${INCLD_LOGIC}/ScepticalPRSequential.h
 	${INCLD_LOGIC}/Tests.h
@@ -57,13 +60,15 @@ set(SRCFILES
 	${SRC_LOGIC}ListActives.c 
 	${SRC_LOGIC}Reduct.c 
 	${SRC_LOGIC}SatProblem.c 
-	${SRC_LOGIC}Decodings_cms.cpp
-	${SRC_LOGIC}Encodings_cms.cpp 
+	${SRC_LOGIC}ScepticalPRCheck.c
+	${SRC_LOGIC}Decodings_SatSolver.cpp
+	${SRC_LOGIC}Encodings_SatSolver.cpp 
 	${SRC_LOGIC}ExtensionSolver.cpp 
 	${SRC_LOGIC}ExternalSolver_pstreams.cpp
 	${SRC_LOGIC}InitialSetSolver.cpp
 	${SRC_LOGIC}Parser_iccma.cpp
-	${SRC_LOGIC}ScepticalPRCheck.c
+	${SRC_LOGIC}SatSolver_cadical.cpp
+	${SRC_LOGIC}SatSolver_cms.cpp
 	${SRC_LOGIC}ScepticalPRParallel.cpp
 	${SRC_LOGIC}ScepticalPRSequential.cpp
 	${SRC_LOGIC}Tests.cpp
@@ -77,30 +82,44 @@ set(SRCFILES
 	)
 
 set(SOURCES ${SRCFILES} ${HEADERS})
-add_executable(ParallelSolver ${SOURCES})
 
-target_include_directories(ParallelSolver PUBLIC INCLD)
+# --- cadical part I ---
+
+# Set path to the directory containing libcadical.a
+set(CADICAL_DIR "${CMAKE_CURRENT_LIST_DIR}/lib/cadical")
+
+# Add the directory containing libcadical.a to the list of paths to search for libraries
+link_directories("${CADICAL_DIR}/build")
+
+# Add include directories to search for headers
+include_directories("${CADICAL_DIR}/src")
+
+# ----------------------
+
+add_executable(${PROJECT_NAME} ${SOURCES})
+
+target_include_directories(${PROJECT_NAME} PUBLIC INCLD)
 
 # Add libraries
 
 # --- OpenMP ---
 find_package(OpenMP)
 if(OpenMP_CXX_FOUND)
-    target_link_libraries(ParallelSolver PUBLIC OpenMP::OpenMP_CXX)
+    target_link_libraries(${PROJECT_NAME} PUBLIC OpenMP::OpenMP_CXX)
 endif()
 
 if(OpenMP_C_FOUND)
-    target_link_libraries(ParallelSolver PUBLIC OpenMP::OpenMP_C)
+    target_link_libraries(${PROJECT_NAME} PUBLIC OpenMP::OpenMP_C)
 endif()
 
 # --- pstreams ---
 set(LIB_PSTREAMS "${CMAKE_CURRENT_LIST_DIR}/lib/pstreams-1.0.3")
 
 add_subdirectory(${LIB_PSTREAMS})
-target_link_libraries(ParallelSolver PUBLIC PStreams)
-target_include_directories(ParallelSolver PUBLIC 
-	"${PROJECT_BINARY_DIR}"
-	"${LIB_PSTREAMS}"
+target_link_libraries(${PROJECT_NAME} PUBLIC PStreams)
+target_include_directories(${PROJECT_NAME} PUBLIC 
+    "${PROJECT_BINARY_DIR}"
+    "${LIB_PSTREAMS}"
 )
 
 # --- cryptominisat ---
@@ -108,15 +127,21 @@ target_include_directories(ParallelSolver PUBLIC
 set(LIB_CMS "${CMAKE_CURRENT_LIST_DIR}/lib/cryptominisat-5.11.15")
 
 add_subdirectory(${LIB_CMS})
-target_link_libraries(ParallelSolver PUBLIC cryptominisat5)
-target_include_directories(ParallelSolver PUBLIC
-	"${PROJECT_BINARY_DIR}"
-	"${LIB_CMS}"
+target_link_libraries(${PROJECT_NAME} PUBLIC cryptominisat5)
+target_include_directories(${PROJECT_NAME} PUBLIC
+    "${PROJECT_BINARY_DIR}"
+    "${LIB_CMS}"
 )
 
+# --- cadical part II ---
+
+# Link the static library
+target_link_libraries(${PROJECT_NAME} PUBLIC cadical)
+# Include the directory containing cadical.hpp
+target_include_directories(${PROJECT_NAME} PUBLIC ${CADICAL_DIR})
 
 # further settings
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET ParallelSolver PROPERTY CXX_STANDARD 20)
+  set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)
 endif()

@@ -19,7 +19,7 @@ static nodeUInt32_t *ExtendExtension(nodeUInt32_t *extension_build, nodeUInt32_t
 void TerminateRejectingQueryEmptyExtention(bool *isRejected, activeArgs_t *reduct, 
 	nodeUInt32_t **output_extension, nodeUInt32_t *extension_build,
 	bool *isSolved, bool *isFirstCalculation, 
-	CMSat::SATSolver *solver)
+	SatSolver *solver)
 {
 #pragma atomic write
 	*isRejected = true;
@@ -53,7 +53,7 @@ void TerminateRejectingQueryEmptyExtention(bool *isRejected, activeArgs_t *reduc
 /*===========================================================================================================================================================*/
 
 static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t *framework, activeArgs_t *activeArgs, bool *isRejected,
-	nodeUInt32_t *extension_build, nodeUInt32_t **output_extension)
+	nodeUInt32_t *extension_build, nodeUInt32_t **output_extension, SOLVERS solver_type)
 {
 	//, int *num_tasks, int *num_tasks_max
 	int id = omp_get_thread_num();
@@ -134,13 +134,19 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 	*isFirstCalculation = true;
 	//printf("%d: ------- isSolved allocated --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
 	
-	uint32_t numVars = (2 * reduct->numberActiveArguments) + 1;
-	SATSolver *solver = new SATSolver();
-	solver->set_num_threads(1);
-	solver->new_vars(numVars);
+	uint64_t numVars = reduct->numberActiveArguments;
+	SatSolver *solver;
+	if (solver_type == SOLVERS::CMS)
+	{
+		solver = new SatSolver_cms(numVars);
+	}
+	else
+	{
+		solver = new SatSolver_cadical(numVars);
+	}
 	//printf("%d: ------- SAT solver initialized --- memory usage: %ld\n", id, get_mem_usage());												//DEBUG
 	//printf("%d Encode: \n", id);																												//DEBUG
-	Encodings_CMS::add_clauses_nonempty_admissible_set(solver, framework, reduct);
+	Encodings_SatSolver::add_clauses_nonempty_admissible_set(solver, framework, reduct);
 	//printf("%d: ------- SAT clauses added --- memory usage: %ld\n", id, get_mem_usage());														//DEBUG
 
 #pragma omp flush(isRejected)
@@ -191,7 +197,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 
 		*isFirstCalculation = false;
 
-		initial_set = DecodingCMS::get_set_from_solver(solver, reduct);
+		initial_set = Decoding_SatSolver::get_set_from_solver(solver, reduct);
 		//printf("%d: ------- initial set allocated --- memory usage: %ld\n", id, get_mem_usage());											//DEBUG
 
 		//printf("%d: computed initial set: ", id);																							//DEBUG
@@ -318,7 +324,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 	priority(0) //firstprivate(new_extension_build) not working with untied // depend(in: argument, framework, activeArgs) depend(inout: isRejected, new_extension_build) depend(out: output_extension)
 		{
 			//printf("%d: ------- task started --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());								//DEBUG
-			check_rejection_parallel_recursiv(argument, framework, activeArgs, isRejected, new_extension_build, output_extension); //, num_tasks, num_tasks_max
+			check_rejection_parallel_recursiv(argument, framework, activeArgs, isRejected, new_extension_build, output_extension, solver_type); //, num_tasks, num_tasks_max
 			free_list_uint32(new_extension_build);
 			//printf("%d: ------- extension freed --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());								//DEBUG
 			//int tmp_num_tasks = 0;																											//DEBUG
@@ -372,7 +378,8 @@ static void check_rejection_parallel_recursiv(uint32_t argument, argFramework_t 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-bool ScepticalPRParallel::check_rejection_parallel(uint32_t argument, argFramework_t *framework, activeArgs_t *activeArgs, nodeUInt32_t **proof_extension, uint8_t numCores)
+bool ScepticalPRParallel::check_rejection_parallel(uint32_t argument, argFramework_t *framework, activeArgs_t *activeArgs, 
+	nodeUInt32_t **proof_extension, uint8_t numCores, SOLVERS solver_type)
 {
 	//float start_time = omp_get_wtime();																											//DEBUG
 	bool *isRejected = NULL;
@@ -414,7 +421,7 @@ bool ScepticalPRParallel::check_rejection_parallel(uint32_t argument, argFramewo
 
 		//printf("%d: ------- started omp parallel -- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());								//DEBUG
 
-		check_rejection_parallel_recursiv(argument, framework, activeArgs, isRejected, NULL, proof_extension);					// , num_tasks, num_tasks_max
+		check_rejection_parallel_recursiv(argument, framework, activeArgs, isRejected, NULL, proof_extension, solver_type);					// , num_tasks, num_tasks_max
 	}
 	
 	bool result = *isRejected;

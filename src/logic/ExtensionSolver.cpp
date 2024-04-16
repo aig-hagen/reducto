@@ -1,24 +1,32 @@
 #include "../../include/logic/ExtensionSolver.h"
 using namespace std;
 
-static void CalculateOneExtension(argFramework_t *framework, activeArgs_t *activeArgs, nodeUInt32_t **extension)
+static void CalculateOneExtension(argFramework_t *framework, activeArgs_t *activeArgs, nodeUInt32_t **extension, SOLVERS solver_type)
 {
 	bool *isSolved = NULL;
 	isSolved = (bool *)malloc(sizeof * isSolved);
 	*isSolved = false;
-	uint32_t numVars = (2 * activeArgs->numberActiveArguments) + 1;
-	SATSolver solver;
-	solver.set_num_threads(1);
-	solver.new_vars(numVars);
-	Encodings_CMS::add_clauses_nonempty_admissible_set(&solver, framework, activeArgs);
-	bool flag_no_sets = InitialSetSolver::calculate_next_solution(framework, activeArgs, &solver, isSolved);
+	uint64_t numVars = activeArgs->numberActiveArguments;
+	SatSolver *solver;
+	
+	if (solver_type == SOLVERS::CMS)
+	{
+		solver = new SatSolver_cms(numVars);
+	}
+	else
+	{
+		solver = new SatSolver_cadical(numVars);
+	}
+	
+	Encodings_SatSolver::add_clauses_nonempty_admissible_set(solver, framework, activeArgs);
+	bool flag_no_sets = InitialSetSolver::calculate_next_solution(framework, activeArgs, solver, isSolved);
 	free(isSolved);
 	if (flag_no_sets == EXIT_FAILURE)
 	{
 		return;			//[TERMINATION CONDITION]
 	}
 
-	nodeUInt32_t *initial_set = DecodingCMS::get_set_from_solver(&solver, activeArgs);
+	nodeUInt32_t *initial_set = Decoding_SatSolver::get_set_from_solver(solver, activeArgs);
 
 	//printf("Extend extension by: ");																				//DEBUG
 	//print_list_uint32(initial_set);																				//DEBUG
@@ -42,7 +50,7 @@ static void CalculateOneExtension(argFramework_t *framework, activeArgs_t *activ
 	//print_active_arguments(reduct);																				//DEBUG
 	//printf("\n");																									//DEBUG
 
-	CalculateOneExtension(framework, reduct, extension);		//[RECURSIVE CALL]
+	CalculateOneExtension(framework, reduct, extension, solver_type);		//[RECURSIVE CALL]
 	
 	free_activeArguments(reduct);
 	
@@ -51,7 +59,7 @@ static void CalculateOneExtension(argFramework_t *framework, activeArgs_t *activ
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-void EXTENSIONSOLVER_CMS::BuildExtension(argFramework_t *framework, activeArgs_t *activeArgs, nodeUInt32_t **extension)
+void EXTENSIONSOLVER_CMS::BuildExtension(argFramework_t *framework, activeArgs_t *activeArgs, nodeUInt32_t **extension, SOLVERS solver_type)
 {
 	if (*extension == NULL)
 	{
@@ -71,7 +79,7 @@ void EXTENSIONSOLVER_CMS::BuildExtension(argFramework_t *framework, activeArgs_t
 	//print_active_arguments(reduct);																				//DEBUG
 	//printf("\n");																									//DEBUG
 
-	CalculateOneExtension(framework, reduct, extension);
+	CalculateOneExtension(framework, reduct, extension, solver_type);
 
 	free_activeArguments(reduct);
 }

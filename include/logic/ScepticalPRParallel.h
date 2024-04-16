@@ -17,11 +17,16 @@ extern "C" {
 #include "../util/MemoryWatchDog.h"
 }
 
-#include "Encodings_cms.h"
-#include "Decodings_cms.h"
+#include "Encodings_SatSolver.h"
+#include "Decodings_SatSolver.h"
 #include "ExternalSolver.h"
 #include "InitialSetSolver.h"
+#include "SatSolver.h"
+#include "SatSolver_cms.h"
+#include "SatSolver_cadical.h"
 #include "omp.h"
+
+#include "../util/Enums.h"
 
 class ScepticalPRParallel {
 public:
@@ -34,9 +39,11 @@ public:
 	/// <param name="framework">The abstract argumentation framework, specifying the underlying attack relations between the arguments.</param>
 	/// <param name="activeArgs">The active arguments of the current state of the framework.</param>
 	/// <param name="proof_extension"> Extension proving, that the argument cannot be sceptically accepted.</param>
-	/// <param name="numCores"> Number of cores requested to be used to solve the problem. Actual number can be lower depending on the OS scheduler.
+	/// <param name="numCores"> Number of cores requested to be used to solve the problem. Actual number can be lower depending on the OS scheduler.</param>
+	/// <param name="solver_type"> Defines which solver shal be used to solve the problem.</param>
 	/// <returns>TRUE iff the sceptical acceptance was rejected. FALSE otherwise.</returns>
-	static bool check_rejection_parallel(uint32_t argument, argFramework_t *framework, activeArgs_t *activeArgs, nodeUInt32_t **proof_extension, uint8_t numCores);
+	static bool check_rejection_parallel(uint32_t argument, argFramework_t *framework, activeArgs_t *activeArgs, 
+		nodeUInt32_t **proof_extension, uint8_t numCores, SOLVERS solver_type);
 };
 
 #endif

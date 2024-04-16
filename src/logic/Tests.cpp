@@ -26,7 +26,7 @@ void static runParallel(int numArgsStart, int numArgsEnd, argFramework_t *framew
 		//printf("%d: ------- extension allocated --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());												//DEBUG
 
 		printf("////////////////////////// ARGUMENT %d //////////////////////////////\n", i);
-		bool isScepticAccepted = !ScepticalPRParallel::check_rejection_parallel(argument, framework, actives, proof_extension, NUM_CORES_TESTS);
+		bool isScepticAccepted = !ScepticalPRParallel::check_rejection_parallel(argument, framework, actives, proof_extension, NUM_CORES_TESTS, SOLVER_TEST);
 		std::cout << std::boolalpha << "sceptic acceptance of " << argument << " : " << isScepticAccepted << std::endl;
 		if (!isScepticAccepted)
 		{
@@ -43,7 +43,7 @@ void static runParallel(int numArgsStart, int numArgsEnd, argFramework_t *framew
 			}
 			else
 			{
-				EXTENSIONSOLVER_CMS::BuildExtension(framework, actives, proof_extension);
+				EXTENSIONSOLVER_CMS::BuildExtension(framework, actives, proof_extension, SOLVER_TEST);
 				printf("Extension that proves rejection: ");
 				print_list_uint32((*proof_extension));
 				printf("\n");

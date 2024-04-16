@@ -1,0 +1,6 @@
+#define VERSION "2.0.0"
+#define IDENTIFIER "2df7b7fed0f9c522fd4cdf6e88cecad4cac8a2df"
+#define SHORTID "2df7b7f"
+#define COMPILER "g++ (Ubuntu 11.4.0-2ubuntu1~20.04) 11.4.0"
+#define FLAGS "-Wall -Wextra -O3 -DNDEBUG"
+#define DATE "Fri Apr 12 12:39:44 UTC 2024 Linux node3student 5.4.0-174-generic x86_64"

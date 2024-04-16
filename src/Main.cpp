@@ -169,7 +169,7 @@ int main(int argc, char **argv)
 			switch (Enums::string_to_sem(sem)) {
 				case PR:
 				
-					skept_accepted = !ScepticalPRParallel::check_rejection_parallel(argument, framework, actives, proof_extension, NUM_CORES);
+					skept_accepted = !ScepticalPRParallel::check_rejection_parallel(argument, framework, actives, proof_extension, NUM_CORES, SOLVER);
 					break;
 				default:
 					cerr << argv[0] << ": Unsupported semantics\n";

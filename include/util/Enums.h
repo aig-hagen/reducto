@@ -10,6 +10,7 @@
 
 enum task { DC, DS, SE, EE, CE, UNKNOWN_TASK };
 enum semantics { IT, UC, PR, GR, UNKNOWN_SEM };
+enum SOLVERS { CMS, CADICAL };
 
 using namespace std;
 
