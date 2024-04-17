@@ -32,7 +32,7 @@ extern "C" {
 #include "../util/Enums.h"
 
 constexpr auto NUM_CORES_TESTS = 0;
-constexpr auto SOLVER_TEST = SOLVERS::CMS;
+constexpr auto SOLVER_TEST = SOLVERS::CADICAL;
 
 using namespace std;
 

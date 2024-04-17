@@ -152,12 +152,13 @@ void Encodings_SatSolver::add_clauses_nonempty_admissible_set(SatSolver *solver,
 void Encodings_SatSolver::add_complement_clause(SatSolver *solver, activeArgs_t *activeArgs)
 {
 	vector<int64_t> complement_clause;
+	vector<bool> model = (*solver).get_model();
 
 	for (uint32_t i = 0; i < activeArgs->numberActiveArguments; i++)
 	{
-		if ((*solver).get_model()[i] == true)
+		if (model[i] == true)
 		{
-			complement_clause.push_back(-1 * static_cast<std::vector<int64_t, std::allocator<int64_t>>::value_type>(i));
+			complement_clause.push_back(-1 * (static_cast<int64_t>(i) + 1));
 		}
 	}
 

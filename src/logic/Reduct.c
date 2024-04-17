@@ -38,6 +38,11 @@ activeArgs_t *get_reduct_set(activeArgs_t *activeArguments, argFramework_t *fram
 
 	while (currentArgument != NULL)
 	{
+		if (reduct->numberActiveArguments == 0)
+		{
+			break;
+		}
+
 		// free all temporary reducts
 		//printf("%d: ------- before getReduct --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());											//DEBUG
 		activeArgs_t *tmp_reduct = reduct;

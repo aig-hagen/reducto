@@ -13,8 +13,10 @@ SatSolver_cms::SatSolver_cms(uint64_t num_var) {
 void SatSolver_cms::add_clause(std::vector<int64_t> clause) {
     // Add the clause to the cryptominisat solver
     std::vector<Lit> lits;
-    for (auto lit : clause) {
-        lits.push_back(Lit(abs(lit) - 1, lit > 0)); // Convert literals to cryptominisat format
+    for (auto variable : clause) {
+        int64_t abs_var64 = variable < 0 ? ((-1) * variable) : variable;
+        uint32_t abs_var = static_cast<uint32_t>(abs_var64);
+        lits.push_back(Lit(abs_var - 1, variable < 0)); // Convert literals to cryptominisat format
     }
     cms_solver.add_clause(lits);
     lits.clear();

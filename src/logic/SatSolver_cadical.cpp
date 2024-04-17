@@ -15,8 +15,8 @@ void SatSolver_cadical::add_clause(std::vector<int64_t> clause) {
 std::vector<bool> SatSolver_cadical::get_model() {
     std::vector<bool> model;
     // Get the model from the CMS solver
-    for (int i = 0; i < _num_variables; ++i) {
-        model.push_back(cadical_solver.val(i) == 1);
+    for (int i = 1; i < _num_variables + 1; ++i) {
+        model.push_back(cadical_solver.val(i) > 0);
     }
     return model;
 }

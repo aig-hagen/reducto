@@ -144,6 +144,12 @@ listInt64_t* create_list_list_int64(nodeInt64_t *element)
 
 uint8_t free_list_uint32(nodeUInt32_t *head)
 {
+    if (head == NULL)
+    {
+        free(head);
+        return EXIT_SUCCESS;
+    }
+
     nodeUInt32_t *current = head;
     nodeUInt32_t *next = current->next;
 

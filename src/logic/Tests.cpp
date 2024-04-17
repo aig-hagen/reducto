@@ -467,7 +467,7 @@ void TestCases::run_Tests()
 	//test0();
 	//testSelfAttack();
 	//test4Args();
-	//test6Args();
+	test6Args();
 	//test6ArgsFile();
 	//testArgsALot();
 	//testCMS();
