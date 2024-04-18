@@ -23,11 +23,10 @@ static vector<int64_t> add_rejected_clauses(SatSolver *solver, argFramework_t *f
 	// basic acceptance and rejection clause
 	//Part I:  models that an argument cannot be accepted and rejected at the same time
 	//create disjunction
-	vector<int64_t> non_simultaneity_clause;
-	non_simultaneity_clause.push_back(get_literal_rejected(activeArgs, argument, true));
-	non_simultaneity_clause.push_back(get_literal_accepted(activeArgs, argument, true));
-	(*solver).add_clause(non_simultaneity_clause);
-	non_simultaneity_clause.clear();
+
+	(*solver).add_clause_short(
+		get_literal_rejected(activeArgs, argument, true),
+		get_literal_accepted(activeArgs, argument, true));
 
 	//Part III: constitutes that if an argument 'a' is rejected, one of its attackers must be accepted
 	//create disjunction
@@ -43,11 +42,10 @@ static void add_rejected_clauses_per_attacker(SatSolver *solver, activeArgs_t *a
 {
 	//Part II: ensures that if an attacker 'b' of an argument 'a' is accepted, then 'a' must be rejected
 	//create disjunction for active attacker
-	vector<int64_t> non_simultaneity_with_attacker_clause;
-	non_simultaneity_with_attacker_clause.push_back(get_literal_rejected(activeArgs, argument, false));
-	non_simultaneity_with_attacker_clause.push_back(get_literal_accepted(activeArgs, attacker, true));
-	(*solver).add_clause(non_simultaneity_with_attacker_clause);
-	non_simultaneity_with_attacker_clause.clear();
+
+	(*solver).add_clause_short(
+		get_literal_rejected(activeArgs, argument, false),
+		get_literal_accepted(activeArgs, attacker, true));
 
 	//Part III: constitutes that if an argument 'a' is rejected, one of its attackers must be accepted
 	//create disjunction
@@ -60,15 +58,17 @@ static void add_rejected_clauses_per_attacker(SatSolver *solver, activeArgs_t *a
 static void add_conflict_free_per_attacker(SatSolver *solver, activeArgs_t *activeArgs, uint32_t argument, uint32_t attacker)
 {
 	//create disjunction
-	vector<int64_t> conflictfree_clause;
-	conflictfree_clause.push_back(get_literal_accepted(activeArgs, argument, true));
+
 	if (argument != attacker)
 	{
-		//is not a self-attack
-		conflictfree_clause.push_back(get_literal_accepted(activeArgs, attacker, true));
+		(*solver).add_clause_short(
+			get_literal_accepted(activeArgs, argument, true),
+			get_literal_accepted(activeArgs, attacker, true));
 	}
-	(*solver).add_clause(conflictfree_clause);
-	conflictfree_clause.clear();
+	else
+	{
+		(*solver).add_clause_short(get_literal_accepted(activeArgs, argument, true), NULL);
+	}
 }
 
 /*===========================================================================================================================================================*/
@@ -85,11 +85,10 @@ static void add_defense_per_attacker(SatSolver *solver, activeArgs_t *activeArgs
 	//models the notion of defense in an abstract argumentation framework: 
 	// if an argument is accepted to be in the admissible set, all its attackers must be rejected
 	//create disjunction
-	vector<int64_t> defense_clause;
-	defense_clause.push_back(get_literal_accepted(activeArgs, argument, true));
-	defense_clause.push_back(get_literal_rejected(activeArgs, attacker, false));
-	(*solver).add_clause(defense_clause);
-	defense_clause.clear();
+
+	(*solver).add_clause_short(
+		get_literal_accepted(activeArgs, argument, true),
+		get_literal_rejected(activeArgs, attacker, false));
 }
 
 /*===========================================================================================================================================================*/

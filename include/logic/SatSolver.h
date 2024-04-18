@@ -16,6 +16,13 @@ public:
 	virtual void add_clause(std::vector<int64_t> clause) = 0;
 
 	/// <summary>
+	/// Adds a new clause, containing up to 2 literals, to the SAT-problem of the solver.
+	/// </summary>
+	/// <param name="lit1">First literal of the clause to add.</param>
+	/// <param name="lit2">Second literal of the clause to add. In case clause has only 1 literal, this parameter is NULL</param>
+	virtual void add_clause_short(int64_t lit1, int64_t lit2) = 0;
+
+	/// <summary>
 	/// Returns the solution for the SAT-problem of the solver. Rejecting variable are returned after all accepting variables are returned.
 	/// </summary>
 	/// <returns>Array of type bool, indicating for each variable if it's set or not</returns>

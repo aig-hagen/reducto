@@ -63,7 +63,7 @@ extern "C" {
 #include "../include/logic/Tests.h"
 
 constexpr auto SOLVERNAME = "ParallelSolver";
-constexpr auto VERSIONNUMBER = "1.5";
+constexpr auto VERSIONNUMBER = "1.6";
 constexpr auto NUM_CORES = 0;
 constexpr auto SOLVER = SOLVERS::CADICAL;
 
