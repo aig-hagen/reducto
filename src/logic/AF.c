@@ -208,7 +208,7 @@ argFramework_t* initialize_framework(argumentInitTemp_t *head)
 		
 		//float end_time = omp_get_wtime();																									//DEBUG
 		//float duration = end_time - start_time;																							//DEBUG
-		//printf("Initializing framework: %.2f s\n", duration);																				//DEBUG
+		//printf("runtime initialize_framework [s]: %.2f s\n", duration);																				//DEBUG
 		return framework;
 	}
 }

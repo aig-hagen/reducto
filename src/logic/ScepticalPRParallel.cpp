@@ -423,10 +423,10 @@ bool ScepticalPRParallel::check_rejection_parallel(uint32_t argument, argFramewo
 	free(isRejected);
 
 	/*printf("Finished program - voluntary context switches: %ld - involuntary context switches: %ld - memory usage: %ld [kB]\n",
-		get_ctxt_switches_volun(), get_ctxt_switches_involun(), get_mem_usage());*/																 //DEBUG
+		get_ctxt_switches_volun(), get_ctxt_switches_involun(), get_mem_usage());*/																//DEBUG
 	//float end_time = omp_get_wtime();																											//DEBUG
 	//float duration = end_time - start_time;																									//DEBUG
-	//printf("Solving framework: %.2f s\n", duration);																							//DEBUG
+	//printf("runtime check_rejection_parallel [s]: %.2f s\n", duration);																		//DEBUG
 
 	return result;
 }
