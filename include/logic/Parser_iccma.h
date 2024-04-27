@@ -1,10 +1,7 @@
 #ifndef PARSER_ICCMA
 #define PARSER_ICCMA
 
-#include <stdio.h>
-#include <stdint.h>
-#include <stdbool.h>
-
+#include <cstdint>
 #include <iostream>			
 #include <fstream>			
 #include <algorithm>
@@ -12,8 +9,9 @@
 
 #include <omp.h>
 
+#include "AF.h"
+
 extern "C" {
-	#include "AF.h"
 	#include "../util/MemoryWatchDog.h"
 }
 
@@ -28,7 +26,7 @@ public:
 	/// </summary>
 	/// <param name="file">String that describes the location of the file to open.</param>
 	/// <returns>The abstract argumentation framework, which is describes by the file.</returns>
-	static argFramework_t *parse_af(string file);
+	static AF parse_af(string file);
 };
 
 #endif

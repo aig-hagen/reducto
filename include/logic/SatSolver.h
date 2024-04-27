@@ -2,8 +2,7 @@
 #define SAT_SOLVER_H
 
 #include <iostream>
-#include <stdio.h>
-#include <stdint.h>
+#include <cstdint>
 #include <vector>
 
 class SatSolver {

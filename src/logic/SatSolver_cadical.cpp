@@ -23,7 +23,7 @@ void SatSolver_cadical::add_clause(std::vector<int64_t> clause) {
 void SatSolver_cadical::add_clause_short(int64_t lit1, int64_t lit2){
     cadical_solver.add(lit1);
     
-    if (lit2 != NULL)
+    if (lit2 != 0)
     {
         cadical_solver.add(lit2);
     }

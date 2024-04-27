@@ -1,35 +1,24 @@
 ﻿#ifndef TESTS_H
 #define TESTS_H
 
+#include <wchar.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include <cstdio>
 #include <iostream>
 #include <stdio.h>
 #include <stdint.h>
 #include <omp.h>
 
-extern "C" {
-#include "Actives.h"
+//extern "C" {
+//	#include "../include/util/MemoryWatchDog.h"
+//}
+
 #include "AF.h"
-#include "Decodings.h"
-#include "Encodings.h"
-#include "Reduct.h"
-#include "SatProblem.h"
-
-#include "../util/Array.h"
-#include "../util/LinkedSparseMatrix.h"
-#include "../util/List.h"
-#include "../util/Matrix.h"
-#include "../util/MemoryWatchDog.h"
-}
-
-#include "ExtensionSolver.h"
-#include "ExternalSolver.h"
-#include "InitialSetSolver.h"
 #include "Parser_iccma.h"
-#include "ScepticalPRSequential.h"
-#include "ScepticalPRParallel.h"
+#include "Solver_DS_PR.h"
 
-#include "../util/Enums.h"
+#include "Enums.h"
 
 constexpr auto NUM_CORES_TESTS = 0;
 constexpr auto SOLVER_TEST = SOLVERS::CADICAL;

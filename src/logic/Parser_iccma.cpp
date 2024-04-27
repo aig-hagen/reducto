@@ -2,20 +2,7 @@
 
 using namespace std;
 
-static string get_next_non_space(string line, uint32_t idxStart, uint32_t *out_newIdxStart)
-{
-	uint32_t idxEnd = line.find(' ', idxStart);
-	string output = line.substr(idxStart, idxEnd - idxStart);
-
-	*out_newIdxStart = line.find_first_not_of(' ', idxEnd);
-
-	return output;
-}
-
-/*===========================================================================================================================================================*/
-/*===========================================================================================================================================================*/
-
-argFramework_t* ParserICCMA::parse_af(string file)
+AF ParserICCMA::parse_af(string file)
 {
 	//float start_time = omp_get_wtime();																										//DEBUG
 	ifstream input;
@@ -40,7 +27,7 @@ argFramework_t* ParserICCMA::parse_af(string file)
 		exit(1);
 	}
 
-	argumentInitTemp_t *head = set_up_initialization(n_args);
+	AF framework = AF(n_args);
 	//printf("%d: ------- setup initialization framework --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());						//DEBUG
 	//long mem_base = get_mem_usage();																											//DEBUG
 
@@ -52,7 +39,7 @@ argFramework_t* ParserICCMA::parse_af(string file)
 		std::istringstream iss(line);
 		uint32_t attacker, victim;
 		iss >> attacker >> victim;
-		add_attack(head, attacker, victim);
+		framework.add_attack(attacker, victim);
 	}
 	//printf("Finished parsing\n");																												//DEBUG
 
@@ -64,5 +51,7 @@ argFramework_t* ParserICCMA::parse_af(string file)
 	//float duration = end_time - start_time;																									//DEBUG
 	//printf("runtime parse_af [s]: %.2f s\n", duration);																						//DEBUG
 
-	return initialize_framework(head);
+	framework.initialize_attackers();
+
+	return framework;
 }

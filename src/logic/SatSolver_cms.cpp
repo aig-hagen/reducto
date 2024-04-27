@@ -49,7 +49,7 @@ void SatSolver_cms::add_clause_short(int64_t lit1, int64_t lit2) {
     
     AddVariableToClause(lit1, lits);
 
-    if (lit2 != NULL)
+    if (lit2 != 0)
     {
         AddVariableToClause(lit2, lits);
     }

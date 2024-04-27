@@ -1,0 +1,46 @@
+#include "../../include/logic/AF.h"
+
+using namespace std;
+
+AF::AF(uint32_t number_args) {
+	num_args = number_args;
+}
+
+bool AF::add_attack(uint32_t attacker, uint32_t victim)
+{
+	if (attacker < 0 || victim < 0) return false;
+	
+	if (attacks.count(make_pair(attacker, victim))) {
+		return false;
+	}
+	attacks.insert(make_pair(attacker, victim));
+	return true;
+}
+
+void AF::initialize_attackers()
+{
+	attackers.clear();
+	self_attack.clear();
+	symmetric_attacks.clear();
+	attackers.resize(num_args);
+	victims.resize(num_args);
+	self_attack.resize(num_args);
+	for (const pair<uint32_t, uint32_t> &attack : attacks) {
+		int32_t source = attack.first;
+		int32_t target = attack.second;
+		attackers[target].push_back(source);
+		if (!victims[source].count(target)) {
+			victims[source].insert(target);
+		}
+		if (source == target)
+			self_attack[source] = true;
+		if (attacks.count(make_pair(target, source))) {
+			symmetric_attacks.insert(make_pair(source, target));
+			symmetric_attacks.insert(make_pair(target, source));
+		}
+	}
+}
+
+bool AF::exists_attack(uint32_t attacker, uint32_t victim) const {
+	return attacks.count(make_pair(attacker, victim));
+}

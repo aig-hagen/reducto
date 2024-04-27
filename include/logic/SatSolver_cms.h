@@ -6,15 +6,8 @@
 #include <stdint.h>
 #include <vector>
 
-extern "C" {
-#include "Encodings.h"
-#include "SatProblem.h"
-}
-
 #include "SatSolver.h"
-
 #include <cryptominisat.h>
-
 
 using namespace CMSat;
 
