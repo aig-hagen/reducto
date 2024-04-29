@@ -39,6 +39,7 @@ set(HEADERS
 	${INCLD_LOGIC}/Tests.h
 
 	${INCLD_UTIL}/MemoryWatchDog.h
+	${INCLD_UTIL}/Printer.h
 	)
 
 set(SRCFILES
@@ -59,6 +60,7 @@ set(SRCFILES
 	${SRC_LOGIC}Tests.cpp
 
 	${SRC_UTIL}MemoryWatchDog.c
+	${SRC_UTIL}Printer.cpp
 	)
 
 set(SOURCES ${SRCFILES} ${HEADERS})

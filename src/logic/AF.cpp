@@ -22,9 +22,9 @@ void AF::initialize_attackers()
 	attackers.clear();
 	self_attack.clear();
 	symmetric_attacks.clear();
-	attackers.resize(num_args);
-	victims.resize(num_args);
-	self_attack.resize(num_args);
+	attackers.resize(num_args + 1);
+	victims.resize(num_args + 1);
+	self_attack.resize(num_args + 1);
 	for (const pair<uint32_t, uint32_t> &attack : attacks) {
 		int32_t source = attack.first;
 		int32_t target = attack.second;

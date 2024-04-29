@@ -9,7 +9,7 @@ using namespace std;
 class Actives {
 
 public:
-	static uint32_t isActive(vector<uint32_t> activeArgs, uint32_t argument);
+	static int64_t isActive(vector<uint32_t> activeArgs, uint32_t argument);
 };
 
 #endif

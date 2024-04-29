@@ -22,6 +22,8 @@ extern "C" {
 #include "ScepticalCheck.h"
 #include "omp.h"
 
+#include "../util/Printer.h"
+
 using namespace std;
 
 class Solver_DS_PR {

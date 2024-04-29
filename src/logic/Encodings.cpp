@@ -11,7 +11,7 @@ static int64_t get_literal_accepted(vector<uint32_t> &activeArgs, uint32_t idxIn
 
 static int64_t get_literal_rejected(vector<uint32_t> &activeArgs, uint32_t idxInActives, bool isInverted)
 {
-	int64_t variable = static_cast<int64_t>(idxInActives + 1) + activeArgs.size() - 1;
+	int64_t variable = static_cast<int64_t>(idxInActives + 1) + activeArgs.size();
 	return isInverted ? -1 * variable : variable;
 }
 
@@ -102,14 +102,14 @@ static void add_admissible(SatSolver &solver, AF &framework, vector<uint32_t> &a
 
 	for (int i = 0; i < attackers.size(); i++)
 	{
-		try {
-			uint32_t idxAtckr = Actives::isActive(activeArgs, attackers[i]);
-			add_rejected_clauses_per_attacker(solver, activeArgs, idxInActives, idxAtckr, rejection_reason_clause);
-			add_conflict_free_per_attacker(solver, activeArgs, idxInActives, idxAtckr);
-			add_defense_per_attacker(solver, activeArgs, idxInActives, idxAtckr);
-		}
-		catch (exception e) {
-			//do nothing
+		int64_t idxAtckr = Actives::isActive(activeArgs, attackers[i]);
+
+		if(idxAtckr > -1)
+		{
+			uint32_t u_idxAtckr = static_cast<uint32_t>(idxAtckr);
+			add_rejected_clauses_per_attacker(solver, activeArgs, idxInActives, u_idxAtckr, rejection_reason_clause);
+			add_conflict_free_per_attacker(solver, activeArgs, idxInActives, u_idxAtckr);
+			add_defense_per_attacker(solver, activeArgs, idxInActives, u_idxAtckr);
 		}
 	}
 
@@ -146,7 +146,8 @@ void Encodings_SatSolver::add_complement_clause(SatSolver &solver, vector<uint32
 	{
 		if (model[i] == true)
 		{
-			complement_clause.push_back(-1 * (static_cast<int64_t>(i) + 1));
+			int64_t variable = -1 * (static_cast<int64_t>(i) + 1);
+			complement_clause.push_back(variable);
 		}
 	}
 
