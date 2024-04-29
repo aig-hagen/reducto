@@ -8,11 +8,10 @@ void Printer::print_list(list<uint32_t> &listToPrint) {
 		return;
 	}
 
-	cout << "(" << *listToPrint.begin();
+	cout << *listToPrint.begin();
 	for (list<uint32_t>::iterator mIter = std::next(listToPrint.begin()); mIter != listToPrint.end(); ++mIter) {
-		cout << "," << *mIter;
+		cout << " " << *mIter;
 	}
-	cout << ")";
 }
 
 void Printer::print_vector(vector<uint32_t> &vector) {
@@ -20,9 +19,8 @@ void Printer::print_vector(vector<uint32_t> &vector) {
 		return;
 	}
 
-	cout << "[" << vector[0];
+	cout << vector[0];
 	for (int i = 1; i < vector.size(); i++) {
-		cout << "," << vector[i];
+		cout << " " << vector[i];
 	}
-	cout << "]";
 }

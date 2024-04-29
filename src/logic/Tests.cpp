@@ -22,18 +22,20 @@ void static runParallel(int numArgsStart, int numArgsEnd, AF &framework)
 
 		printf("////////////////////////// ARGUMENT %d //////////////////////////////\n", i);
 		bool isScepticAccepted = Solver_DS_PR::solve(argument, framework, proof_extension, NUM_CORES_TESTS, SOLVER_TEST);
-		std::cout << std::boolalpha << "sceptic acceptance of " << argument << " : " << isScepticAccepted << std::endl;
+		
+		std::cout << std::boolalpha << (isScepticAccepted ? "YES" : "NO") << std::endl;
 		if (!isScepticAccepted)
 		{
+			cout << "w ";
 			if (proof_extension.empty())
 			{
 				if (framework.victims[argument].count(argument))
 				{
-					printf("Argument attacks itself.\n");
+					cout <<"Argument attacks itself." << endl;
 				}
 				else
 				{
-					printf("No Extension found\n");
+					cout << "No Extension found" << endl;
 				}
 			}
 			else
@@ -42,6 +44,8 @@ void static runParallel(int numArgsStart, int numArgsEnd, AF &framework)
 				printf("Extension that proves rejection: ");
 				print_list_uint32((*proof_extension));
 				printf("\n");*/
+				Printer::print_list(proof_extension);
+				cout << endl;
 			}
 		}
 	}
@@ -61,7 +65,7 @@ static void testSelfAttack()
 	framework.add_attack(1, 1);
 	framework.add_attack(2, 1);
 	framework.add_attack(3, 2);
-	framework.initialize_attackers();
+	framework.initialize_af();
 
 	runParallel(1, 1, framework);
 }
@@ -74,7 +78,7 @@ static void test4Args()
 	AF framework = AF(4);
 	framework.add_attack(1, 2);
 	framework.add_attack(4, 1);
-	framework.initialize_attackers();
+	framework.initialize_af();
 
 	runParallel(1, 1, framework);
 }
@@ -93,7 +97,7 @@ static void test6Args()
 	framework.add_attack(3, 2);
 	framework.add_attack(4, 1);
 	framework.add_attack(5, 4);
-	framework.initialize_attackers();
+	framework.initialize_af();
 
 	runParallel(1, 6, framework);
 }
@@ -103,7 +107,8 @@ static void test6Args()
 
 static void test6ArgsFile()
 {
-	AF framework = ParserICCMA::parse_af("./../../../rsc/examples/example2.i23");
+	AF framework;
+	ParserICCMA::parse_af(framework, "./../../../rsc/examples/example2.i23");
 	runParallel(1, 6, framework);
 }
 
@@ -127,7 +132,7 @@ static void testArgsALot()
 			framework.add_attack(i, (i + numArgs / 3) % numArgs);
 		}
 	}
-	framework.initialize_attackers();
+	framework.initialize_af();
 
 	runParallel(1, 1, framework);
 }
@@ -146,7 +151,8 @@ static void testFile()
 	double start, end, parse_af_time;
 	start = omp_get_wtime();
 
-	AF framework = ParserICCMA::parse_af("/home/jsander/solvers/ICCMA23/benchmarks/main/ER_200_30_5.i23");
+	AF framework; 
+	ParserICCMA::parse_af(framework, "/home/jsander/solvers/ICCMA23/benchmarks/main/g_1477_0.03_8.i23");
 
 	end = omp_get_wtime();
 	parse_af_time = end - start;
@@ -154,18 +160,15 @@ static void testFile()
 
 	//printf("%d: ------- framework initialized --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());									//DEBUG														//DEBUG
 
-	runParallel(95, 95, framework);
+	runParallel(671, 671, framework);
 }
 
 void TestCases::run_Tests()
 {
-	//test0();
 	//testSelfAttack();
 	//test4Args();
-	test6Args();
+	//test6Args();
 	//test6ArgsFile();
 	//testArgsALot();
-	//testCMS();
-	//testExampleCMS();
-	//testFile();
+	testFile();
 }

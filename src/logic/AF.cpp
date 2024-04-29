@@ -2,10 +2,6 @@
 
 using namespace std;
 
-AF::AF(uint32_t number_args) {
-	num_args = number_args;
-}
-
 bool AF::add_attack(uint32_t attacker, uint32_t victim)
 {
 	if (attacker < 0 || victim < 0) return false;
@@ -17,8 +13,14 @@ bool AF::add_attack(uint32_t attacker, uint32_t victim)
 	return true;
 }
 
-void AF::initialize_attackers()
+void AF::initialize(uint32_t number_args) {
+	num_args = number_args;
+}
+
+void AF::initialize_af()
 {
+	//float start_time = omp_get_wtime();																										//DEBUG
+
 	attackers.clear();
 	self_attack.clear();
 	symmetric_attacks.clear();
@@ -39,6 +41,10 @@ void AF::initialize_attackers()
 			symmetric_attacks.insert(make_pair(target, source));
 		}
 	}
+
+	//float end_time = omp_get_wtime();																											//DEBUG
+	//float duration = end_time - start_time;																									//DEBUG
+	//printf("runtime initialize_af [s]: %.2f s\n", duration);																					//DEBUG
 }
 
 bool AF::exists_attack(uint32_t attacker, uint32_t victim) const {

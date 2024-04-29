@@ -4,6 +4,8 @@
 #include <vector>
 #include <unordered_set>
 #include <cstdint>
+#include <iostream>	
+#include <omp.h>
 
 template <class T>
 inline void hash_combine(std::size_t &seed, const T &v)
@@ -30,8 +32,6 @@ class AF {
 
 public:
 
-    AF(uint32_t number_args);
-
     uint32_t num_args;
     std::vector<std::vector<uint32_t>> attackers;
 	std::vector <std::unordered_set<uint32_t>> victims;
@@ -40,7 +40,8 @@ public:
 	std::unordered_set<std::pair<uint32_t, uint32_t>> symmetric_attacks;
 
     bool add_attack(uint32_t attacker, uint32_t victim);
-    void initialize_attackers();
+	void initialize(uint32_t number_args);
+    void initialize_af();
     bool exists_attack(uint32_t attacker, uint32_t victim) const;
 };
 

@@ -2,7 +2,7 @@
 
 using namespace std;
 
-AF ParserICCMA::parse_af(string file)
+void ParserICCMA::parse_af(AF &framework, string file)
 {
 	//float start_time = omp_get_wtime();																										//DEBUG
 	ifstream input;
@@ -27,7 +27,8 @@ AF ParserICCMA::parse_af(string file)
 		exit(1);
 	}
 
-	AF framework = AF(n_args);
+	framework.initialize(n_args);
+
 	//printf("%d: ------- setup initialization framework --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());						//DEBUG
 	//long mem_base = get_mem_usage();																											//DEBUG
 
@@ -51,7 +52,5 @@ AF ParserICCMA::parse_af(string file)
 	//float duration = end_time - start_time;																									//DEBUG
 	//printf("runtime parse_af [s]: %.2f s\n", duration);																						//DEBUG
 
-	framework.initialize_attackers();
-
-	return framework;
+	framework.initialize_af();
 }

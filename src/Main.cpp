@@ -63,7 +63,7 @@ void static print_problems()
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-int main(int argc, char **argv)
+int execute(int argc, char **argv)
 {
 	if (argc == 1) {
 		print_version();
@@ -133,9 +133,9 @@ int main(int argc, char **argv)
 		return 1;*/
 	}
 
-	AF *framework = NULL;
+	AF framework;
 	if (fileformat == "i23") {
-		*framework = ParserICCMA::parse_af(file);
+		ParserICCMA::parse_af(framework, file);
 	}
 	else {
 		cerr << argv[0] << ": Unsupported file format\n";
@@ -159,7 +159,7 @@ int main(int argc, char **argv)
 
 			switch (Enums::string_to_sem(sem)) {
 				case PR:
-					skept_accepted = Solver_DS_PR::solve(argument, *framework, proof_extension, NUM_CORES, SOLVER);
+					skept_accepted = Solver_DS_PR::solve(argument, framework, proof_extension, NUM_CORES, SOLVER);
 					break;
 				default:
 					cerr << argv[0] << ": Unsupported semantics\n";
@@ -174,15 +174,17 @@ int main(int argc, char **argv)
 					EXTENSIONSOLVER::BuildExtension(framework, actives, proof_extension);
 				}*/
 				cout << "w " << endl;
-				for (list<uint32_t>::iterator mIter = std::next(proof_extension.begin()); mIter != proof_extension.end(); ++mIter) {
-					cout << *mIter << " ";
+
+				if (!proof_extension.empty()) {
+					for (list<uint32_t>::iterator mIter = proof_extension.begin(); mIter != proof_extension.end(); ++mIter) {
+						cout << *mIter << " ";
+					}
+					proof_extension;
+					cout << endl;
 				}
-				proof_extension;
-				cout << endl;
 			}
 
 			//free allocated memory
-			delete framework;
 			proof_extension.clear();
 			break;
 		}
@@ -194,10 +196,16 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-//int main(int argc, char **argv)
-//{
-//
-//	TestCases::run_Tests();
-//
-//	return 0;
-//}
+int test(int argc, char **argv)
+{
+
+	TestCases::run_Tests();
+
+	return 0;
+}
+
+int main(int argc, char **argv)
+{
+	execute(argc, argv);
+	//test(argc, argv)
+}
