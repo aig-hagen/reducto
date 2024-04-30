@@ -24,9 +24,9 @@ void AF::initialize_af()
 	attackers.clear();
 	self_attack.clear();
 	symmetric_attacks.clear();
-	attackers.resize(num_args + 1);
-	victims.resize(num_args + 1);
-	self_attack.resize(num_args + 1);
+	attackers.resize(static_cast<uint64_t>(num_args) + 1);
+	victims.resize(static_cast<uint64_t>(num_args) + 1);
+	self_attack.resize(static_cast<uint64_t>(num_args) + 1);
 	for (const pair<uint32_t, uint32_t> &attack : attacks) {
 		int32_t source = attack.first;
 		int32_t target = attack.second;
@@ -41,6 +41,14 @@ void AF::initialize_af()
 			symmetric_attacks.insert(make_pair(target, source));
 		}
 	}
+
+	attackers.shrink_to_fit();
+	for (int i = 0; i < attackers.size(); i++) {
+		attackers[i].shrink_to_fit();
+	}
+
+	victims.shrink_to_fit();
+	self_attack.shrink_to_fit();
 
 	//float end_time = omp_get_wtime();																											//DEBUG
 	//float duration = end_time - start_time;																									//DEBUG

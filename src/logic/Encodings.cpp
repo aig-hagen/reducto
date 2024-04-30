@@ -5,13 +5,13 @@ using std::vector;
 
 static int64_t get_literal_accepted(vector<uint32_t> &activeArgs, uint32_t idxInActives, bool isInverted)
 {
-	int64_t variable = idxInActives + 1;
+	int64_t variable = static_cast<int64_t>(idxInActives) + 1;
 	return isInverted ? -1 * variable: variable;
 }
 
 static int64_t get_literal_rejected(vector<uint32_t> &activeArgs, uint32_t idxInActives, bool isInverted)
 {
-	int64_t variable = static_cast<int64_t>(idxInActives + 1) + activeArgs.size();
+	int64_t variable = static_cast<int64_t>(idxInActives) + 1 + activeArgs.size();
 	return isInverted ? -1 * variable : variable;
 }
 
