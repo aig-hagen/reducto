@@ -5,7 +5,7 @@ using std::vector;
 
 static int64_t get_literal_accepted(vector<uint32_t> &activeArgs, uint32_t idxInActives, bool isInverted)
 {
-	int64_t variable = idxInActives + 1;
+	int64_t variable = static_cast<int64_t>(idxInActives) + 1;
 	return isInverted ? -1 * variable: variable;
 }
 
@@ -98,13 +98,12 @@ static void add_admissible(SatSolver &solver, AF &framework, vector<uint32_t> &a
 {
 	vector<int64_t> rejection_reason_clause = add_rejected_clauses(solver, activeArgs, idxInActives);
 
-	vector<uint32_t> attackers = framework.attackers[activeArgs[idxInActives]];
+	unordered_set<uint32_t> attackers = framework.attackers[activeArgs[idxInActives]];
 
-	for (int i = 0; i < attackers.size(); i++)
-	{
-		int64_t idxAtckr = Actives::isActive(activeArgs, attackers[i]);
+	for (const uint32_t attacker : attackers) {
+		int64_t idxAtckr = Actives::isActive(activeArgs, attacker);
 
-		if(idxAtckr > -1)
+		if (idxAtckr > -1)
 		{
 			uint32_t u_idxAtckr = static_cast<uint32_t>(idxAtckr);
 			add_rejected_clauses_per_attacker(solver, activeArgs, idxInActives, u_idxAtckr, rejection_reason_clause);
