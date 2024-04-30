@@ -24,15 +24,13 @@ void AF::initialize_af()
 	attackers.clear();
 	self_attack.clear();
 	symmetric_attacks.clear();
-	attackers.resize(static_cast<uint64_t>(num_args) + 1);
-	victims.resize(static_cast<uint64_t>(num_args) + 1);
-	self_attack.resize(static_cast<uint64_t>(num_args) + 1);
+	attackers.resize(num_args + 1);
+	victims.resize(num_args + 1);
+	self_attack.resize(num_args + 1);
 	for (const pair<uint32_t, uint32_t> &attack : attacks) {
 		int32_t source = attack.first;
 		int32_t target = attack.second;
-		if (!attackers[target].count(source)) {
-			attackers[target].insert(source);
-		}
+		attackers[target].push_back(source);
 		if (!victims[source].count(target)) {
 			victims[source].insert(target);
 		}
