@@ -3,78 +3,78 @@
 using namespace std;
 using std::vector;
 
-static int64_t get_literal_accepted(vector<uint32_t> &activeArgs, uint32_t idxInActives, bool isInverted)
+static int64_t get_literal_accepted(uint32_t idxInActives, bool isInverted)
 {
 	int64_t variable = static_cast<int64_t>(idxInActives) + 1;
 	return isInverted ? -1 * variable: variable;
 }
 
-static int64_t get_literal_rejected(vector<uint32_t> &activeArgs, uint32_t idxInActives, bool isInverted)
+static int64_t get_literal_rejected(uint32_t activeArgsSize, uint32_t idxInActives, bool isInverted)
 {
-	int64_t variable = static_cast<int64_t>(idxInActives) + 1 + activeArgs.size();
+	int64_t variable = static_cast<int64_t>(idxInActives) + 1 + activeArgsSize;
 	return isInverted ? -1 * variable : variable;
 }
 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static vector<int64_t> add_rejected_clauses(SatSolver &solver, vector<uint32_t> &activeArgs, uint32_t idxInActives)
+static vector<int64_t> add_rejected_clauses(SatSolver &solver, uint32_t activeArgsSize, uint32_t idxInActives)
 {
 	// basic acceptance and rejection clause
 	//Part I:  models that an argument cannot be accepted and rejected at the same time
 	//create disjunction
 
 	solver.add_clause_short(
-		get_literal_rejected(activeArgs, idxInActives, true),
-		get_literal_accepted(activeArgs, idxInActives, true));
+		get_literal_rejected(activeArgsSize, idxInActives, true),
+		get_literal_accepted(idxInActives, true));
 
 	//Part III: constitutes that if an argument 'a' is rejected, one of its attackers must be accepted
 	//create disjunction
 	vector<int64_t> rejection_reason_clause;
-	rejection_reason_clause.push_back(get_literal_rejected(activeArgs, idxInActives, true));
+	rejection_reason_clause.push_back(get_literal_rejected(activeArgsSize, idxInActives, true));
 	return rejection_reason_clause;
 }
 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static void add_rejected_clauses_per_attacker(SatSolver &solver, vector<uint32_t> &activeArgs, uint32_t idxInActives, uint32_t idxAtckr, vector<int64_t> &rejection_reason_clause)
+static void add_rejected_clauses_per_attacker(SatSolver &solver, uint32_t activeArgsSize, uint32_t idxInActives, uint32_t idxAtckr, vector<int64_t> &rejection_reason_clause)
 {
 	//Part II: ensures that if an attacker 'b' of an argument 'a' is accepted, then 'a' must be rejected
 	//create disjunction for active attacker
 
 	solver.add_clause_short(
-		get_literal_rejected(activeArgs, idxInActives, false),
-		get_literal_accepted(activeArgs, idxAtckr, true));
+		get_literal_rejected(activeArgsSize, idxInActives, false),
+		get_literal_accepted(idxAtckr, true));
 
 	//Part III: constitutes that if an argument 'a' is rejected, one of its attackers must be accepted
 	//create disjunction
-	rejection_reason_clause.push_back(get_literal_accepted(activeArgs, idxAtckr, false));
+	rejection_reason_clause.push_back(get_literal_accepted(idxAtckr, false));
 }
 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static void add_conflict_free_per_attacker(SatSolver &solver, vector<uint32_t> &activeArgs, uint32_t idxInActives, uint32_t idxAtckr)
+static void add_conflict_free_per_attacker(SatSolver &solver, uint32_t idxInActives, uint32_t idxAtckr)
 {
 	//create disjunction
 
 	if (idxInActives != idxAtckr)
 	{
 		solver.add_clause_short(
-			get_literal_accepted(activeArgs, idxInActives, true),
-			get_literal_accepted(activeArgs, idxAtckr, true));
+			get_literal_accepted(idxInActives, true),
+			get_literal_accepted(idxAtckr, true));
 	}
 	else
 	{
-		solver.add_clause_short(get_literal_accepted(activeArgs, idxInActives, true), 0);
+		solver.add_clause_short(get_literal_accepted(idxInActives, true), 0);
 	}
 }
 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static void add_defense_per_attacker(SatSolver &solver, vector<uint32_t> &activeArgs, uint32_t idxInActives, uint32_t idxAtckr)
+static void add_defense_per_attacker(SatSolver &solver, uint32_t activeArgsSize, uint32_t idxInActives, uint32_t idxAtckr)
 {
 	if (idxInActives == idxAtckr)
 	{
@@ -87,8 +87,8 @@ static void add_defense_per_attacker(SatSolver &solver, vector<uint32_t> &active
 	//create disjunction
 
 	solver.add_clause_short(
-		get_literal_accepted(activeArgs, idxInActives, true),
-		get_literal_rejected(activeArgs, idxAtckr, false));
+		get_literal_accepted(idxInActives, true),
+		get_literal_rejected(activeArgsSize, idxAtckr, false));
 }
 
 /*===========================================================================================================================================================*/
@@ -96,7 +96,7 @@ static void add_defense_per_attacker(SatSolver &solver, vector<uint32_t> &active
 
 static void add_admissible(SatSolver &solver, AF &framework, vector<uint32_t> &activeArgs, uint32_t idxInActives)
 {
-	vector<int64_t> rejection_reason_clause = add_rejected_clauses(solver, activeArgs, idxInActives);
+	vector<int64_t> rejection_reason_clause = add_rejected_clauses(solver, activeArgs.size(), idxInActives);
 
 	vector<uint32_t> attackers = framework.attackers[activeArgs[idxInActives]];
 
@@ -107,9 +107,9 @@ static void add_admissible(SatSolver &solver, AF &framework, vector<uint32_t> &a
 		if(idxAtckr > -1)
 		{
 			uint32_t u_idxAtckr = static_cast<uint32_t>(idxAtckr);
-			add_rejected_clauses_per_attacker(solver, activeArgs, idxInActives, u_idxAtckr, rejection_reason_clause);
-			add_conflict_free_per_attacker(solver, activeArgs, idxInActives, u_idxAtckr);
-			add_defense_per_attacker(solver, activeArgs, idxInActives, u_idxAtckr);
+			add_rejected_clauses_per_attacker(solver, activeArgs.size(), idxInActives, u_idxAtckr, rejection_reason_clause);
+			add_conflict_free_per_attacker(solver, idxInActives, u_idxAtckr);
+			add_defense_per_attacker(solver, activeArgs.size(), idxInActives, u_idxAtckr);
 		}
 	}
 
@@ -126,7 +126,7 @@ void Encodings_SatSolver::add_clauses_nonempty_admissible_set(SatSolver &solver,
 	//iterate through all active arguments
 
 	for (int i = 0; i < activeArgs.size(); i++) {
-		non_empty_clause.push_back(get_literal_accepted(activeArgs, i, false));
+		non_empty_clause.push_back(get_literal_accepted(i, false));
 		add_admissible(solver, framework, activeArgs, i);
 	}
 
@@ -137,12 +137,12 @@ void Encodings_SatSolver::add_clauses_nonempty_admissible_set(SatSolver &solver,
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-void Encodings_SatSolver::add_complement_clause(SatSolver &solver, vector<uint32_t> &activeArgs)
+void Encodings_SatSolver::add_complement_clause(SatSolver &solver, uint32_t activeArgsSize)
 {
 	vector<int64_t> complement_clause;
 	vector<bool> model = solver.get_model();
 
-	for (uint32_t i = 0; i < activeArgs.size(); i++)
+	for (uint32_t i = 0; i < activeArgsSize; i++)
 	{
 		if (model[i] == true)
 		{

@@ -27,8 +27,8 @@ public:
     /// find another solution to the problem.
     /// </summary>
     /// <param name="solver">The SATSolver, to which a solution was found</param>
-    /// <param name="activeArgs">The set of active arguments, in the current state of the framework.</param>
-    static void add_complement_clause(SatSolver &solver, vector<uint32_t> &activeArgs);
+    /// <param name="activeArgs">The size of the set of active arguments, in the current state of the framework.</param>
+    static void add_complement_clause(SatSolver &solver, uint32_t activeArgsSize);
 };
 
 #endif

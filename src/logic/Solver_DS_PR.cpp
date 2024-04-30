@@ -123,7 +123,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 	do {
 		if (*isSolved)
 		{
-			Encodings_SatSolver::add_complement_clause(*solver, reduct);
+			Encodings_SatSolver::add_complement_clause(*solver, reduct.size());
 			//printf("%d: added complement clause \n", omp_get_thread_num());																	//DEBUG
 		}
 
