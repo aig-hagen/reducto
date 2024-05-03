@@ -41,7 +41,7 @@ public:
 
     bool add_attack(uint32_t attacker, uint32_t victim);
 	void initialize(uint32_t number_args);
-    void initialize_af();
+    void finish_initilization();
     bool exists_attack(uint32_t attacker, uint32_t victim) const;
 };
 

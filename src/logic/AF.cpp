@@ -15,18 +15,14 @@ bool AF::add_attack(uint32_t attacker, uint32_t victim)
 
 void AF::initialize(uint32_t number_args) {
 	num_args = number_args;
-}
-
-void AF::initialize_af()
-{
-	//float start_time = omp_get_wtime();																										//DEBUG
-
-	attackers.clear();
-	self_attack.clear();
-	symmetric_attacks.clear();
 	attackers.resize(static_cast<uint64_t>(num_args) + 1);
 	victims.resize(static_cast<uint64_t>(num_args) + 1);
 	self_attack.resize(static_cast<uint64_t>(num_args) + 1);
+}
+
+void AF::finish_initilization()
+{
+	//float start_time = omp_get_wtime();																										//DEBUG	
 	for (const pair<uint32_t, uint32_t> &attack : attacks) {
 		int32_t source = attack.first;
 		int32_t target = attack.second;
@@ -52,7 +48,7 @@ void AF::initialize_af()
 
 	//float end_time = omp_get_wtime();																											//DEBUG
 	//float duration = end_time - start_time;																									//DEBUG
-	//printf("runtime initialize_af [s]: %.2f s\n", duration);																					//DEBUG
+	//printf("runtime finish_initilization [s]: %.2f s\n", duration);																					//DEBUG
 }
 
 bool AF::exists_attack(uint32_t attacker, uint32_t victim) const {

@@ -15,8 +15,8 @@ static list<uint32_t> ExtendExtension(list<uint32_t> &extension_build, list<uint
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, vector<uint32_t> &activeArgs, bool *isRejected,
-	list<uint32_t> &extension_build, list<uint32_t> &output_extension, SOLVERS solver_type)
+static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, unordered_set<uint32_t> &activeArgs, bool *isRejected,
+	list<uint32_t> &extension_build, list<uint32_t> &output_extension)
 {
 	//, int *num_tasks, int *num_tasks_max
 	int id = omp_get_thread_num();
@@ -40,10 +40,10 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 	//Printer::print_vector(activeArgs);																										//DEBUG
 	//cout << endl;																																//DEBUG
 	
-	vector<uint32_t> reduct;
+	unordered_set<uint32_t> reduct;
 	if (extension_build.empty())
 	{
-		reduct.insert(reduct.end(), activeArgs.begin(), activeArgs.end());
+		reduct = activeArgs;
 		//cout << id << ": reduct copied active_args: ";																						//DEBUG
 		//Printer::print_vector(reduct);																										//DEBUG
 		//cout << endl;																															//DEBUG
@@ -84,14 +84,8 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 	uint64_t numVars = reduct.size();
 
 	SatSolver *solver = NULL;
-	if (solver_type == SOLVERS::CMS)
-	{
-		solver = new SatSolver_cms(numVars);
-	}
-	else
-	{
-		solver = new SatSolver_cadical(numVars);
-	}
+	solver = new SatSolver_cadical(numVars);
+	
 	//cout << id << ": SAT solver initialized" << endl;																							//DEBUG
 	//printf("%d: ------- SAT solver initialized --- memory usage: %ld\n", id, get_mem_usage());												//DEBUG
 	
@@ -123,7 +117,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 	do {
 		if (*isSolved)
 		{
-			Encodings_SatSolver::add_complement_clause(*solver, reduct.size());
+			Encodings_SatSolver::add_complement_clause(*solver, reduct);
 			//printf("%d: added complement clause \n", omp_get_thread_num());																	//DEBUG
 		}
 
@@ -279,11 +273,11 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 #pragma omp task \
 	firstprivate(new_extension_build) \
 	private(reduct, initial_set, solver) \
-	shared(argument, framework, activeArgs, isRejected, output_extension, solver_type) \
+	shared(argument, framework, activeArgs, isRejected, output_extension) \
 	priority(0)
 		{
 			//printf("%d: ------- task started --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());										//DEBUG
-			check_rejection_parallel_recursiv(argument, framework, activeArgs, isRejected, new_extension_build, output_extension, solver_type); //, num_tasks, num_tasks_max
+			check_rejection_parallel_recursiv(argument, framework, activeArgs, isRejected, new_extension_build, output_extension); //, num_tasks, num_tasks_max
 			new_extension_build.clear();
 			//printf("%d: ------- extension freed --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());										//DEBUG
 			//int tmp_num_tasks = 0;																													//DEBUG
@@ -302,7 +296,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 
 		if (extension_build.empty())
 		{
-			reduct.insert(reduct.end(), activeArgs.begin(), activeArgs.end());
+			reduct = activeArgs;
 			//cout << id << ": reduct copied active_args: ";																							//DEBUG
 			//Printer::print_vector(reduct);																											//DEBUG
 			//cout << "; memory_usage: " << get_mem_usage() << endl;																					//DEBUG
@@ -341,7 +335,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static bool check_rejection_parallel(uint32_t argument, AF &framework, list<uint32_t> &proof_extension, uint8_t numCores, SOLVERS solver_type)
+static bool check_rejection_parallel(uint32_t argument, AF &framework, list<uint32_t> &proof_extension, uint8_t numCores)
 {
 	//float start_time = omp_get_wtime();																												//DEBUG
 	bool *isRejected = NULL;
@@ -360,9 +354,10 @@ static bool check_rejection_parallel(uint32_t argument, AF &framework, list<uint
 	}
 
 	//long mem_base = get_mem_usage();																													//DEBUG
-	vector<uint32_t> active_args;
+	unordered_set<uint32_t> active_args;
+	active_args.rehash(framework.num_args);
 	for (int i = 1; i < framework.num_args + 1; i++) {
-		active_args.push_back(i);
+		active_args.insert(i);
 	}
 	//printf("Memory space of initialized active arguments: %ld [kB]\n", get_mem_usage() - mem_base);													//DEBUG
 	
@@ -391,7 +386,7 @@ static bool check_rejection_parallel(uint32_t argument, AF &framework, list<uint
 
 		list<uint32_t> extension_build;
 
-		check_rejection_parallel_recursiv(argument, framework, active_args, isRejected, extension_build, proof_extension, solver_type);					// , num_tasks, num_tasks_max
+		check_rejection_parallel_recursiv(argument, framework, active_args, isRejected, extension_build, proof_extension);					// , num_tasks, num_tasks_max
 	}
 	
 	bool result = *isRejected;
@@ -410,7 +405,7 @@ static bool check_rejection_parallel(uint32_t argument, AF &framework, list<uint
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-bool Solver_DS_PR::solve(uint32_t argument, AF &framework, list<uint32_t> &proof_extension, uint8_t numCores, SOLVERS solver_type) {
+bool Solver_DS_PR::solve(uint32_t argument, AF &framework, list<uint32_t> &proof_extension, uint8_t numCores) {
 	pre_proc_result result_preProcessor = PreProc_DS_PR::process(framework, argument);
 
 	switch (result_preProcessor){
@@ -422,7 +417,7 @@ bool Solver_DS_PR::solve(uint32_t argument, AF &framework, list<uint32_t> &proof
 			return false;
 
 		case unknown:
-			return !check_rejection_parallel(argument, framework, proof_extension, numCores, solver_type);
+			return !check_rejection_parallel(argument, framework, proof_extension, numCores);
 
 		default:
 			return unknown;

@@ -52,5 +52,5 @@ void ParserICCMA::parse_af(AF &framework, string file)
 	//float duration = end_time - start_time;																									//DEBUG
 	//printf("runtime parse_af [s]: %.2f s\n", duration);																						//DEBUG
 
-	framework.initialize_af();
+	framework.finish_initilization();
 }

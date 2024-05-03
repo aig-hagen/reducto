@@ -38,6 +38,13 @@ public:
 	std::vector<bool> get_model();
 
 	/// <summary>
+	/// Method to check if single variable is part of the model.
+	/// </summary>
+	/// <param name="variable"></param>
+	/// <returns>TRUE if the variable is true in the model.</returns>
+	std::uint8_t check_var_model(int64_t variable);
+
+	/// <summary>
 	/// This method calculates a solution for the SAT-Problem of the solver.
 	/// </summary>
 	/// <returns> <c>TRUE</c> iff a solution was found. Otherwise <c>FALSE</c></returns>

@@ -9,7 +9,6 @@ extern "C" {
 	#include "../util/MemoryWatchDog.h"
 }
 
-#include "Actives.h"
 #include "AF.h"
 #include "Encodings.h"
 #include "Enums.h"
@@ -36,9 +35,8 @@ public:
 	/// <param name="framework">The abstract argumentation framework, specifying the underlying attack relations between the arguments.</param>
 	/// <param name="proof_extension"> Extension proving, that the argument cannot be sceptically accepted.</param>
 	/// <param name="numCores"> Number of cores requested to be used to solve the problem. Actual number can be lower depending on the OS scheduler.</param>
-	/// <param name="solver_type"> Defines which solver shal be used to solve the problem.</param>
 	/// <returns>TRUE iff the argument is sceptical accepted. FALSE otherwise.</returns>
-	static bool solve(uint32_t argument, AF &framework, list<uint32_t> &proof_extension, uint8_t numCores, SOLVERS solver_type);
+	static bool solve(uint32_t argument, AF &framework, list<uint32_t> &proof_extension, uint8_t numCores);
 };
 
 #endif

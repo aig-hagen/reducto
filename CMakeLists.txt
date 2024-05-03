@@ -23,7 +23,6 @@ set(SRC_UTIL "${SRC}util/")
 
 set(HEADERS
 	${INCLD}/Main.h
-	${INCLD_LOGIC}/Actives.h 
 	${INCLD_LOGIC}/AF.h 
 	${INCLD_LOGIC}/Decodings.h 
 	${INCLD_LOGIC}/Encodings.h 
@@ -44,7 +43,6 @@ set(HEADERS
 
 set(SRCFILES
     ${SRC}Main.cpp
-	${SRC_LOGIC}Actives.cpp 
 	${SRC_LOGIC}AF.cpp 
 	${SRC_LOGIC}Decodings.cpp 
 	${SRC_LOGIC}Encodings.cpp 

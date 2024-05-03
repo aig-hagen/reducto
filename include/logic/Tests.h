@@ -21,7 +21,6 @@
 #include "Enums.h"
 
 constexpr auto NUM_CORES_TESTS = 0;
-constexpr auto SOLVER_TEST = SOLVERS::CADICAL;
 
 using namespace std;
 

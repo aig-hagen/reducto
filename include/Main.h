@@ -51,7 +51,6 @@ extern "C" {
 constexpr auto SOLVERNAME = "ParallelSolver";
 constexpr auto VERSIONNUMBER = "1.8";
 constexpr auto NUM_CORES = 0;
-constexpr auto SOLVER = SOLVERS::CADICAL;
 
 static int version_flag = 0;
 static int usage_flag = 0;

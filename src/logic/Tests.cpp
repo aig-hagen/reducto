@@ -21,7 +21,7 @@ void static runParallel(int numArgsStart, int numArgsEnd, AF &framework)
 		//printf("%d: ------- extension allocated --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());									//DEBUG
 
 		printf("////////////////////////// ARGUMENT %d //////////////////////////////\n", i);
-		bool isScepticAccepted = Solver_DS_PR::solve(argument, framework, proof_extension, NUM_CORES_TESTS, SOLVER_TEST);
+		bool isScepticAccepted = Solver_DS_PR::solve(argument, framework, proof_extension, NUM_CORES_TESTS);
 		
 		std::cout << std::boolalpha << (isScepticAccepted ? "YES" : "NO") << std::endl;
 		if (!isScepticAccepted)
@@ -40,7 +40,7 @@ void static runParallel(int numArgsStart, int numArgsEnd, AF &framework)
 			}
 			else
 			{
-				/*EXTENSIONSOLVER_CMS::BuildExtension(framework, actives, proof_extension, SOLVER_TEST);
+				/*EXTENSIONSOLVER_CMS::BuildExtension(framework, actives, proof_extension);
 				printf("Extension that proves rejection: ");
 				print_list_uint32((*proof_extension));
 				printf("\n");*/
@@ -65,7 +65,7 @@ static void testSelfAttack()
 	framework.add_attack(1, 1);
 	framework.add_attack(2, 1);
 	framework.add_attack(3, 2);
-	framework.initialize_af();
+	framework.finish_initilization();
 
 	runParallel(1, 1, framework);
 }
@@ -78,7 +78,7 @@ static void test4Args()
 	AF framework = AF(4);
 	framework.add_attack(1, 2);
 	framework.add_attack(4, 1);
-	framework.initialize_af();
+	framework.finish_initilization();
 
 	runParallel(1, 1, framework);
 }
@@ -97,7 +97,7 @@ static void test6Args()
 	framework.add_attack(3, 2);
 	framework.add_attack(4, 1);
 	framework.add_attack(5, 4);
-	framework.initialize_af();
+	framework.finish_initilization();
 
 	runParallel(1, 6, framework);
 }
@@ -132,7 +132,7 @@ static void testArgsALot()
 			framework.add_attack(i, (i + numArgs / 3) % numArgs);
 		}
 	}
-	framework.initialize_af();
+	framework.finish_initilization();
 
 	runParallel(1, 1, framework);
 }
