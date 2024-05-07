@@ -33,9 +33,9 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 	}
 
 	//cout << id << ": starting task - argument " << argument << " ----------------------------------" << endl;									//DEBUG
-	//cout << id << ": Extension so far: ";																										//DEBUG
-	//Printer::print_list(extension_build);																										//DEBUG
-	//cout << endl;																																//DEBUG
+	cout << id << ": Extension so far: ";																										//DEBUG
+	Printer::print_list(extension_build);																										//DEBUG
+	cout << endl;																																//DEBUG
 	//cout << id << ": current active arguments: ";																								//DEBUG
 	//Printer::print_vector(activeArgs);																										//DEBUG
 	//cout << endl;																																//DEBUG

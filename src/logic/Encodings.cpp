@@ -24,7 +24,7 @@ static vector<int64_t> add_rejected_clauses(SatSolver &solver, uint32_t activeAr
 	//Part I:  models that an argument cannot be accepted and rejected at the same time
 	//create disjunction
 
-	//cout << " [" << get_literal_rejected(activeArgsSize, argument, true) << " " << get_literal_accepted(argument, true) << "]";								//DEBUG
+	cout << " [" << get_literal_rejected(activeArgsSize, argument, true) << " " << get_literal_accepted(argument, true) << "]";								//DEBUG
 	solver.add_clause_short(
 		get_literal_rejected(activeArgsSize, argument, true),
 		get_literal_accepted(argument, true));
@@ -44,7 +44,7 @@ static void add_rejected_clauses_per_attacker(SatSolver &solver, uint32_t active
 	//Part II: ensures that if an attacker 'b' of an argument 'a' is accepted, then 'a' must be rejected
 	//create disjunction for active attacker
 
-	//cout << " [" << get_literal_rejected(activeArgsSize, argument, false) << " " << get_literal_accepted(attacker, true) << "]";								//DEBUG
+	cout << " [" << get_literal_rejected(activeArgsSize, argument, false) << " " << get_literal_accepted(attacker, true) << "]";								//DEBUG
 	solver.add_clause_short(
 		get_literal_rejected(activeArgsSize, argument, false),
 		get_literal_accepted(attacker, true));
@@ -63,14 +63,14 @@ static void add_conflict_free_per_attacker(SatSolver &solver, uint32_t argument,
 
 	if (argument != attacker)
 	{
-		//cout << " [" << get_literal_accepted(argument, true) << " " << get_literal_accepted(attacker, true) << "]";												//DEBUG
+		cout << " [" << get_literal_accepted(argument, true) << " " << get_literal_accepted(attacker, true) << "]";												//DEBUG
 		solver.add_clause_short(
 			get_literal_accepted(argument, true),
 			get_literal_accepted(attacker, true));
 	}
 	else
 	{
-		//cout << " [" << get_literal_accepted(argument, true) << "]";																							//DEBUG
+		cout << " [" << get_literal_accepted(argument, true) << "]";																							//DEBUG
 		solver.add_clause_short(get_literal_accepted(argument, true), 0);
 	}
 }
@@ -90,7 +90,7 @@ static void add_defense_per_attacker(SatSolver &solver, uint32_t activeArgsSize,
 	// if an argument is accepted to be in the admissible set, all its attackers must be rejected
 	//create disjunction
 
-	//cout << " [" << get_literal_accepted(argument, true) << " " << get_literal_rejected(activeArgsSize, attacker, false) << "]";								//DEBUG
+	cout << " [" << get_literal_accepted(argument, true) << " " << get_literal_rejected(activeArgsSize, attacker, false) << "]";								//DEBUG
 	solver.add_clause_short(
 		get_literal_accepted(argument, true),
 		get_literal_rejected(activeArgsSize, attacker, false));
@@ -115,9 +115,9 @@ static void add_admissible(SatSolver &solver, AF &framework, unordered_set<uint3
 		}
 	}
 
-	//cout << " [";																																				//DEBUG
-	//Printer::print_vector(rejection_reason_clause);																											//DEBUG
-	//cout << "]";																																				//DEBUG
+	cout << " [";																																				//DEBUG
+	Printer::print_vector(rejection_reason_clause);																											//DEBUG
+	cout << "]";																																				//DEBUG
 	solver.add_clause(rejection_reason_clause);
 	rejection_reason_clause.clear();
 }
@@ -127,7 +127,7 @@ static void add_admissible(SatSolver &solver, AF &framework, unordered_set<uint3
 
 void Encodings_SatSolver::add_clauses_nonempty_admissible_set(SatSolver &solver, AF &framework, unordered_set<uint32_t> &activeArgs)
 {
-	//cout << "encode: {";																																		//DEBUG
+	cout << "encode: {";																																		//DEBUG
 
 	vector<int64_t> non_empty_clause;
 	//iterate through all active arguments
@@ -141,9 +141,9 @@ void Encodings_SatSolver::add_clauses_nonempty_admissible_set(SatSolver &solver,
 			add_admissible(solver, framework, activeArgs, argument);
 		}
 	}
-	//cout << " [";																																				//DEBUG
-	//Printer::print_vector(non_empty_clause);																													//DEBUG
-	//cout << "]}" << endl;																																		//DEBUG
+	cout << " [";																																				//DEBUG
+	Printer::print_vector(non_empty_clause);																													//DEBUG
+	cout << "]}" << endl;																																		//DEBUG
 	solver.add_clause(non_empty_clause);
 	non_empty_clause.clear();
 }
