@@ -127,8 +127,6 @@ static void add_admissible(SatSolver &solver, AF &framework, unordered_set<uint3
 
 void Encodings_SatSolver::add_clauses_nonempty_admissible_set(SatSolver &solver, AF &framework, unordered_set<uint32_t> &activeArgs)
 {
-	cout << "encode: {";																																		//DEBUG
-
 	vector<int64_t> non_empty_clause;
 	//iterate through all active arguments
 
@@ -143,7 +141,7 @@ void Encodings_SatSolver::add_clauses_nonempty_admissible_set(SatSolver &solver,
 	}
 	cout << " [";																																				//DEBUG
 	Printer::print_vector(non_empty_clause);																													//DEBUG
-	cout << "]}" << endl;																																		//DEBUG
+	cout << "]" << endl;																																		//DEBUG
 	solver.add_clause(non_empty_clause);
 	non_empty_clause.clear();
 }
