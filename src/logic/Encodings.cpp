@@ -24,6 +24,7 @@ static vector<int64_t> add_rejected_clauses(SatSolver &solver, uint32_t activeAr
 	//Part I:  models that an argument cannot be accepted and rejected at the same time
 	//create disjunction
 
+	//cout << " [" << get_literal_rejected(activeArgsSize, argument, true) << " " << get_literal_accepted(argument, true) << "]";								//DEBUG
 	solver.add_clause_short(
 		get_literal_rejected(activeArgsSize, argument, true),
 		get_literal_accepted(argument, true));
@@ -43,6 +44,7 @@ static void add_rejected_clauses_per_attacker(SatSolver &solver, uint32_t active
 	//Part II: ensures that if an attacker 'b' of an argument 'a' is accepted, then 'a' must be rejected
 	//create disjunction for active attacker
 
+	//cout << " [" << get_literal_rejected(activeArgsSize, argument, false) << " " << get_literal_accepted(attacker, true) << "]";								//DEBUG
 	solver.add_clause_short(
 		get_literal_rejected(activeArgsSize, argument, false),
 		get_literal_accepted(attacker, true));
@@ -61,12 +63,14 @@ static void add_conflict_free_per_attacker(SatSolver &solver, uint32_t argument,
 
 	if (argument != attacker)
 	{
+		//cout << " [" << get_literal_accepted(argument, true) << " " << get_literal_accepted(attacker, true) << "]";												//DEBUG
 		solver.add_clause_short(
 			get_literal_accepted(argument, true),
 			get_literal_accepted(attacker, true));
 	}
 	else
 	{
+		//cout << " [" << get_literal_accepted(argument, true) << "]";																							//DEBUG
 		solver.add_clause_short(get_literal_accepted(argument, true), 0);
 	}
 }
@@ -74,9 +78,9 @@ static void add_conflict_free_per_attacker(SatSolver &solver, uint32_t argument,
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static void add_defense_per_attacker(SatSolver &solver, uint32_t activeArgsSize, uint32_t arguments, uint32_t attacker)
+static void add_defense_per_attacker(SatSolver &solver, uint32_t activeArgsSize, uint32_t argument, uint32_t attacker)
 {
-	if (arguments == attacker)
+	if (argument == attacker)
 	{
 		return;
 	}
@@ -86,8 +90,9 @@ static void add_defense_per_attacker(SatSolver &solver, uint32_t activeArgsSize,
 	// if an argument is accepted to be in the admissible set, all its attackers must be rejected
 	//create disjunction
 
+	//cout << " [" << get_literal_accepted(argument, true) << " " << get_literal_rejected(activeArgsSize, attacker, false) << "]";								//DEBUG
 	solver.add_clause_short(
-		get_literal_accepted(arguments, true),
+		get_literal_accepted(argument, true),
 		get_literal_rejected(activeArgsSize, attacker, false));
 }
 
@@ -110,6 +115,9 @@ static void add_admissible(SatSolver &solver, AF &framework, unordered_set<uint3
 		}
 	}
 
+	//cout << " [";																																				//DEBUG
+	//Printer::print_vector(rejection_reason_clause);																											//DEBUG
+	//cout << "]";																																				//DEBUG
 	solver.add_clause(rejection_reason_clause);
 	rejection_reason_clause.clear();
 }
@@ -119,6 +127,8 @@ static void add_admissible(SatSolver &solver, AF &framework, unordered_set<uint3
 
 void Encodings_SatSolver::add_clauses_nonempty_admissible_set(SatSolver &solver, AF &framework, unordered_set<uint32_t> &activeArgs)
 {
+	//cout << "encode: {";																																		//DEBUG
+
 	vector<int64_t> non_empty_clause;
 	//iterate through all active arguments
 
@@ -131,7 +141,9 @@ void Encodings_SatSolver::add_clauses_nonempty_admissible_set(SatSolver &solver,
 			add_admissible(solver, framework, activeArgs, argument);
 		}
 	}
-
+	//cout << " [";																																				//DEBUG
+	//Printer::print_vector(non_empty_clause);																													//DEBUG
+	//cout << "]}" << endl;																																		//DEBUG
 	solver.add_clause(non_empty_clause);
 	non_empty_clause.clear();
 }
@@ -142,7 +154,7 @@ void Encodings_SatSolver::add_clauses_nonempty_admissible_set(SatSolver &solver,
 void Encodings_SatSolver::add_complement_clause(SatSolver &solver, unordered_set<uint32_t> &activeArgs)
 {
 	vector<int64_t> complement_clause;
-
+	
 	for (size_t bno = 0; bno < activeArgs.bucket_count(); ++bno) {
 		for (auto bit = activeArgs.begin(bno), end = activeArgs.end(bno); bit != end; ++bit) {
 			const auto &argument = *bit;
@@ -156,6 +168,9 @@ void Encodings_SatSolver::add_complement_clause(SatSolver &solver, unordered_set
 		}
 	}
 
+	cout << "add complement clause: [";																														//DEBUG
+	Printer::print_vector(complement_clause);																													//DEBUG
+	cout << "]" << endl;																																		//DEBUG
 	solver.add_clause(complement_clause);
 	complement_clause.clear();
 }

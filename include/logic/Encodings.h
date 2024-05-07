@@ -8,6 +8,8 @@
 #include "AF.h"
 #include "SatSolver.h"
 
+#include "../util/Printer.h"
+
 
 using namespace std;
 /*

@@ -53,14 +53,20 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 	{
 		//printf("%d: ------- before new reduct allocated --- memory usage: %ld\n", id, get_mem_usage());										//DEBUG
 		reduct = Reduct::get_reduct_set(activeArgs, framework, extension_build);
-		//cout << id << ": reduct created: ";																									//DEBUG
-		//Printer::print_vector(reduct);																										//DEBUG
-		//cout << endl;																															//DEBUG
+		cout << id << ": reduct created: ";																										//DEBUG
+		Printer::print_set(reduct);																												//DEBUG
+		cout << endl;																															//DEBUG
 		//cout << "; memory_usage: " << get_mem_usage() << endl;																				//DEBUG
 	}
 
 	if (reduct.size() < 2)
 	{
+
+		//TODO muss hier abbruch flag gesetzt werden? ??????????????????????????????????????????????????????????????????????????????????????????????????????????
+//#pragma atomic write
+//		*isRejected = true;
+//#pragma omp flush(isRejected)		//maybe flush is not needed since isRejected point so a memory address, which content is changed
+
 		//there is only 1 active argument, this has to be the argument to check, if not then there should have been a rejection check earlier who did not work
 		//printf("%d: only 1 argument left -> skip reduct\n", omp_get_thread_num());															//DEBUG
 		
@@ -160,9 +166,9 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 
 		list<uint32_t> initial_set = Decoding::get_set_from_solver(*solver, reduct);
 		//printf("%d: ------- initial set allocated --- memory usage: %ld\n", id, get_mem_usage());											//DEBUG
-		//cout << id << ": computed initial set: ";																							//DEBUG
-		//Printer::print_list(initial_set);																									//DEBUG
-		//cout << endl;																														//DEBUG
+		cout << id << ": computed initial set: ";																							//DEBUG
+		Printer::print_list(initial_set);																									//DEBUG
+		cout << endl;																														//DEBUG
 		
 		if (initial_set.empty())
 		{
