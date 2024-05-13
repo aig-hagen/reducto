@@ -341,7 +341,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static bool check_rejection_parallel(uint32_t argument, AF &framework, list<uint32_t> &proof_extension, uint8_t numCores)
+static bool check_rejection_parallel(uint32_t argument, AF &framework, unordered_set<uint32_t> &active_args, list<uint32_t> &proof_extension, uint8_t numCores)
 {
 	//float start_time = omp_get_wtime();																												//DEBUG
 	bool *isRejected = NULL;
@@ -359,13 +359,7 @@ static bool check_rejection_parallel(uint32_t argument, AF &framework, list<uint
 		omp_set_num_threads(numCores);
 	}
 
-	//long mem_base = get_mem_usage();																													//DEBUG
-	unordered_set<uint32_t> active_args;
-	active_args.rehash(framework.num_args);
-	for (int i = 1; i < framework.num_args + 1; i++) {
-		active_args.insert(i);
-	}
-	//printf("Memory space of initialized active arguments: %ld [kB]\n", get_mem_usage() - mem_base);													//DEBUG
+	
 	
 	/*int *num_tasks = NULL;
 	num_tasks = (int *)malloc(sizeof * num_tasks);
@@ -412,7 +406,16 @@ static bool check_rejection_parallel(uint32_t argument, AF &framework, list<uint
 /*===========================================================================================================================================================*/
 
 bool Solver_DS_PR::solve(uint32_t argument, AF &framework, list<uint32_t> &proof_extension, uint8_t numCores) {
-	pre_proc_result result_preProcessor = PreProc_DS_PR::process(framework, argument);
+	
+	//long mem_base = get_mem_usage();																													//DEBUG
+	unordered_set<uint32_t> active_args;
+	active_args.rehash(framework.num_args);
+	for (int i = 1; i < framework.num_args + 1; i++) {
+		active_args.insert(i);
+	}
+	//printf("Memory space of initialized active arguments: %ld [kB]\n", get_mem_usage() - mem_base);													//DEBUG
+
+	pre_proc_result result_preProcessor = PreProc_DS_PR::process(framework, active_args, argument);
 
 	switch (result_preProcessor){
 
@@ -423,7 +426,7 @@ bool Solver_DS_PR::solve(uint32_t argument, AF &framework, list<uint32_t> &proof
 			return false;
 
 		case unknown:
-			return !check_rejection_parallel(argument, framework, proof_extension, numCores);
+			return !check_rejection_parallel(argument, framework, active_args, proof_extension, numCores);
 
 		default:
 			return unknown;
