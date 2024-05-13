@@ -24,15 +24,14 @@ set(SRC_UTIL "${SRC}util/")
 set(HEADERS
 	${INCLD}/Main.h
 	${INCLD_LOGIC}/AF.h 
-	${INCLD_LOGIC}/Decodings.h 
-	${INCLD_LOGIC}/Encodings.h 
+	${INCLD_LOGIC}/Decoding.h 
+	${INCLD_LOGIC}/Encoding.h 
 	${INCLD_LOGIC}/Enums.h 
 	${INCLD_LOGIC}/Parser_iccma.h
 	${INCLD_LOGIC}/PreProcessor_DS_PR.h
 	${INCLD_LOGIC}/Reduct.h 
 	${INCLD_LOGIC}/SatSolver.h
 	${INCLD_LOGIC}/SatSolver_cadical.h
-	${INCLD_LOGIC}/SatSolver_cms.h
 	${INCLD_LOGIC}/ScepticalCheck.h 
 	${INCLD_LOGIC}/Solver_DS_PR.h 	
 	${INCLD_LOGIC}/Tests.h
@@ -44,14 +43,13 @@ set(HEADERS
 set(SRCFILES
     ${SRC}Main.cpp
 	${SRC_LOGIC}AF.cpp 
-	${SRC_LOGIC}Decodings.cpp 
-	${SRC_LOGIC}Encodings.cpp 
+	${SRC_LOGIC}Decoding.cpp 
+	${SRC_LOGIC}Encoding.cpp 
 	${SRC_LOGIC}Enums.cpp
 	${SRC_LOGIC}Parser_iccma.cpp
 	${SRC_LOGIC}PreProcessor_DS_PR.cpp
 	${SRC_LOGIC}Reduct.cpp 
 	${SRC_LOGIC}SatSolver_cadical.cpp
-	${SRC_LOGIC}SatSolver_cms.cpp
 	${SRC_LOGIC}ScepticalCheck.cpp
 	${SRC_LOGIC}Solver_DS_PR.cpp
 
@@ -91,17 +89,6 @@ endif()
 if(OpenMP_C_FOUND)
     target_link_libraries(${PROJECT_NAME} PUBLIC OpenMP::OpenMP_C)
 endif()
-
-# --- cryptominisat ---
-
-set(LIB_CMS "${CMAKE_CURRENT_LIST_DIR}/lib/cryptominisat-5.11.15")
-
-add_subdirectory(${LIB_CMS})
-target_link_libraries(${PROJECT_NAME} PUBLIC cryptominisat5)
-target_include_directories(${PROJECT_NAME} PUBLIC
-    "${PROJECT_BINARY_DIR}"
-    "${LIB_CMS}"
-)
 
 # --- cadical part II ---
 

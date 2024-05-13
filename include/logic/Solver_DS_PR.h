@@ -10,13 +10,12 @@ extern "C" {
 }
 
 #include "AF.h"
-#include "Encodings.h"
+#include "Encoding.h"
 #include "Enums.h"
-#include "Decodings.h"
+#include "Decoding.h"
 #include "PreProcessor_DS_PR.h"
 #include "Reduct.h"
 #include "SatSolver.h"
-#include "SatSolver_cms.h"
 #include "SatSolver_cadical.h"
 #include "ScepticalCheck.h"
 #include "omp.h"

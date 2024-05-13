@@ -50,7 +50,7 @@ extern "C" {
 
 constexpr auto SOLVERNAME = "ParallelSolver";
 constexpr auto VERSIONNUMBER = "1.8";
-constexpr auto NUM_CORES = 1;
+constexpr auto NUM_CORES = 0;
 
 static int version_flag = 0;
 static int usage_flag = 0;

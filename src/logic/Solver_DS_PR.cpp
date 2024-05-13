@@ -33,9 +33,9 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 	}
 
 	//cout << id << ": starting task - argument " << argument << " ----------------------------------" << endl;									//DEBUG
-	cout << id << ": Extension so far: ";																										//DEBUG
-	Printer::print_list(extension_build);																										//DEBUG
-	cout << endl;																																//DEBUG
+	//cout << id << ": Extension so far: ";																										//DEBUG
+	//Printer::print_list(extension_build);																										//DEBUG
+	//cout << endl;																																//DEBUG
 	//cout << id << ": current active arguments: ";																								//DEBUG
 	//Printer::print_vector(activeArgs);																										//DEBUG
 	//cout << endl;																																//DEBUG
@@ -53,9 +53,9 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 	{
 		//printf("%d: ------- before new reduct allocated --- memory usage: %ld\n", id, get_mem_usage());										//DEBUG
 		reduct = Reduct::get_reduct_set(activeArgs, framework, extension_build);
-		cout << id << ": reduct created: ";																										//DEBUG
-		Printer::print_set(reduct);																												//DEBUG
-		cout << endl;																															//DEBUG
+		//cout << id << ": reduct created: ";																										//DEBUG
+		//Printer::print_set(reduct);																												//DEBUG
+		//cout << endl;																															//DEBUG
 		//cout << "; memory_usage: " << get_mem_usage() << endl;																				//DEBUG
 	}
 
@@ -96,7 +96,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 	//printf("%d: ------- SAT solver initialized --- memory usage: %ld\n", id, get_mem_usage());												//DEBUG
 	
 	//printf("%d Encode: \n", id);																												//DEBUG
-	Encodings_SatSolver::add_clauses_nonempty_admissible_set(*solver, framework, reduct);
+	Encoding::add_clauses_nonempty_admissible_set(*solver, framework, reduct);
 	//cout << id << ": SAT clauses added" << endl;																								//DEBUG
 	//printf("%d: ------- SAT clauses added --- memory usage: %ld\n", id, get_mem_usage());														//DEBUG
 
@@ -123,7 +123,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 	do {
 		if (*isSolved)
 		{
-			Encodings_SatSolver::add_complement_clause(*solver, reduct);
+			Encoding::add_complement_clause(*solver, reduct);
 			//printf("%d: added complement clause \n", omp_get_thread_num());																	//DEBUG
 		}
 
@@ -166,9 +166,9 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 
 		list<uint32_t> initial_set = Decoding::get_set_from_solver(*solver, reduct);
 		//printf("%d: ------- initial set allocated --- memory usage: %ld\n", id, get_mem_usage());											//DEBUG
-		cout << id << ": computed initial set: ";																							//DEBUG
-		Printer::print_list(initial_set);																									//DEBUG
-		cout << endl;																														//DEBUG
+		//cout << id << ": computed initial set: ";																							//DEBUG
+		//Printer::print_list(initial_set);																									//DEBUG
+		//cout << endl;																														//DEBUG
 		
 		if (initial_set.empty())
 		{

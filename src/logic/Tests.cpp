@@ -1,12 +1,10 @@
 ﻿#include "../../include/logic/Tests.h"
-#include <cryptominisat.h>
 #include <assert.h>
 #include <vector>
 
 #include <limits.h>
 
 using std::vector;
-using namespace CMSat;
 
 using namespace std;
 
