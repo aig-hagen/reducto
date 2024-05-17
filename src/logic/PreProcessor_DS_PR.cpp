@@ -1,6 +1,6 @@
 #include "../../include/logic/PreProcessor_DS_PR.h"
 
-static pre_proc_result reduce_by_grounded(AF &framework, unordered_set<uint32_t> &active_args, uint32_t query, unordered_set<uint32_t> *output_reduct)
+static pre_proc_result reduce_by_grounded(AF &framework, unordered_set<uint32_t> &active_args, uint32_t query, unordered_set<uint32_t> &out_reduct)
 {
 	// fill list with unattacked arguments
 	list<uint32_t> ls_unattacked_unprocessed;
@@ -16,21 +16,28 @@ static pre_proc_result reduce_by_grounded(AF &framework, unordered_set<uint32_t>
 	}
 
 	// init variable of current reduct
-	*output_reduct = active_args;
+	out_reduct = active_args;
 
 	//process list of unattacked arguments
-	for (list<uint32_t>::iterator mIter = std::next(ls_unattacked_unprocessed.begin()); mIter != ls_unattacked_unprocessed.end(); ++mIter) {
+	for (list<uint32_t>::iterator mIter = ls_unattacked_unprocessed.begin(); mIter != ls_unattacked_unprocessed.end(); ++mIter) {
 		const auto &ua = *mIter;
+
+		//reject query if it gets attacked by argument of grounded extension
+		if( ua == query) {
+			return pre_proc_result::accepted;
+		}
+
+
 		//reject query if it gets attacked by argument of grounded extension
 		if (framework.victims[ua].count(query)) {
 			return pre_proc_result::rejected;
 		}
 
-		//reduct active argument by unattacked argument
-		unordered_set<uint32_t> tmp = Reduct::get_reduct(*output_reduct, framework, ua);
+		//reduce active argument by unattacked argument
+		unordered_set<uint32_t> tmp = Reduct::get_reduct(out_reduct, framework, ua);
 		//update current reduct
-		output_reduct->clear();
-		*output_reduct = tmp;
+		out_reduct.clear();
+		out_reduct = tmp;
 
 		//iterate through victims of the victims of ua
 		unordered_set<uint32_t> victims = framework.victims[ua];
@@ -42,11 +49,17 @@ static pre_proc_result reduce_by_grounded(AF &framework, unordered_set<uint32_t>
 				for (size_t bno2 = 0; bno2 < victims_of_victims.bucket_count(); ++bno2) {
 					for (auto bit2 = victims_of_victims.begin(bno2), end = victims_of_victims.end(bno2); bit2 != end; ++bit2) {
 						const auto &vvua = *bit2;
-						//check if victim is unattacked
+
+						if (!out_reduct.count(vvua)) {
+							//only account victims of victims that are still active
+							continue;
+						}
+
+						//check if victim of victim is unattacked
 						vector<uint32_t> attackers_vvua = framework.attackers[vvua];
 						uint8_t is_unattacked = 1;
 						for (int i = 0; i < attackers_vvua.size(); i++) {
-							if (output_reduct->count(attackers_vvua[i])) {
+							if (out_reduct.count(attackers_vvua[i])) {
 								is_unattacked = 0;
 								break;
 							}
@@ -75,17 +88,17 @@ static pre_proc_result reduce_by_grounded(AF &framework, unordered_set<uint32_t>
 }
 
 
-pre_proc_result PreProc_DS_PR::process(AF &framework, unordered_set<uint32_t> &active_args, uint32_t argument) {
+pre_proc_result PreProc_DS_PR::process(AF &framework, unordered_set<uint32_t> &active_args, uint32_t query, unordered_set<uint32_t> &out_reduct) {
 	
-	if (framework.victims[argument].count(argument))
+	if (framework.victims[query].count(query))
 	{
 		return pre_proc_result::rejected;
 	}
 
-	if (framework.attackers[argument].empty())
+	if (framework.attackers[query].empty())
 	{
 		return pre_proc_result::accepted;
 	}
-
-	return unknown;
+	
+	return reduce_by_grounded(framework, active_args, query, out_reduct);
 }

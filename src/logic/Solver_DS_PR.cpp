@@ -415,7 +415,13 @@ bool Solver_DS_PR::solve(uint32_t argument, AF &framework, list<uint32_t> &proof
 	}
 	// printf("Memory space of initialized active arguments: %ld [kB]\n", get_mem_usage() - mem_base);													//DEBUG
 
-	pre_proc_result result_preProcessor = PreProc_DS_PR::process(framework, active_args, argument);
+	unordered_set<uint32_t> initial_reduct;
+
+	pre_proc_result result_preProcessor = PreProc_DS_PR::process(framework, active_args, argument, initial_reduct);
+
+	cout << "Reduct after preprocessing ";																												//DEBUG
+	Printer::print_set(initial_reduct);																												//DEBUG
+	cout << endl;																																		//DEBUG
 
 	switch (result_preProcessor){
 
@@ -426,7 +432,7 @@ bool Solver_DS_PR::solve(uint32_t argument, AF &framework, list<uint32_t> &proof
 			return false;
 
 		case unknown:
-			return !check_rejection_parallel(argument, framework, active_args, proof_extension, numCores);
+			return !check_rejection_parallel(argument, framework, initial_reduct, proof_extension, numCores);
 
 		default:
 			return unknown;
