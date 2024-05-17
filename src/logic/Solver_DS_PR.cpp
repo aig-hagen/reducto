@@ -419,9 +419,9 @@ bool Solver_DS_PR::solve(uint32_t argument, AF &framework, list<uint32_t> &proof
 
 	pre_proc_result result_preProcessor = PreProc_DS_PR::process(framework, active_args, argument, initial_reduct);
 
-	cout << "Reduct after preprocessing ";																												//DEBUG
-	Printer::print_set(initial_reduct);																												//DEBUG
-	cout << endl;																																		//DEBUG
+	//cout << "Reduct after preprocessing ";																												//DEBUG
+	//Printer::print_set(initial_reduct);																													//DEBUG
+	//cout << endl;																																		//DEBUG
 
 	switch (result_preProcessor){
 
