@@ -413,7 +413,7 @@ bool Solver_DS_PR::solve(uint32_t argument, AF &framework, list<uint32_t> &proof
 	for (int i = 1; i < framework.num_args + 1; i++) {
 		active_args.insert(i);
 	}
-	//printf("Memory space of initialized active arguments: %ld [kB]\n", get_mem_usage() - mem_base);													//DEBUG
+	// printf("Memory space of initialized active arguments: %ld [kB]\n", get_mem_usage() - mem_base);													//DEBUG
 
 	pre_proc_result result_preProcessor = PreProc_DS_PR::process(framework, active_args, argument);
 
