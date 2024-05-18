@@ -23,13 +23,29 @@ void AF::initialize(uint32_t number_args) {
 void AF::finish_initilization()
 {
 	//float start_time = omp_get_wtime();																										//DEBUG	
+
+	const uint64_t tmp_num_args = static_cast<uint64_t>(num_args) + 1;
+	vector<vector<uint32_t>> attackers_vectors;
+	attackers_vectors.resize(tmp_num_args);
+	vector<vector<uint8_t>> attackers_bitsets;
+	attackers_bitsets.resize(tmp_num_args);
+	vector<vector<uint32_t>> victims_vectors;
+	victims_vectors.resize(tmp_num_args);
+	vector<vector<uint8_t>> victims_bitsets;
+	victims_bitsets.resize(tmp_num_args);
+	for (int i = 0; i < tmp_num_args; i++) {
+		attackers_bitsets[i].resize(tmp_num_args);
+		victims_bitsets[i].resize(tmp_num_args);
+	}
+
 	for (const pair<uint32_t, uint32_t> &attack : attacks) {
 		int32_t source = attack.first;
 		int32_t target = attack.second;
-		attackers[target].push_back(source);
-		if (!victims[source].count(target)) {
-			victims[source].insert(target);
-		}
+		attackers_vectors[target].push_back(source);
+		attackers_bitsets[target][source] = true;
+		victims_vectors[source].push_back(target);
+		victims_bitsets[source][target] = true;
+
 		if (source == target)
 			self_attack[source] = true;
 		if (attacks.count(make_pair(target, source))) {
@@ -38,12 +54,20 @@ void AF::finish_initilization()
 		}
 	}
 
-	attackers.shrink_to_fit();
 	for (int i = 0; i < attackers.size(); i++) {
-		attackers[i].shrink_to_fit();
+		attackers_vectors[i].shrink_to_fit();
+		attackers[i] = VectorBitSet(attackers_vectors[i], attackers_bitsets[i]);
 	}
+	attackers_vectors.clear();
+	attackers_bitsets.clear();
 
-	victims.shrink_to_fit();
+	for (int i = 0; i < victims.size(); i++) {
+		victims_vectors[i].shrink_to_fit();
+		victims[i] = VectorBitSet(victims_vectors[i], victims_bitsets[i]);
+	}
+	victims_vectors.clear();
+	victims_bitsets.clear();
+
 	self_attack.shrink_to_fit();
 
 	//float end_time = omp_get_wtime();																											//DEBUG

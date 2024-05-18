@@ -10,6 +10,7 @@
 
 #include "omp.h"
 
+#include "../util/VectorBitSet.h"
 #include "../logic/Enums.h"
 
 enum pre_proc_result { accepted, rejected, unknown };
@@ -17,6 +18,6 @@ enum pre_proc_result { accepted, rejected, unknown };
 class PreProc_DS_PR {
 public:
 	//returns 1 if argument was accepted, 2 if argument was  
-	static pre_proc_result process(AF &framework, unordered_set<uint32_t> &active_args, uint32_t argument, unordered_set<uint32_t> &out_reduct);
+	static pre_proc_result process(AF &framework, VectorBitSet &active_args, uint32_t argument, VectorBitSet &out_reduct);
 };
 #endif

@@ -7,6 +7,8 @@
 
 #include "SatSolver.h"
 
+#include "../util/VectorBitSet.h"
+
 using namespace std;
 
 class Decoding {
@@ -18,7 +20,7 @@ public:
 	/// <param name="problem">The SAT-Solver, which solution if to be tranlated.</param>
 	/// <param name="activeArgs">The set of active arguments, in the current state of the framework.</param>
 	/// <returns>Set of arguments, which solve the specified SAT-problem.</returns>
-	static list<uint32_t> get_set_from_solver(SatSolver &solver, unordered_set<uint32_t> &activeArgs);
+	static list<uint32_t> get_set_from_solver(SatSolver &solver, VectorBitSet &activeArgs);
 
 };
 #endif

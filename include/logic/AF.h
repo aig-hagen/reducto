@@ -7,6 +7,8 @@
 #include <iostream>	
 #include <omp.h>
 
+#include "../util/VectorBitSet.h"
+
 template <class T>
 inline void hash_combine(std::size_t &seed, const T &v)
 {
@@ -33,8 +35,8 @@ class AF {
 public:
 
     uint32_t num_args;
-    std::vector<std::vector<uint32_t>> attackers;
-	std::vector <std::unordered_set<uint32_t>> victims;
+    std::vector<VectorBitSet> attackers;
+	std::vector<VectorBitSet> victims;
 	std::vector<uint8_t> self_attack;
     std::unordered_set<std::pair<uint32_t, uint32_t>> attacks;
 	std::unordered_set<std::pair<uint32_t, uint32_t>> symmetric_attacks;

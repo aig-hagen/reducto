@@ -1,29 +1,29 @@
 #include "../../include/logic/Reduct.h"
 
-unordered_set<uint32_t> Reduct::get_reduct(unordered_set<uint32_t> &activeArguments, AF &framework, uint32_t argument)
+VectorBitSet Reduct::get_reduct(VectorBitSet &activeArguments, AF &framework, uint32_t argument)
 {
-	unordered_set<uint32_t> reduct;
-	
-	for (size_t bno = 0; bno < activeArguments.bucket_count(); ++bno) {
-		for (auto bit = activeArguments.begin(bno), end = activeArguments.end(bno); bit != end; ++bit) {
-			const auto &active_arg = *bit;
+	vector<uint32_t> reduct_vector;
+	vector<uint8_t> reduct_bitset;
+	reduct_bitset.resize(static_cast<uint64_t>(framework.num_args) + 1);
 
-			if (active_arg == argument || framework.victims[argument].count(active_arg)) {
-				continue;
-			}
+	for (int i = 0; i < activeArguments._vector.size(); i++) {
 
-			reduct.insert(active_arg);
+		if (activeArguments._vector[i] == argument || framework.victims[argument]._bitset[activeArguments._vector[i]]) {
+			continue;
 		}
+
+		reduct_vector.push_back(activeArguments._vector[i]);
+		reduct_bitset[activeArguments._vector[i]] = true;
 	}
 
-
-	return reduct;
+	reduct_vector.shrink_to_fit();
+	return VectorBitSet(reduct_vector, reduct_bitset);
 }
 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-unordered_set<uint32_t> Reduct::get_reduct_set(unordered_set<uint32_t> &activeArguments, AF &framework, list<uint32_t> &set_arguments)
+VectorBitSet Reduct::get_reduct_set(VectorBitSet &activeArguments, AF &framework, list<uint32_t> &set_arguments)
 {
 	if (set_arguments.empty()) {
 		throw new exception;
@@ -31,23 +31,21 @@ unordered_set<uint32_t> Reduct::get_reduct_set(unordered_set<uint32_t> &activeAr
 
 	//printf("%d: ------- before getReduct --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());												//DEBUG
 	// do not free activeArguments, since its a given parameter and hence out of this method's responsibility
-	unordered_set<uint32_t> reduct = get_reduct(activeArguments, framework, *set_arguments.begin());
+	VectorBitSet reduct = get_reduct(activeArguments, framework, *set_arguments.begin());
 	//printf("%d: ------- after getReduct --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());													//DEBUG
-	if (reduct.empty()) {
+	if (reduct._vector.empty()) {
 		return reduct;
 	}
 
 	for (list<uint32_t>::iterator mIter = std::next(set_arguments.begin()); mIter != set_arguments.end(); ++mIter) {
-		if (reduct.empty())
+		if (reduct._vector.empty())
 		{
 			break;
 		}
 
 		// free all temporary reducts
 		//printf("%d: ------- before getReduct --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());											//DEBUG
-		unordered_set<uint32_t> tmp_reduct = get_reduct(reduct, framework, *mIter);
-		reduct.clear();
-		reduct = tmp_reduct;
+		reduct = get_reduct(reduct, framework, *mIter);
 		//printf("%d: ------- after getReduct + free tmp_Reduct --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());							//DEBUG
 	}
 

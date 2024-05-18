@@ -27,7 +27,7 @@ void static runParallel(int numArgsStart, int numArgsEnd, AF &framework)
 			cout << "w ";
 			if (proof_extension.empty())
 			{
-				if (framework.victims[argument].count(argument))
+				if (framework.victims[argument]._bitset[argument])
 				{
 					cout <<"Argument attacks itself." << endl;
 				}

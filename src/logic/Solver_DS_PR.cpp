@@ -15,7 +15,7 @@ static list<uint32_t> ExtendExtension(list<uint32_t> &extension_build, list<uint
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, unordered_set<uint32_t> &activeArgs, bool *isRejected,
+static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, VectorBitSet &activeArgs, bool *isRejected,
 	list<uint32_t> &extension_build, list<uint32_t> &output_extension)
 {
 	//, int *num_tasks, int *num_tasks_max
@@ -40,26 +40,13 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 	//Printer::print_vector(activeArgs);																										//DEBUG
 	//cout << endl;																																//DEBUG
 	
-	unordered_set<uint32_t> reduct;
-	if (extension_build.empty())
-	{
-		reduct = activeArgs;
-		//cout << id << ": reduct copied active_args: ";																						//DEBUG
-		//Printer::print_vector(reduct);																										//DEBUG
-		//cout << endl;																															//DEBUG
-		//cout << "; memory_usage: " << get_mem_usage() << endl;																				//DEBUG
-	}
-	else
-	{
-		//printf("%d: ------- before new reduct allocated --- memory usage: %ld\n", id, get_mem_usage());										//DEBUG
-		reduct = Reduct::get_reduct_set(activeArgs, framework, extension_build);
-		//cout << id << ": reduct created: ";																										//DEBUG
-		//Printer::print_set(reduct);																												//DEBUG
-		//cout << endl;																															//DEBUG
-		//cout << "; memory_usage: " << get_mem_usage() << endl;																				//DEBUG
-	}
+	VectorBitSet reduct = extension_build.empty() ? activeArgs.copy() : Reduct::get_reduct_set(activeArgs, framework, extension_build);
+	//cout << id << ": reduct created: ";																										//DEBUG
+	//Printer::print_set(reduct);																												//DEBUG
+	//cout << endl;																																//DEBUG
+	//cout << "; memory_usage: " << get_mem_usage() << endl;																					//DEBUG
 
-	if (reduct.size() < 2)
+	if (reduct._vector.size() < 2)
 	{
 
 		//TODO muss hier abbruch flag gesetzt werden? ??????????????????????????????????????????????????????????????????????????????????????????????????????????
@@ -69,9 +56,6 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 
 		//there is only 1 active argument, this has to be the argument to check, if not then there should have been a rejection check earlier who did not work
 		//printf("%d: only 1 argument left -> skip reduct\n", omp_get_thread_num());															//DEBUG
-		
-		reduct.clear();
-		//printf("%d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());														//DEBUG
 
 		return;
 	}
@@ -87,7 +71,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 	//cout << id << ": pointers *isSolved and *isFirstCalculation set" << endl;																	//DEBUG
 	//printf("%d: ------- isSolved allocated --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
 	
-	uint64_t numVars = reduct.size();
+	uint64_t numVars = reduct._vector.size();
 
 	SatSolver *solver = NULL;
 	solver = new SatSolver_cadical(numVars);
@@ -110,8 +94,6 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 		//printf("%d: ------- isSolved freed --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
 		free(isFirstCalculation);
 		//printf("%d: ------- isFirstCalculation freed --- memory usage: %ld\n", id, get_mem_usage());											//DEBUG
-		reduct.clear();
-		//printf("115: %d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
 		delete solver;
 		//printf("%d: finished task - argument %d ----------------------------------\n", omp_get_thread_num(), argument);						//DEBUG
 		return;
@@ -150,8 +132,6 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 #pragma omp flush(isRejected)		//maybe flush is not needed since isRejected point so a memory address, which content is changed
 
 				//printf("%d: preliminary terminated.\n", omp_get_thread_num());																//DEBUG
-				reduct.clear();
-				//printf("%d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());												//DEBUG
 				free(isSolved);
 				//printf("%d: ------- isSolved freed --- memory usage: %ld\n", id, get_mem_usage());											//DEBUG
 				free(isFirstCalculation);
@@ -184,8 +164,6 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 #pragma omp flush(isRejected)		//maybe flush is not needed since isRejected point so a memory address, which content is changed
 
 				//printf("%d: preliminary terminated.\n", omp_get_thread_num());																		//DEBUG
-				reduct.clear();
-				//printf("%d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
 				free(isSolved);
 				//printf("%d: ------- isSolved freed --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
 				free(isFirstCalculation);
@@ -225,8 +203,6 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 			//printf("%d: ------- isSolved freed --- memory usage: %ld\n", id, get_mem_usage());												//DEBUG
 			free(isFirstCalculation);
 			//printf("%d: ------- isFirstCalculation freed --- memory usage: %ld\n", id, get_mem_usage());										//DEBUG
-			reduct.clear();
-			//printf("216: %d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());												//DEBUG
 			delete solver;
 			initial_set.clear();
 			//printf("%d: ------- initial set freed --- memory usage: %ld\n", id, get_mem_usage());												//DEBUG
@@ -249,8 +225,6 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 		//cout << endl;
 		//cout << "; memory usage : " << get_mem_usage() << endl;																				//DEBUG
 		
-		reduct.clear();
-		//printf("%d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());														//DEBUG
 		initial_set.clear();
 		//printf("%d: ------- initial set freed --- memory usage: %ld\n", id, get_mem_usage());													//DEBUG
 
@@ -300,21 +274,11 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 		
 		new_extension_build.clear();
 
-		if (extension_build.empty())
-		{
-			reduct = activeArgs;
-			//cout << id << ": reduct copied active_args: ";																							//DEBUG
-			//Printer::print_vector(reduct);																											//DEBUG
-			//cout << "; memory_usage: " << get_mem_usage() << endl;																					//DEBUG
-		}
-		else
-		{
-			//printf("%d: ------- before new reduct allocated --- memory usage: %ld\n", id, get_mem_usage());											//DEBUG
-			reduct = Reduct::get_reduct_set(activeArgs, framework, extension_build);
-			//cout << id << ": reduct created: ";																										//DEBUG
-			//Printer::print_vector(reduct);																											//DEBUG
-			//cout << "; memory_usage: " << get_mem_usage() << endl;																					//DEBUG
-		}
+		reduct = extension_build.empty() ? activeArgs.copy() : Reduct::get_reduct_set(activeArgs, framework, extension_build);
+		//cout << id << ": reduct created: ";																										//DEBUG
+		//Printer::print_set(reduct);																												//DEBUG
+		//cout << endl;																																//DEBUG
+		//cout << "; memory_usage: " << get_mem_usage() << endl;																					//DEBUG
 
 #pragma omp flush(isRejected)
 #pragma omp atomic read
@@ -331,8 +295,6 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 	free(isFirstCalculation);
 	//printf("%d: ------- isFirstCalculation freed --- memory usage: %ld\n", id, get_mem_usage());														//DEBUG
 	delete solver;
-	reduct.clear();
-	//printf("%d: ------- reduct freed --- memory usage: %ld\n", id, get_mem_usage());																	//DEBUG
 
 	//printf("%d: finished task - argument %d ----------------------------------\n", omp_get_thread_num(), argument);									//DEBUG
 	return;
@@ -341,7 +303,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static bool check_rejection_parallel(uint32_t argument, AF &framework, unordered_set<uint32_t> &active_args, list<uint32_t> &proof_extension, uint8_t numCores)
+static bool check_rejection_parallel(uint32_t argument, AF &framework, VectorBitSet &active_args, list<uint32_t> &proof_extension, uint8_t numCores)
 {
 	//float start_time = omp_get_wtime();																												//DEBUG
 	bool *isRejected = NULL;
@@ -391,7 +353,6 @@ static bool check_rejection_parallel(uint32_t argument, AF &framework, unordered
 	
 	bool result = *isRejected;
 	free(isRejected);
-	active_args.clear();
 
 	/*printf("Finished program - voluntary context switches: %ld - involuntary context switches: %ld - memory usage: %ld [kB]\n",
 		get_ctxt_switches_volun(), get_ctxt_switches_involun(), get_mem_usage());*/																		//DEBUG
@@ -408,14 +369,18 @@ static bool check_rejection_parallel(uint32_t argument, AF &framework, unordered
 bool Solver_DS_PR::solve(uint32_t argument, AF &framework, list<uint32_t> &proof_extension, uint8_t numCores) {
 	
 	//long mem_base = get_mem_usage();																													//DEBUG
-	unordered_set<uint32_t> active_args;
-	active_args.rehash(framework.num_args);
+	vector<uint32_t> active_args_vector;
+	vector<uint8_t> active_args_bitset;
+	active_args_bitset.resize(framework.num_args + 1);
+
 	for (int i = 1; i < framework.num_args + 1; i++) {
-		active_args.insert(i);
+		active_args_vector.push_back(i);
+		active_args_bitset[i] = true;
 	}
+	VectorBitSet active_args = VectorBitSet(active_args_vector, active_args_bitset);
 	// printf("Memory space of initialized active arguments: %ld [kB]\n", get_mem_usage() - mem_base);													//DEBUG
 
-	unordered_set<uint32_t> initial_reduct;
+	VectorBitSet initial_reduct = VectorBitSet();
 
 	pre_proc_result result_preProcessor = PreProc_DS_PR::process(framework, active_args, argument, initial_reduct);
 

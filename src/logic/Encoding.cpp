@@ -99,15 +99,15 @@ static void add_defense_per_attacker(SatSolver &solver, uint32_t argsSize, uint3
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static void add_admissible(SatSolver &solver, AF &framework, unordered_set<uint32_t> &activeArgs, uint32_t argument)
+static void add_admissible(SatSolver &solver, AF &framework, VectorBitSet &activeArgs, uint32_t argument)
 {
 	vector<int64_t> rejection_reason_clause = add_rejected_clauses(solver, framework.num_args, argument);
 	
-	vector<uint32_t> attackers = framework.attackers[argument];
+	vector<uint32_t> attackers = framework.attackers[argument]._vector;
 
 	for (int i = 0; i < attackers.size(); i++)
 	{
-		if(activeArgs.count(attackers[i]))
+		if (activeArgs._bitset[attackers[i]])
 		{
 			add_rejected_clauses_per_attacker(solver, framework.num_args, argument, attackers[i], rejection_reason_clause);
 			add_conflict_free_per_attacker(solver, argument, attackers[i]);
@@ -125,20 +125,16 @@ static void add_admissible(SatSolver &solver, AF &framework, unordered_set<uint3
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-void Encoding::add_clauses_nonempty_admissible_set(SatSolver &solver, AF &framework, unordered_set<uint32_t> &activeArgs)
+void Encoding::add_clauses_nonempty_admissible_set(SatSolver &solver, AF &framework, VectorBitSet &activeArgs)
 {
 	vector<int64_t> non_empty_clause;
 	//iterate through all active arguments
 
-
-	for (size_t bno = 0; bno < activeArgs.bucket_count(); ++bno) {
-		for (auto bit = activeArgs.begin(bno), end = activeArgs.end(bno); bit != end; ++bit) {
-			const auto &argument = *bit;
-
-			non_empty_clause.push_back(get_literal_accepted(argument, false));
-			add_admissible(solver, framework, activeArgs, argument);
-		}
+	for (int i = 0; i < activeArgs._vector.size(); i++) {
+		non_empty_clause.push_back(get_literal_accepted(activeArgs._vector[i], false));
+		add_admissible(solver, framework, activeArgs, activeArgs._vector[i]);
 	}
+
 	//cout << " [";																																				//DEBUG
 	//Printer::print_vector(non_empty_clause);																													//DEBUG
 	//cout << "]" << endl;																																		//DEBUG
@@ -149,20 +145,18 @@ void Encoding::add_clauses_nonempty_admissible_set(SatSolver &solver, AF &framew
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-void Encoding::add_complement_clause(SatSolver &solver, unordered_set<uint32_t> &activeArgs)
+void Encoding::add_complement_clause(SatSolver &solver, VectorBitSet &activeArgs)
 {
 	vector<int64_t> complement_clause;
 	
-	for (size_t bno = 0; bno < activeArgs.bucket_count(); ++bno) {
-		for (auto bit = activeArgs.begin(bno), end = activeArgs.end(bno); bit != end; ++bit) {
-			const auto &argument = *bit;
-			int64_t arg_64 = static_cast<int64_t>(argument);
+	for (int i = 0; i < activeArgs._vector.size(); i++) {
 
-			if (solver.check_var_model(arg_64))
-			{
-				int64_t arg_64_inv = -1 * arg_64;
-				complement_clause.push_back(arg_64_inv);
-			}
+		int64_t arg_64 = static_cast<int64_t>(activeArgs._vector[i]);
+
+		if (solver.check_var_model(arg_64))
+		{
+			int64_t arg_64_inv = -1 * arg_64;
+			complement_clause.push_back(arg_64_inv);
 		}
 	}
 
