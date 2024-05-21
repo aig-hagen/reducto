@@ -4,12 +4,15 @@ static pre_proc_result reduce_by_grounded(AF &framework, VectorBitSet &active_ar
 {
 	// fill list with unattacked arguments
 	list<uint32_t> ls_unattacked_unprocessed;
+	vector<uint32_t> num_attacker;
 	//iterate through active arguments
 	for (int i = 0; i < active_args._vector.size(); i++) {
 		//check if argument is unattacked
 		if (framework.attackers[active_args._vector[i]]._vector.empty()) {
 			ls_unattacked_unprocessed.push_back(active_args._vector[i]);
 		}
+
+		num_attacker.push_back(framework.attackers[active_args._vector[i]]._vector.size());
 	}
 
 	
@@ -46,18 +49,11 @@ static pre_proc_result reduce_by_grounded(AF &framework, VectorBitSet &active_ar
 					continue;
 				}
 
-				//check if victim of victim is unattacked
-				vector<uint32_t> attackers_vvua = framework.attackers[vvua]._vector;
-				uint8_t is_unattacked = 1;
-				for (int k = 0; k < attackers_vvua.size(); k++) {
-					if (out_reduct._bitset[attackers_vvua[k]]) {
-						is_unattacked = 0;
-						break;
-					}
-				}
+				//update number of attackers
+				num_attacker[vvua - 1]--;
 
-				//add to list if vvua is unattacked
-				if (is_unattacked) {
+				//check if victim of victim is unattacked
+				if (num_attacker[vvua - 1] == 0) {
 					ls_unattacked_unprocessed.push_back(vvua);
 				}
 			}
