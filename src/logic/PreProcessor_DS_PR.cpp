@@ -35,12 +35,15 @@ static pre_proc_result reduce_by_grounded(AF &framework, VectorBitSet &active_ar
 			return pre_proc_result::rejected;
 		}
 
-		//reduce active argument by unattacked argument + update current reduct
-		out_reduct = Reduct::get_reduct(out_reduct, framework, ua);
-
 		//iterate through victims of the victims of ua
 		for (int i = 0; i < framework.victims[ua]._vector.size(); i++) {
 			uint32_t vua = framework.victims[ua]._vector[i];
+
+			if (!out_reduct._bitset[vua]) {
+				//only account victims that are still active
+				continue;
+			}
+
 			for (int j = 0; j < framework.victims[vua]._vector.size(); j++) {
 				uint32_t vvua = framework.victims[vua]._vector[j];
 
@@ -58,6 +61,9 @@ static pre_proc_result reduce_by_grounded(AF &framework, VectorBitSet &active_ar
 				}
 			}
 		}
+
+		//reduce active argument by unattacked argument + update current reduct
+		out_reduct = Reduct::get_reduct(out_reduct, framework, ua);
 	}
 
 	return pre_proc_result::unknown;
