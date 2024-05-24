@@ -42,6 +42,10 @@ public:
         return VectorBitSet(copy_vector, copy_bitset);
     }
 
+    void clear() {
+        _bitset.clear();
+        _vector.clear();
+    }
 };
 
 #endif

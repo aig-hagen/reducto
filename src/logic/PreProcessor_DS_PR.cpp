@@ -67,20 +67,12 @@ static pre_proc_result reduce_by_grounded(AF &framework, VectorBitSet &active_ar
 	}
 
 	return pre_proc_result::unknown;
-
-	//gehe durch Liste der unattacked arguments  _ua
-		//ist query unter den victims von _ua? wenn ja beende und gebe rejected zurück
-		//reduziere um das unattacked argument _ua
-		//update _r mit aktuellen redukt und mache redukt so über einzelne schleifendurchläufe hinaus persistent
-		//prüfe ob in den victims jedes victims des unattacked arguments, also in victim(victim(_ua))  _vua
-			//prüfe ob argument _vua im neuen reduct unattacked ist
-			//wenn ja füge es zur liste hinzu
-		
 }
 
 
 pre_proc_result PreProc_DS_PR::process(AF &framework, VectorBitSet &active_args, uint32_t query, VectorBitSet &out_reduct) {
-	
+	//long mem_base = get_mem_usage();																													//DEBUG
+
 	if (framework.victims[query]._bitset[query])
 	{
 		return pre_proc_result::rejected;
@@ -91,5 +83,10 @@ pre_proc_result PreProc_DS_PR::process(AF &framework, VectorBitSet &active_args,
 		return pre_proc_result::accepted;
 	}
 	
-	return reduce_by_grounded(framework, active_args, query, out_reduct);
+	pre_proc_result result =  reduce_by_grounded(framework, active_args, query, out_reduct);
+
+	//printf("PreProc_DS_PR::process() finished - voluntary context switches: %ld - involuntary context switches: %ld - memory usage: %ld/%ld [kB]\n",
+	//	get_ctxt_switches_volun(), get_ctxt_switches_involun(), get_mem_usage() - mem_base, get_mem_usage());											//DEBUG
+
+	return result;
 }

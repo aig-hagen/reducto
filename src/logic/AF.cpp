@@ -72,7 +72,7 @@ void AF::finish_initilization()
 
 	//float end_time = omp_get_wtime();																											//DEBUG
 	//float duration = end_time - start_time;																									//DEBUG
-	//printf("runtime finish_initilization [s]: %.2f s\n", duration);																					//DEBUG
+	//printf("runtime finish_initilization [s]: %.2f s\n", duration);																			//DEBUG
 }
 
 bool AF::exists_attack(uint32_t attacker, uint32_t victim) const {

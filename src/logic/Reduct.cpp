@@ -45,7 +45,9 @@ VectorBitSet Reduct::get_reduct_set(VectorBitSet &activeArguments, AF &framework
 
 		// free all temporary reducts
 		//printf("%d: ------- before getReduct --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());											//DEBUG
-		reduct = get_reduct(reduct, framework, *mIter);
+		VectorBitSet reduct_tmp = get_reduct(reduct, framework, *mIter);
+		reduct.clear();
+		reduct = reduct_tmp;
 		//printf("%d: ------- after getReduct + free tmp_Reduct --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());							//DEBUG
 	}
 

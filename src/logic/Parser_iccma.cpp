@@ -4,6 +4,7 @@ using namespace std;
 
 void ParserICCMA::parse_af(AF &framework, string file)
 {
+	//long mem_base = get_mem_usage();																											//DEBUG
 	//float start_time = omp_get_wtime();																										//DEBUG
 	ifstream input;
 	input.open(file);
@@ -46,7 +47,7 @@ void ParserICCMA::parse_af(AF &framework, string file)
 
 	input.close();
 	//printf("%d: ------- finished reading file --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());								//DEBUG
-	//printf("Memory space needed to process AF as input: %ld [kB]\n", get_mem_usage() - mem_base);												//DEBUG
+	//printf("Memory space needed to process AF as input: %ld/%ld [kB]\n", get_mem_usage() - mem_base, get_mem_usage());						//DEBUG
 
 	//float end_time = omp_get_wtime();																											//DEBUG
 	//float duration = end_time - start_time;																									//DEBUG

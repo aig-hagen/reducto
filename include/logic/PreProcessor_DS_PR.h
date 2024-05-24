@@ -13,6 +13,10 @@
 #include "../util/VectorBitSet.h"
 #include "../logic/Enums.h"
 
+extern "C" {
+	#include "../util/MemoryWatchDog.h"
+}
+
 enum pre_proc_result { accepted, rejected, unknown };
 
 class PreProc_DS_PR {
