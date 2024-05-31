@@ -346,21 +346,9 @@ static bool check_rejection_parallel(uint32_t argument, AF &framework, VectorBit
 
 bool Solver_DS_PR::solve(uint32_t argument, AF &framework, list<uint32_t> &proof_extension, uint8_t numCores) {
 	
-	//long mem_base = get_mem_usage();																												//DEBUG
-	vector<uint32_t> active_args_vector;
-	vector<uint8_t> active_args_bitset;
-	active_args_bitset.resize(framework.num_args + 1);
-
-	for (int i = 1; i < framework.num_args + 1; i++) {
-		active_args_vector.push_back(i);
-		active_args_bitset[i] = true;
-	}
-	VectorBitSet active_args = VectorBitSet(active_args_vector, active_args_bitset);
-	//printf("Memory space of initialized active arguments: %ld/%ld [kB]\n", get_mem_usage() - mem_base, get_mem_usage());							//DEBUG
-
 	VectorBitSet initial_reduct = VectorBitSet();
 
-	pre_proc_result result_preProcessor = PreProc_DS_PR::process(framework, active_args, argument, initial_reduct);
+	pre_proc_result result_preProcessor = PreProc_DS_PR::process(framework, argument, initial_reduct);
 
 	//cout << "Reduct after preprocessing ";																										//DEBUG
 	//Printer::print_set(initial_reduct);																											//DEBUG

@@ -40,6 +40,7 @@ public:
 	std::vector<uint8_t> self_attack;
     std::unordered_set<std::pair<uint32_t, uint32_t>> attacks;
 	std::unordered_set<std::pair<uint32_t, uint32_t>> symmetric_attacks;
+	std::vector<uint32_t> distance_to_query;
 
     bool add_attack(uint32_t attacker, uint32_t victim);
 	void initialize(uint32_t number_args);
