@@ -29,6 +29,7 @@ set(HEADERS
 	${INCLD_LOGIC}/Enums.h 
 	${INCLD_LOGIC}/Parser_iccma.h
 	${INCLD_LOGIC}/PreProcessor_DS_PR.h
+	${INCLD_LOGIC}/Prioritizer.h
 	${INCLD_LOGIC}/Reduct.h 
 	${INCLD_LOGIC}/SatSolver.h
 	${INCLD_LOGIC}/SatSolver_cadical.h
@@ -49,6 +50,7 @@ set(SRCFILES
 	${SRC_LOGIC}Enums.cpp
 	${SRC_LOGIC}Parser_iccma.cpp
 	${SRC_LOGIC}PreProcessor_DS_PR.cpp
+	${SRC_LOGIC}Prioritizer.cpp
 	${SRC_LOGIC}Reduct.cpp 
 	${SRC_LOGIC}SatSolver_cadical.cpp
 	${SRC_LOGIC}ScepticalCheck.cpp

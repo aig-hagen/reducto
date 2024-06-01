@@ -65,12 +65,12 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 	
 	uint64_t numVars = reduct._vector.size();
 
-	//mem_base = get_mem_usage();																											//DEBUG
+	//mem_base = get_mem_usage();																												//DEBUG
 	SatSolver *solver = NULL;
 	solver = new SatSolver_cadical(numVars);
-	//printf("%d: ------- new SAT solver created --- memory usage: %ld/%ld\n", id, get_mem_usage() - mem_base, get_mem_usage());					//DEBUG
+	//printf("%d: ------- new SAT solver created --- memory usage: %ld/%ld\n", id, get_mem_usage() - mem_base, get_mem_usage());				//DEBUG
 	
-	//mem_base = get_mem_usage();																											//DEBUG
+	//mem_base = get_mem_usage();																												//DEBUG
 	//printf("%d Encode: \n", id);																												//DEBUG
 	Encoding::add_clauses_nonempty_admissible_set(*solver, framework, reduct);
 	//cout << id << ": SAT clauses added" << endl;																								//DEBUG
@@ -93,17 +93,17 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 	do {
 		if (*isSolved)
 		{
-			//mem_base = get_mem_usage();																									//DEBUG
+			//mem_base = get_mem_usage();																										//DEBUG
 			Encoding::add_complement_clause(*solver, reduct);
-			//printf("%d: added complement clause --- memory usage: %ld/%ld\n", id, get_mem_usage() - mem_base, get_mem_usage());					//DEBUG
+			//printf("%d: added complement clause --- memory usage: %ld/%ld\n", id, get_mem_usage() - mem_base, get_mem_usage());				//DEBUG
 		}
 
 		*isSolved = true;
 
-		//mem_base = get_mem_usage();																												//DEBUG
+		//mem_base = get_mem_usage();																											//DEBUG
 		has_Solution = (*solver).solve();
 		//cout << id << ": SAT problem solved" << endl;																							//DEBUG
-		//printf("%d: ------- SAT problem solved --- memory usage: %ld/%ld\n", id, get_mem_usage() - mem_base, get_mem_usage());					//DEBUG
+		//printf("%d: ------- SAT problem solved --- memory usage: %ld/%ld\n", id, get_mem_usage() - mem_base, get_mem_usage());				//DEBUG
 
 		if (!has_Solution)
 		{
@@ -132,7 +132,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 			break;
 		}
 
-		//mem_base = get_mem_usage();																												//DEBUG
+		//mem_base = get_mem_usage();																											//DEBUG
 		list<uint32_t> initial_set = Decoding::get_set_from_solver(*solver, reduct);
 		//printf("%d: ------- initial set allocated --- memory usage: %ld/%ld\n", id, get_mem_usage() - mem_base, get_mem_usage());				//DEBUG
 		//cout << id << ": computed initial set: ";																								//DEBUG
@@ -177,9 +177,9 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 			//cout << id << "initial set rejects " << argument << endl;																			//DEBUG
 			//printf("%d: finished task - argument %d ----------------------------------\n", omp_get_thread_num(), argument);					//DEBUG
 
-			//mem_base = get_mem_usage();																											//DEBUG
+			//mem_base = get_mem_usage();																										//DEBUG
 			list<uint32_t> new_extension_build = ExtendExtension(extension_build, initial_set);
-			//cout << id << ": new extension created: ";																							//DEBUG
+			//cout << id << ": new extension created: ";																						//DEBUG
 			//Printer::print_list(extension_build);																								//DEBUG
 			//cout << " memory usage : " << get_mem_usage() - mem_base << "/" << get_mem_usage() << "[kB]" << endl;								//DEBUG	
 			
@@ -202,13 +202,18 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 			continue;
 		}
 
-		//mem_base = get_mem_usage();																												//DEBUG
+		//mem_base = get_mem_usage();																											//DEBUG
 		list<uint32_t> new_extension_build = ExtendExtension(extension_build, initial_set);
-		//cout << id << ": new extension created: ";																								//DEBUG
+		//cout << id << ": new extension created: ";																							//DEBUG
 		//Printer::print_list(extension_build);																									//DEBUG
 		//cout << " memory usage : " << get_mem_usage() - mem_base << "/" << get_mem_usage() << "[kB]" << endl;									//DEBUG
 		
 		initial_set.clear();
+
+		uint32_t prio = Prioritizer::calculate_priority(framework, new_extension_build);
+		cout << "Priority calculated for:";																										//DEBUG
+		Printer::print_list(extension_build);																									//DEBUG
+		cout << "Priority: " << prio << endl;																									//DEBUG
 
 //#pragma atomic write
 //		*num_tasks = *num_tasks + 1;
@@ -236,7 +241,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 	firstprivate(new_extension_build) \
 	private(reduct, initial_set, solver) \
 	shared(argument, framework, activeArgs, isRejected, output_extension) \
-	priority(0)
+	priority(prio)
 		{
 			//printf("%d: ------- task started --- memory usage: %ld\n", omp_get_thread_num(), get_mem_usage());									//DEBUG
 			check_rejection_parallel_recursiv(argument, framework, activeArgs, isRejected, new_extension_build, output_extension); //, num_tasks, num_tasks_max

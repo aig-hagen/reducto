@@ -14,6 +14,7 @@ extern "C" {
 #include "Enums.h"
 #include "Decoding.h"
 #include "PreProcessor_DS_PR.h"
+#include "Prioritizer.h"
 #include "Reduct.h"
 #include "SatSolver.h"
 #include "SatSolver_cadical.h"

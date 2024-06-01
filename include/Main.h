@@ -49,7 +49,7 @@ extern "C" {
 #include "../include/logic/Tests.h"
 
 constexpr auto SOLVERNAME = "ParallelSolver";
-constexpr auto VERSIONNUMBER = "1.14";
+constexpr auto VERSIONNUMBER = "1.15";
 constexpr auto NUM_CORES = 0;
 
 static int version_flag = 0;
