@@ -82,8 +82,6 @@ template <class I, class Rank> void rsort (I first, I last, Rank rank) {
             (masked_upper - masked_lower + 1) * sizeof *count);
 
     const I end = c + n;
-    bool sorted = true;
-    R last = 0;
 
     for (I p = c; p != end; p++) {
       const auto r = rank (*p);
@@ -91,10 +89,6 @@ template <class I, class Rank> void rsort (I first, I last, Rank rank) {
         lower &= r, upper |= r;
       const auto s = r >> i;
       const auto m = s & mask;
-      if (sorted && last > m)
-        sorted = false;
-      else
-        last = m;
       count[m]++;
     }
 
@@ -106,9 +100,6 @@ template <class I, class Rank> void rsort (I first, I last, Rank rank) {
       if ((lower & shifted) == (upper & shifted))
         continue;
     }
-
-    if (sorted)
-      continue;
 
     size_t pos = 0;
     for (R j = masked_lower; j <= masked_upper; j++) {

@@ -3,6 +3,7 @@
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_EXTENSIONS off)
 
 # Enable Hot Reload for MSVC compilers if supported.
 if (POLICY CMP0141)
@@ -22,63 +23,43 @@ set(SRC_UTIL "${SRC}util/")
 
 set(HEADERS
 	${INCLD}/Main.h
-	${INCLD_LOGIC}/Actives.h 
 	${INCLD_LOGIC}/AF.h 
-	${INCLD_LOGIC}/Decodings.h 
-	${INCLD_LOGIC}/Encodings.h 
-	${INCLD_LOGIC}/ListActives.h 
-	${INCLD_LOGIC}/Reduct.h 
-	${INCLD_LOGIC}/SatProblem.h
-	${INCLD_LOGIC}/ScepticalPRCheck.h
-	${INCLD_LOGIC}/Decodings_SatSolver.h
-	${INCLD_LOGIC}/Encodings_SatSolver.h 
-	${INCLD_LOGIC}/ExtensionSolver.h 
-	${INCLD_LOGIC}/ExternalSolver.h
-	${INCLD_LOGIC}/InitialSetSolver.h
+	${INCLD_LOGIC}/Decoding.h 
+	${INCLD_LOGIC}/Encoding.h 
+	${INCLD_LOGIC}/Enums.h 
 	${INCLD_LOGIC}/Parser_iccma.h
+	${INCLD_LOGIC}/PreProcessor_DS_PR.h
+	${INCLD_LOGIC}/Prioritizer.h
+	${INCLD_LOGIC}/Reduct.h 
 	${INCLD_LOGIC}/SatSolver.h
 	${INCLD_LOGIC}/SatSolver_cadical.h
-	${INCLD_LOGIC}/SatSolver_cms.h
-	${INCLD_LOGIC}/ScepticalPRParallel.h
-	${INCLD_LOGIC}/ScepticalPRSequential.h
+	${INCLD_LOGIC}/ScepticalCheck.h 
+	${INCLD_LOGIC}/Solver_DS_PR.h 	
 	${INCLD_LOGIC}/Tests.h
 
-	${INCLD_UTIL}/Array.h 
-	${INCLD_UTIL}/LinkedSparseMatrix.h 
-	${INCLD_UTIL}/List.h 
-	${INCLD_UTIL}/Matrix.h
-	${INCLD_UTIL}/MemoryWatchDog.h 
-	${INCLD_UTIL}/Enums.h
+	${INCLD_UTIL}/VectorBitSet.h
+	${INCLD_UTIL}/MemoryWatchDog.h
+	${INCLD_UTIL}/Printer.h
 	)
 
 set(SRCFILES
     ${SRC}Main.cpp
-	${SRC_LOGIC}Actives.c 
-	${SRC_LOGIC}AF.c 
-	${SRC_LOGIC}Decodings.c 
-	${SRC_LOGIC}Encodings.c 
-	${SRC_LOGIC}ListActives.c 
-	${SRC_LOGIC}Reduct.c 
-	${SRC_LOGIC}SatProblem.c 
-	${SRC_LOGIC}ScepticalPRCheck.c
-	${SRC_LOGIC}Decodings_SatSolver.cpp
-	${SRC_LOGIC}Encodings_SatSolver.cpp 
-	${SRC_LOGIC}ExtensionSolver.cpp 
-	${SRC_LOGIC}ExternalSolver_pstreams.cpp
-	${SRC_LOGIC}InitialSetSolver.cpp
+	${SRC_LOGIC}AF.cpp 
+	${SRC_LOGIC}Decoding.cpp 
+	${SRC_LOGIC}Encoding.cpp 
+	${SRC_LOGIC}Enums.cpp
 	${SRC_LOGIC}Parser_iccma.cpp
+	${SRC_LOGIC}PreProcessor_DS_PR.cpp
+	${SRC_LOGIC}Prioritizer.cpp
+	${SRC_LOGIC}Reduct.cpp 
 	${SRC_LOGIC}SatSolver_cadical.cpp
-	${SRC_LOGIC}SatSolver_cms.cpp
-	${SRC_LOGIC}ScepticalPRParallel.cpp
-	${SRC_LOGIC}ScepticalPRSequential.cpp
+	${SRC_LOGIC}ScepticalCheck.cpp
+	${SRC_LOGIC}Solver_DS_PR.cpp
+
 	${SRC_LOGIC}Tests.cpp
 
-	${SRC_UTIL}Array.c
-	${SRC_UTIL}LinkedSparseMatrix.c 
-	${SRC_UTIL}List.c
-	${SRC_UTIL}Matrix.c
 	${SRC_UTIL}MemoryWatchDog.c
-	${SRC_UTIL}Enums.cpp
+	${SRC_UTIL}Printer.cpp
 	)
 
 set(SOURCES ${SRCFILES} ${HEADERS})
@@ -111,27 +92,6 @@ endif()
 if(OpenMP_C_FOUND)
     target_link_libraries(${PROJECT_NAME} PUBLIC OpenMP::OpenMP_C)
 endif()
-
-# --- pstreams ---
-set(LIB_PSTREAMS "${CMAKE_CURRENT_LIST_DIR}/lib/pstreams-1.0.3")
-
-add_subdirectory(${LIB_PSTREAMS})
-target_link_libraries(${PROJECT_NAME} PUBLIC PStreams)
-target_include_directories(${PROJECT_NAME} PUBLIC 
-    "${PROJECT_BINARY_DIR}"
-    "${LIB_PSTREAMS}"
-)
-
-# --- cryptominisat ---
-
-set(LIB_CMS "${CMAKE_CURRENT_LIST_DIR}/lib/cryptominisat-5.11.15")
-
-add_subdirectory(${LIB_CMS})
-target_link_libraries(${PROJECT_NAME} PUBLIC cryptominisat5)
-target_include_directories(${PROJECT_NAME} PUBLIC
-    "${PROJECT_BINARY_DIR}"
-    "${LIB_CMS}"
-)
 
 # --- cadical part II ---
 

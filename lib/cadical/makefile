@@ -1,4 +1,4 @@
-CADICALBUILD=/home/jsander/solvers/cadical/build
+CADICALBUILD=/home/jsander/solvers/cadical-rel-1.9.5/build
 all:
 	$(MAKE) -C "$(CADICALBUILD)"
 clean:
@@ -11,8 +11,8 @@ clean:
 	  fi; \
 	  rm -rf "$(CADICALBUILD)"; \
 	fi
-	rm -f "/home/jsander/solvers/cadical/src/makefile"
-	rm -f "/home/jsander/solvers/cadical/makefile"
+	rm -f "/home/jsander/solvers/cadical-rel-1.9.5/src/makefile"
+	rm -f "/home/jsander/solvers/cadical-rel-1.9.5/makefile"
 test:
 	$(MAKE) -C "$(CADICALBUILD)" test
 cadical:

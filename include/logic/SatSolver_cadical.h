@@ -6,11 +6,6 @@
 #include <stdint.h>
 #include <vector>
 
-extern "C" {
-#include "Encodings.h"
-#include "SatProblem.h"
-}
-
 #include "SatSolver.h"
 #include "./../../lib/cadical/src/cadical.hpp"
 
@@ -41,6 +36,13 @@ public:
 	/// </summary>
 	/// <returns>Array of type bool, indicating for each variable if it's set or not</returns>
 	std::vector<bool> get_model();
+
+	/// <summary>
+	/// Method to check if single variable is part of the model.
+	/// </summary>
+	/// <param name="variable"></param>
+	/// <returns>TRUE if the variable is true in the model.</returns>
+	std::uint8_t check_var_model(int64_t variable);
 
 	/// <summary>
 	/// This method calculates a solution for the SAT-Problem of the solver.

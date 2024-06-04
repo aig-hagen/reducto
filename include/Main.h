@@ -37,35 +37,20 @@
 #include <getopt.h>			// parsing commandline options
 
 extern "C" {
-	#include "../include/logic/Actives.h"
-	#include "../include/logic/AF.h"
-	#include "../include/logic/Decodings.h"
-	#include "../include/logic/Encodings.h"
-	#include "../include/logic/Reduct.h"
-	#include "../include/logic/SatProblem.h"
-
-	#include "../include/util/Array.h"
-	#include "../include/util/LinkedSparseMatrix.h"
-	#include "../include/util/List.h"
-	#include "../include/util/Matrix.h"
 	#include "../include/util/MemoryWatchDog.h"
 }
 
-#include "../include/logic/ExtensionSolver.h"
-#include "../include/logic/ExternalSolver.h"
-#include "../include/logic/InitialSetSolver.h"
+#include "../include/logic/AF.h"
 #include "../include/logic/Parser_iccma.h"
-#include "../include/logic/ScepticalPRSequential.h"
-#include "../include/logic/ScepticalPRParallel.h"
+#include "../include/logic/Solver_DS_PR.h"
 
-#include "../include/util/Enums.h"
+#include "../include/logic/Enums.h"
 
 #include "../include/logic/Tests.h"
 
 constexpr auto SOLVERNAME = "ParallelSolver";
-constexpr auto VERSIONNUMBER = "1.7";
+constexpr auto VERSIONNUMBER = "1.15";
 constexpr auto NUM_CORES = 0;
-constexpr auto SOLVER = SOLVERS::CADICAL;
 
 static int version_flag = 0;
 static int usage_flag = 0;

@@ -1,4 +1,4 @@
-test: usage trace api cnf icnf mbt contrib
+test: usage trace api cnf icnf mbt
 api:
 	@api/run.sh
 cnf:
@@ -11,6 +11,4 @@ trace:
 	@trace/run.sh
 usage:
 	@usage/run.sh
-contrib:
-	@contrib/run.sh
-.PHONY: test api cnf icnf mbt trace usage contrib
+.PHONY: test api cnf icnf mbt trace usage

@@ -517,25 +517,18 @@ void Internal::reset_assumptions () {
 
 struct sort_assumptions_positive_rank {
   Internal *internal;
-
-  // Decision level could be 'INT_MAX' and thus 'level + 1' could overflow.
-  // Therefore we carefully have to use 'unsigned' for levels below.
-
-  const unsigned max_level;
-
+  const int max_level;
   sort_assumptions_positive_rank (Internal *s)
-      : internal (s), max_level (s->level + 1u) {}
+      : internal (s), max_level (s->level + 1) {}
 
-  typedef uint64_t Type;
-
-  // Set assumptions first, then sorted by position on the trail
-  // unset literals are sorted by literal value.
-
+  typedef int Type;
+  // set assumptions first, then sorted by position on the trail
+  // unset literals are sorted by literal value
   Type operator() (const int &a) const {
     const int val = internal->val (a);
     const bool assigned = (val != 0);
     const Var &v = internal->var (a);
-    uint64_t res = (assigned ? (unsigned) v.level : max_level);
+    uint64_t res = (assigned ? v.level : max_level);
     res <<= 32;
     res |= (assigned ? v.trail : abs (a));
     return res;
@@ -551,9 +544,8 @@ struct sort_assumptions_smaller {
   }
 };
 
-// Sort the assumptions by the current position on the trail and backtrack
+// sort the assumptions by the current position on the trail and backtrack
 // to the first place where the assumptions and the current trail differ.
-
 void Internal::sort_and_reuse_assumptions () {
   assert (opts.ilbassumptions);
   if (assumptions.empty ())
@@ -562,8 +554,7 @@ void Internal::sort_and_reuse_assumptions () {
          sort_assumptions_positive_rank (this),
          sort_assumptions_smaller (this));
 
-  unsigned max_level = 0;
-  // assumptions are sorted by level, with unset at the end
+  int max_level = 0;
   for (auto lit : assumptions) {
     if (val (lit))
       max_level = var (lit).level;
@@ -571,41 +562,37 @@ void Internal::sort_and_reuse_assumptions () {
       break;
   }
 
-  const unsigned size = min (level + 1u, max_level + 1);
+  const int size = min (level + 1, max_level + 1);
   assert ((size_t) level == control.size () - 1);
   LOG (assumptions, "sorted assumptions");
   int target = 0;
-  for (unsigned i = 1, j = 0; i < size;) {
+  for (int i = 1, j = 0; i < size;) {
     const Level &l = control[i];
     const int lit = l.decision;
     const int alit = assumptions[j];
     const int lev = i;
-    target = lev;
+    target = lev - 1;
     if (val (alit) &&
         var (alit).level < lev) { // we can ignore propagated assumptions
-      LOG ("ILB skipping propagation %d", alit);
       ++j;
       continue;
     }
-    if (!lit) { // skip fake decisions
-      target = lev - 1;
+    ++i, ++j;
+    // removed literals or pseudo decision level:
+    if (!lit || var (lit).level != lev) {
+      if (val (alit) > 0 && var (alit).level < lev)
+        continue;
       break;
     }
-    ++i, ++j;
-    assert (var (lit).level == lev);
     if (l.decision == alit) {
       continue;
     }
-    target = lev - 1;
-    LOG ("first different literal %d on the trail and %d from the "
-         "assumptions",
-         lit, alit);
     break;
   }
+
   if (target < level)
     backtrack (target);
   LOG ("assumptions allow for reuse of trail up to level %d", level);
-  //  COVER (target > 1);
   if ((size_t) level > assumptions.size ())
     stats.assumptionsreused += assumptions.size ();
   else

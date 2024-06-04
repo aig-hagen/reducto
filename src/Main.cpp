@@ -63,7 +63,7 @@ void static print_problems()
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-int main(int argc, char **argv)
+int execute(int argc, char **argv)
 {
 	if (argc == 1) {
 		print_version();
@@ -133,19 +133,15 @@ int main(int argc, char **argv)
 		return 1;*/
 	}
 
-	argFramework_t *framework = NULL;
+	AF framework;
 	if (fileformat == "i23") {
-		framework = ParserICCMA::parse_af(file);
+		ParserICCMA::parse_af(framework, file);
 	}
 	else {
 		cerr << argv[0] << ": Unsupported file format\n";
 		return 1;
 	}
 
-	//long mem_base = get_mem_usage();																										//DEBUG
-	activeArgs_t *actives = initialize_actives(framework->number);
-	//printf("Memory space of initialized active arguments: %ld [kB]\n", get_mem_usage() - mem_base);										//DEBUG
-	
 	string task = problem.substr(0, problem.find("-"));
 	problem.erase(0, problem.find("-") + 1);
 	string sem = problem.substr(0, problem.find("-"));
@@ -158,47 +154,38 @@ int main(int argc, char **argv)
 			}
 
 			uint32_t argument = std::stoi(query);
-			nodeUInt32_t **proof_extension = NULL;
-			proof_extension = (nodeUInt32_t **)malloc(sizeof * proof_extension);
-			if (proof_extension == NULL) {
-				printf("Memory allocation failed\n");
-				exit(1);
-			}
+			list<uint32_t> proof_extension;
 			bool skept_accepted = false;
 
 			switch (Enums::string_to_sem(sem)) {
 				case PR:
-				
-					skept_accepted = !ScepticalPRParallel::check_rejection_parallel(argument, framework, actives, proof_extension, NUM_CORES, SOLVER);
+					skept_accepted = Solver_DS_PR::solve(argument, framework, proof_extension, NUM_CORES);
 					break;
 				default:
 					cerr << argv[0] << ": Unsupported semantics\n";
 					return 1;
 			}
 
-			cout << (skept_accepted ? "YES" : "NO") << "\n";
+			cout << (skept_accepted ? "YES" : "NO") << endl;
 			if (!skept_accepted)
 			{
 				/*if (*proof_extension != NULL)
 				{
-					EXTENSIONSOLVER_CMS::BuildExtension(framework, actives, proof_extension);
+					EXTENSIONSOLVER::BuildExtension(framework, actives, proof_extension);
 				}*/
-				printf("w ");
-				print_list_elements_uint32((*proof_extension));
-				printf("\n");
+				cout << "w " << endl;
+
+				if (!proof_extension.empty()) {
+					for (list<uint32_t>::iterator mIter = proof_extension.begin(); mIter != proof_extension.end(); ++mIter) {
+						cout << *mIter << " ";
+					}
+					proof_extension;
+					cout << endl;
+				}
 			}
 
 			//free allocated memory
-			free_matrix(framework->attackers);
-			free_matrix(framework->victims);
-			free(framework);
-			free_activeArguments(actives);
-			if (*proof_extension != NULL)
-			{
-				free_list_uint32(*proof_extension);
-			}
-			free(proof_extension);
-
+			proof_extension.clear();
 			break;
 		}
 		default:
@@ -209,10 +196,16 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-//int main(int argc, char **argv)
-//{
-//
-//	TestCases::run_Tests();
-//
-//	return 0;
-//}
+int test(int argc, char **argv)
+{
+
+	TestCases::run_Tests();
+
+	return 0;
+}
+
+int main(int argc, char **argv)
+{
+	execute(argc, argv);
+	//test(argc, argv)
+}

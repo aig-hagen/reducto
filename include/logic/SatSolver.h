@@ -2,8 +2,7 @@
 #define SAT_SOLVER_H
 
 #include <iostream>
-#include <stdio.h>
-#include <stdint.h>
+#include <cstdint>
 #include <vector>
 
 class SatSolver {
@@ -27,6 +26,13 @@ public:
 	/// </summary>
 	/// <returns>Array of type bool, indicating for each variable if it's set or not</returns>
 	virtual std::vector<bool> get_model() = 0;
+
+	/// <summary>
+	/// Method to check if single variable is part of the model.
+	/// </summary>
+	/// <param name="variable"></param>
+	/// <returns>TRUE if the variable is true in the model.</returns>
+	virtual std::uint8_t check_var_model(int64_t variable) = 0;
 
 	/// <summary>
 	/// This method calculates a solution for the SAT-Problem of the solver.
