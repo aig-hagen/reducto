@@ -212,8 +212,8 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 
 		uint32_t prio = Prioritizer::calculate_priority(framework, new_extension_build);
 		cout << "Priority calculated for:";																										//DEBUG
-		Printer::print_list(extension_build);																									//DEBUG
-		cout << "Priority: " << prio << endl;																									//DEBUG
+		Printer::print_list(new_extension_build);																								//DEBUG
+		cout << " Calculated Priority: " << prio << endl;																						//DEBUG
 
 //#pragma atomic write
 //		*num_tasks = *num_tasks + 1;
