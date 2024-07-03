@@ -57,5 +57,5 @@ std::uint8_t SatSolver_cadical::check_var_model(int64_t variable) {
 
 bool SatSolver_cadical::solve() {
     // Solve the SAT problem using the CMS solver
-    return cadical_solver.solve() == 10; // Return true if a solution is found, false otherwise
+    return cadical_solver.solve() == 10; // Returns true if a solution is found, false otherwise
 }

@@ -32,6 +32,11 @@ public:
         _array.clear();
     }
 
+    /// <summary>
+    /// This method creates a new instance and copies all elements of this
+    /// instance in the new instance created.
+    /// </summary>
+    /// <returns>New instance containing all elements of this instance.</returns>
     ArrayBitSet copy() {
         const uint64_t vector_size = _array.size();
         std::vector<uint32_t> copy_vector;
@@ -50,6 +55,9 @@ public:
         return ArrayBitSet(copy_vector, copy_bitset);
     }
 
+    /// <summary>
+    /// Frees the space of this instance, but not of its elements.
+    /// </summary>
     void clear() {
         _bitset.clear();
         _array.clear();

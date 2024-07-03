@@ -125,12 +125,8 @@ int execute(int argc, char **argv)
 		return 1;
 	}
 
-	//printf("Set file format\n");																										//DEBUG
-
 	if (fileformat.empty()) {
 		fileformat = file.substr(file.find_last_of(".") + 1, file.length() - file.find_last_of(".") - 1);
-		/*cerr << argv[0] << ": File format must be specified via -fo flag\n";
-		return 1;*/
 	}
 
 	AF framework;
@@ -169,10 +165,6 @@ int execute(int argc, char **argv)
 			cout << (skept_accepted ? "YES" : "NO") << endl;
 			if (!skept_accepted)
 			{
-				/*if (*proof_extension != NULL)
-				{
-					EXTENSIONSOLVER::BuildExtension(framework, actives, proof_extension);
-				}*/
 				cout << "w " << endl;
 
 				if (!proof_extension.empty()) {
