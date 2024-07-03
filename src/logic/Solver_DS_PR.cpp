@@ -145,12 +145,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 
 		list<uint32_t> new_extension_build = ExtendExtension(extension_build, initial_set);		
 		initial_set.clear();
-
 		uint32_t prio = Prioritizer::calculate_priority(framework, new_extension_build);
-		cout << "Priority calculated for:";																										//DEBUG
-		Printer::print_list(new_extension_build);																								//DEBUG
-		cout << " Calculated Priority: " << prio << endl;																						//DEBUG
-
 #pragma omp task \
 	firstprivate(new_extension_build) \
 	private(reduct, initial_set, solver) \
