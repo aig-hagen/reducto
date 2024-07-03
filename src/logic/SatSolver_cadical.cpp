@@ -1,7 +1,7 @@
 #include "../../include/logic/SatSolver_cadical.h"
 
-SatSolver_cadical::SatSolver_cadical(uint64_t number_variables) {
-    _num_variables = number_variables;
+SatSolver_cadical::SatSolver_cadical(uint64_t number_arguments) {
+    _num_arguments = number_arguments;
 }
 
 /*===========================================================================================================================================================*/
@@ -38,7 +38,7 @@ void SatSolver_cadical::add_clause_short(int64_t lit1, int64_t lit2){
 std::vector<bool> SatSolver_cadical::get_model() {
     std::vector<bool> model;
     // Get the model from the CMS solver
-    for (int i = 1; i < _num_variables + 1; ++i) {
+    for (int i = 1; i < _num_arguments + 1; ++i) {
         model.push_back(cadical_solver.val(i) > 0);
     }
     return model;

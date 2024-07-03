@@ -30,22 +30,67 @@ namespace std
 	};
 }
 
+/// <summary>
+/// This class is responsible for representing the data of an abstract argumentation framework.
+/// </summary>
 class AF {
 
 public:
 
+    /// <summary>
+    /// Number of arguments in the abstract argumentation framework.
+    /// </summary>
     uint32_t num_args;
+    /// <summary>
+    /// Lists for each argument a list of the arguments, attacking ist.
+    /// </summary>
     std::vector<VectorBitSet> attackers;
+	/// <summary>
+	/// Lists for each argument a list of the arguments, which are attacked by it.
+	/// </summary>
 	std::vector<VectorBitSet> victims;
+	/// <summary>
+	/// Booleans indicating if an arguments attacks itself.
+	/// </summary>
 	std::vector<uint8_t> self_attack;
+    /// <summary>
+    /// Set in which the buckets contain pairs of arguments, indicating that the first argument is attacking the second.
+    /// </summary>
     std::unordered_set<std::pair<uint32_t, uint32_t>> attacks;
+	/// <summary>
+	/// Set in which the buckets contain pairs of arguments, indicating that each argument is attacking the other.
+	/// </summary>
 	std::unordered_set<std::pair<uint32_t, uint32_t>> symmetric_attacks;
+	/// <summary>
+	/// List for all arguments their distance to the argument of the query.
+	/// </summary>
 	std::vector<uint32_t> distance_to_query;
 
+    /// <summary>
+    /// Adds an attack to the instance.
+    /// </summary>
+    /// <param name="attacker">The argument which is attacking the other.</param>
+    /// <param name="victim">The argument which is been attacked by the other.</param>
+    /// <returns>TRUE iff the attack was successfully added.</returns>
     bool add_attack(uint32_t attacker, uint32_t victim);
-	void initialize(uint32_t number_args);
-    void finish_initilization();
+    /// <summary>
+    /// This method checks if there's an attack from the one to the other specified 
+	/// argument.
+    /// </summary>
+    /// <param name="attacker">The argument which is attacking the other.</param>
+    /// <param name="victim">The argument which is been attacked by the other.</param>
+    /// <returns>TRUE iff there is an attack.</returns>
     bool exists_attack(uint32_t attacker, uint32_t victim) const;
+    /// <summary>
+    /// This method signals the instance, that it has all necessary information to finish
+	/// the initialization process.
+    /// </summary>
+    void finish_initilization();
+	/// <summary>
+	/// This method starts the initialization process on this instance.
+	/// </summary>
+	/// <param name="number_args">The number of arguments in the framework to initialize.</param>
+	void initialize(uint32_t number_args);
 };
 
 #endif

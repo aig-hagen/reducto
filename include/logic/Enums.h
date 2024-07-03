@@ -7,13 +7,20 @@
 
 #include <iostream>
 
-
+/// <summary>
+/// Abbreviations of the different type of tasks, which the solver can solve
+/// </summary>
 enum task { DC, DS, SE, EE, CE, UNKNOWN_TASK };
+/// <summary>
+/// Abbreviations of the different semantics of the solutions to calculate.
+/// </summary>
 enum semantics { IT, UC, PR, GR, UNKNOWN_SEM };
-enum SOLVERS { CMS, CADICAL };
 
 using namespace std;
 
+/// <summary>
+/// This class is responsible for converting to and from Enum-Data-Types.
+/// </summary>
 class Enums {
 public:
 

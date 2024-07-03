@@ -25,11 +25,15 @@ extern "C" {
 
 using namespace std;
 
+/// <summary>
+/// This class is responsible for solving a problem of sceptical acceptance of an query-argument
+/// in extensions of the preferred semantics.
+/// </summary>
 class Solver_DS_PR {
 public:
 
 	/// <summary>
-	/// Checks if a specified argument is sceptically accepted.
+	/// Checks if a specified argument is sceptically accepted by all preferred extensions.
 	/// </summary>
 	/// <param name="argument">The argument, which could be sceptical accepted or not.</param>
 	/// <param name="framework">The abstract argumentation framework, specifying the underlying attack relations between the arguments.</param>
