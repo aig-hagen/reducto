@@ -158,8 +158,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 	priority(prio)
 		{
 			check_rejection_parallel_recursiv(argument, framework, activeArgs, isRejected, new_extension_build, output_extension);
-			new_extension_build.clear();
-			int tmp_num_tasks = 0;																												
+			new_extension_build.clear();																												
 		}
 		new_extension_build.clear();
 
