@@ -162,7 +162,6 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 			int tmp_num_tasks = 0;																												
 		}
 		new_extension_build.clear();
-		reduct = extension_build.empty() ? activeArgs.copy() : Reduct::get_reduct_set(activeArgs, framework, extension_build);
 
 #pragma omp flush(isRejected)
 #pragma omp atomic read
