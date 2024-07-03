@@ -44,11 +44,11 @@ public:
     /// <summary>
     /// Lists for each argument a list of the arguments, attacking ist.
     /// </summary>
-    std::vector<VectorBitSet> attackers;
+    std::vector<ArrayBitSet> attackers;
 	/// <summary>
 	/// Lists for each argument a list of the arguments, which are attacked by it.
 	/// </summary>
-	std::vector<VectorBitSet> victims;
+	std::vector<ArrayBitSet> victims;
 	/// <summary>
 	/// Booleans indicating if an arguments attacks itself.
 	/// </summary>

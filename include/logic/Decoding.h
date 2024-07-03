@@ -23,6 +23,6 @@ public:
 	/// <param name="solver">The SatSolver, which solution is to be translated.</param>
 	/// <param name="activeArgs">The set of active arguments, in the current state of the framework.</param>
 	/// <returns>Set of arguments, which solves the problem of the specified SatSolver.</returns>
-	static list<uint32_t> get_set_from_solver(SatSolver &solver, VectorBitSet &activeArgs);
+	static list<uint32_t> get_set_from_solver(SatSolver &solver, ArrayBitSet &activeArgs);
 };
 #endif

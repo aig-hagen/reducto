@@ -27,7 +27,7 @@ public:
 	/// <param name="framework">The framework to reduce.</param>
 	/// <param name="argument">The argument, by which the framework will be reduced.</param>
 	/// <returns>Set of active arguments in the new transition state after the reduction.</returns>
-	static VectorBitSet get_reduct(VectorBitSet &activeArguments, AF &framework, uint32_t argument);
+	static ArrayBitSet get_reduct(ArrayBitSet &activeArguments, AF &framework, uint32_t argument);
 
 	/// <summary>
 	/// Reduces the state of the specified framework by the specified set of arguments.
@@ -37,7 +37,7 @@ public:
 	/// <param name="framework">The framework to reduce.</param>
 	/// <param name="set_arguments">The set of argument, by which the framework will be reduced.</param>
 	/// <returns>Set of active arguments in the new transition state after the reduction.</returns>
-	static VectorBitSet get_reduct_set(VectorBitSet &activeArguments, AF &framework, list<uint32_t> &set_arguments);
+	static ArrayBitSet get_reduct_set(ArrayBitSet &activeArguments, AF &framework, list<uint32_t> &set_arguments);
 };
 
 #endif

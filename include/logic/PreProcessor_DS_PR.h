@@ -38,6 +38,6 @@ public:
 	/// <param name="out_reduct">[Output-Parameter]The set of active arguments, which remain of the original framework after the preprocessor if finished.
 	/// Keep in mind, that the value of this parameter will be overwritten during this method, as it's an output-parameter.</param>
 	/// <returns>Returns an Enum indicating if the method has solved the problem, and if so to which conclusion it came.</returns>
-	static pre_proc_result process(AF &framework, uint32_t argument, VectorBitSet &out_reduct);
+	static pre_proc_result process(AF &framework, uint32_t argument, ArrayBitSet &out_reduct);
 };
 #endif

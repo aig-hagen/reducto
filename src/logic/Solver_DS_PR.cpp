@@ -15,7 +15,7 @@ static list<uint32_t> ExtendExtension(list<uint32_t> &extension_build, list<uint
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, VectorBitSet &activeArgs, bool *isRejected,
+static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, ArrayBitSet &activeArgs, bool *isRejected,
 	list<uint32_t> &extension_build, list<uint32_t> &output_extension)	//, int *num_tasks, int *num_tasks_max
 {
 	int id = omp_get_thread_num();
@@ -40,13 +40,13 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 	//cout << endl;																																//DEBUG
 	
 	//long mem_base = get_mem_usage();																											//DEBUG
-	VectorBitSet reduct = extension_build.empty() ? activeArgs.copy() : Reduct::get_reduct_set(activeArgs, framework, extension_build);
+	ArrayBitSet reduct = extension_build.empty() ? activeArgs.copy() : Reduct::get_reduct_set(activeArgs, framework, extension_build);
 	//cout << id << ": reduct created: ";																										//DEBUG
 	//Printer::print_set(reduct);																												//DEBUG
 	//cout << endl;																																//DEBUG
 	//cout << " memory_usage: " << get_mem_usage() - mem_base << "/" << get_mem_usage() << "[kB]" << endl;																					//DEBUG
 
-	if (reduct._vector.size() < 2)
+	if (reduct._array.size() < 2)
 	{
 		//there is only 1 active argument, this has to be the argument to check, if not then there should have been a rejection check earlier who did not work
 		//printf("%d: only 1 argument left -> skip reduct\n", omp_get_thread_num());															//DEBUG
@@ -63,7 +63,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 	isFirstCalculation = (bool *)malloc(sizeof * isFirstCalculation);
 	*isFirstCalculation = true;
 	
-	uint64_t numVars = reduct._vector.size();
+	uint64_t numVars = reduct._array.size();
 
 	//mem_base = get_mem_usage();																												//DEBUG
 	SatSolver *solver = NULL;
@@ -287,7 +287,7 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static bool check_rejection_parallel(uint32_t argument, AF &framework, VectorBitSet &active_args, list<uint32_t> &proof_extension, uint8_t numCores)
+static bool check_rejection_parallel(uint32_t argument, AF &framework, ArrayBitSet &active_args, list<uint32_t> &proof_extension, uint8_t numCores)
 {
 	//float start_time = omp_get_wtime();																											//DEBUG
 	//long mem_base = get_mem_usage();																												//DEBUG
@@ -351,7 +351,7 @@ static bool check_rejection_parallel(uint32_t argument, AF &framework, VectorBit
 
 bool Solver_DS_PR::solve(uint32_t argument, AF &framework, list<uint32_t> &proof_extension, uint8_t numCores) {
 	
-	VectorBitSet initial_reduct = VectorBitSet();
+	ArrayBitSet initial_reduct = ArrayBitSet();
 
 	pre_proc_result result_preProcessor = PreProc_DS_PR::process(framework, argument, initial_reduct);
 
