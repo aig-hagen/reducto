@@ -1,7 +1,7 @@
-#include "../../include/logic/Prioritizer.h"
+#include "../../include/logic/Heuristic1.h"
 
 
-uint32_t Prioritizer::calculate_priority(AF &framework, list<uint32_t> &set_arguments) {
+uint32_t Heuristic1::calculate_priority(AF &framework, list<uint32_t> &set_arguments) {
 
 	if (set_arguments.empty()) {
 		throw new exception;

@@ -4,7 +4,7 @@ using namespace std;
 
 void static print_usage()
 {
-	cout << "Usage: " << SOLVERNAME << " -p <task> -f <file> -fo <format> [-a <query>]\n\n";
+	cout << "Usage: " << PROGRAM_NAME << " -p <task> -f <file> -fo <format> [-a <query>]\n\n";
 	cout << "  <task>      computational problem; for a list of available problems use option --problems\n";
 	cout << "  <file>      input argumentation framework\n";
 	cout << "  <format>    file format for input AF; for a list of available formats use option --formats\n";
@@ -21,7 +21,7 @@ void static print_usage()
 
 void static print_version()
 {
-	cout << SOLVERNAME << " (version "<< VERSIONNUMBER <<")\n"
+	cout << PROGRAM_NAME << " (version "<< VERSIONNUMBER <<")\n"
 		<< "Lars Bengel, University of Hagen <lars.bengel@fernuni-hagen.de>\n" 
 		<< "Julian Sander, University of Hagen <julian.sander@fernuni-hagen.de>\n";
 }
@@ -125,12 +125,8 @@ int execute(int argc, char **argv)
 		return 1;
 	}
 
-	//printf("Set file format\n");																										//DEBUG
-
 	if (fileformat.empty()) {
 		fileformat = file.substr(file.find_last_of(".") + 1, file.length() - file.find_last_of(".") - 1);
-		/*cerr << argv[0] << ": File format must be specified via -fo flag\n";
-		return 1;*/
 	}
 
 	AF framework;
@@ -169,10 +165,6 @@ int execute(int argc, char **argv)
 			cout << (skept_accepted ? "YES" : "NO") << endl;
 			if (!skept_accepted)
 			{
-				/*if (*proof_extension != NULL)
-				{
-					EXTENSIONSOLVER::BuildExtension(framework, actives, proof_extension);
-				}*/
 				cout << "w " << endl;
 
 				if (!proof_extension.empty()) {
@@ -196,16 +188,7 @@ int execute(int argc, char **argv)
 	return 0;
 }
 
-int test(int argc, char **argv)
-{
-
-	TestCases::run_Tests();
-
-	return 0;
-}
-
 int main(int argc, char **argv)
 {
 	execute(argc, argv);
-	//test(argc, argv)
 }

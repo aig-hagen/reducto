@@ -34,7 +34,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <omp.h>
-#include <getopt.h>			// parsing commandline options
+#include <getopt.h>
 
 extern "C" {
 	#include "../include/util/MemoryWatchDog.h"
@@ -46,17 +46,28 @@ extern "C" {
 
 #include "../include/logic/Enums.h"
 
-#include "../include/logic/Tests.h"
-
-constexpr auto SOLVERNAME = "ParallelSolver";
+constexpr auto PROGRAM_NAME = "ParallelSolver";
 constexpr auto VERSIONNUMBER = "1.15";
+/// <summary>
+/// Number of cores requested to use during the computation of a solution.
+/// Keep in mind that the actual number of cores used depends on the 
+/// OS scheduler and might be lower. If value == 0, then the system 
+/// is free to choose the /// number of cores automatically without any 
+/// restrictions.
+/// </summary>
 constexpr auto NUM_CORES = 0;
 
+/// <summary>
+/// Flags used for internal processing.
+/// </summary>
 static int version_flag = 0;
 static int usage_flag = 0;
 static int formats_flag = 0;
 static int problems_flag = 0;
 
+/// <summary>
+/// Different options that can be added to a execution call of this application.
+/// </summary>
 const struct option longopts[] =
 {
 	{"help", no_argument, &usage_flag, 1},

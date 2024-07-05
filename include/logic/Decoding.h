@@ -11,16 +11,18 @@
 
 using namespace std;
 
+/// <summary>
+/// This class is responsible to decode a SATProblem in structure of arguments.
+/// </summary>
 class Decoding {
 public:
 
 	/// <summary>
-	/// Translates the solution of a specified SAT-problem to a set of argument, in the context of a specified set of active arguments.
+	/// Translates the solution of a specified SatSolver to a set of argument, in the context of a specified set of active arguments.
 	/// </summary>
-	/// <param name="problem">The SAT-Solver, which solution if to be tranlated.</param>
+	/// <param name="solver">The SatSolver, which solution is to be translated.</param>
 	/// <param name="activeArgs">The set of active arguments, in the current state of the framework.</param>
-	/// <returns>Set of arguments, which solve the specified SAT-problem.</returns>
-	static list<uint32_t> get_set_from_solver(SatSolver &solver, VectorBitSet &activeArgs);
-
+	/// <returns>Set of arguments, which solves the problem of the specified SatSolver.</returns>
+	static list<uint32_t> get_set_from_solver(SatSolver &solver, ArrayBitSet &activeArgs);
 };
 #endif

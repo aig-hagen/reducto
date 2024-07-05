@@ -5,6 +5,9 @@
 #include <cstdint>
 #include <vector>
 
+/// <summary>
+/// This class is responsible for solving a problem encoded as a SAT-problem
+/// </summary>
 class SatSolver {
 public:
 
@@ -18,11 +21,13 @@ public:
 	/// Adds a new clause, containing up to 2 literals, to the SAT-problem of the solver.
 	/// </summary>
 	/// <param name="lit1">First literal of the clause to add.</param>
-	/// <param name="lit2">Second literal of the clause to add. In case clause has only 1 literal, this parameter is NULL</param>
+	/// <param name="lit2">Second literal of the clause to add. 
+	/// In case, that the clause has only 1 literal, this parameter is NULL</param>
 	virtual void add_clause_short(int64_t lit1, int64_t lit2) = 0;
 
 	/// <summary>
-	/// Returns the solution for the SAT-problem of the solver. Rejecting variable are returned after all accepting variables are returned.
+	/// Returns the solution for the SAT-problem of the solver. 
+	/// Rejecting variables are listed in the second half of the returned data.
 	/// </summary>
 	/// <returns>Array of type bool, indicating for each variable if it's set or not</returns>
 	virtual std::vector<bool> get_model() = 0;
@@ -30,7 +35,7 @@ public:
 	/// <summary>
 	/// Method to check if single variable is part of the model.
 	/// </summary>
-	/// <param name="variable"></param>
+	/// <param name="variable">The variable of the SAT-problem to check.</param>
 	/// <returns>TRUE if the variable is true in the model.</returns>
 	virtual std::uint8_t check_var_model(int64_t variable) = 0;
 

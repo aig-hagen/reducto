@@ -25,8 +25,6 @@ void AF::initialize(uint32_t number_args) {
 
 void AF::finish_initilization()
 {
-	//float start_time = omp_get_wtime();																										//DEBUG	
-
 	const uint64_t tmp_num_args = static_cast<uint64_t>(num_args) + 1;
 	vector<vector<uint32_t>> attackers_vectors;
 	attackers_vectors.resize(tmp_num_args);
@@ -59,23 +57,19 @@ void AF::finish_initilization()
 
 	for (int i = 0; i < attackers.size(); i++) {
 		attackers_vectors[i].shrink_to_fit();
-		attackers[i] = VectorBitSet(attackers_vectors[i], attackers_bitsets[i]);
+		attackers[i] = ArrayBitSet(attackers_vectors[i], attackers_bitsets[i]);
 	}
 	attackers_vectors.clear();
 	attackers_bitsets.clear();
 
 	for (int i = 0; i < victims.size(); i++) {
 		victims_vectors[i].shrink_to_fit();
-		victims[i] = VectorBitSet(victims_vectors[i], victims_bitsets[i]);
+		victims[i] = ArrayBitSet(victims_vectors[i], victims_bitsets[i]);
 	}
 	victims_vectors.clear();
 	victims_bitsets.clear();
 
 	self_attack.shrink_to_fit();
-
-	//float end_time = omp_get_wtime();																											//DEBUG
-	//float duration = end_time - start_time;																									//DEBUG
-	//printf("runtime finish_initilization [s]: %.2f s\n", duration);																			//DEBUG
 }
 
 bool AF::exists_attack(uint32_t attacker, uint32_t victim) const {

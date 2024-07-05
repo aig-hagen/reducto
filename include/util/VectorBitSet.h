@@ -8,24 +8,37 @@
 
 using namespace std;
 
-class VectorBitSet {
+/// <summary>
+/// This class is realizes a combined data structure of an array and a bitset.
+/// </summary>
+class ArrayBitSet {
 
 public:
-
-    std::vector<uint32_t> _vector;
+    /// <summary>
+    /// Array of fixed length, used for iterating through the contained elements.
+    /// </summary>
+    std::vector<uint32_t> _array;
+    /// <summary>
+    /// Bitset of fixed length, used for existance checks of an element.
+    /// </summary>
     std::vector<uint8_t> _bitset;
 
-    VectorBitSet() {}
+    ArrayBitSet() {}
 
-    VectorBitSet(std::vector<uint32_t> new_vector, std::vector<uint8_t> new_bitset) : _vector{ new_vector }, _bitset{ new_bitset } {}
+    ArrayBitSet(std::vector<uint32_t> new_vector, std::vector<uint8_t> new_bitset) : _array{ new_vector }, _bitset{ new_bitset } {}
 
-    ~VectorBitSet() {
+    ~ArrayBitSet() {
         _bitset.clear();
-        _vector.clear();
+        _array.clear();
     }
 
-    VectorBitSet copy() {
-        const uint64_t vector_size = _vector.size();
+    /// <summary>
+    /// This method creates a new instance and copies all elements of this
+    /// instance in the new instance created.
+    /// </summary>
+    /// <returns>New instance containing all elements of this instance.</returns>
+    ArrayBitSet copy() {
+        const uint64_t vector_size = _array.size();
         std::vector<uint32_t> copy_vector;
         const uint64_t bitset_size = _bitset.size();
         std::vector<uint8_t> copy_bitset;
@@ -33,18 +46,21 @@ public:
 
         for (int i = 0; i < bitset_size; i++) {
             if (i < vector_size) {
-                copy_vector.push_back(_vector[i]);
+                copy_vector.push_back(_array[i]);
             }
 
             copy_bitset[i] = _bitset[i];
         }
 
-        return VectorBitSet(copy_vector, copy_bitset);
+        return ArrayBitSet(copy_vector, copy_bitset);
     }
 
+    /// <summary>
+    /// Frees the space of this instance, but not of its elements.
+    /// </summary>
     void clear() {
         _bitset.clear();
-        _vector.clear();
+        _array.clear();
     }
 };
 

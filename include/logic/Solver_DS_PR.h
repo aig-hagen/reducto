@@ -3,18 +3,23 @@
 
 #include <iostream>
 #include <cstdint>
+#include <string_view>
+#include <functional>
 #include <vector>
+#include <queue>
 
 extern "C" {
 	#include "../util/MemoryWatchDog.h"
 }
 
 #include "AF.h"
+#include "Decoding.h"
 #include "Encoding.h"
 #include "Enums.h"
-#include "Decoding.h"
+#include "ExtensionPrioritised.h"
+#include "Heuristic1.h"
+#include "IPrioritizer.h"
 #include "PreProcessor_DS_PR.h"
-#include "Prioritizer.h"
 #include "Reduct.h"
 #include "SatSolver.h"
 #include "SatSolver_cadical.h"
@@ -25,11 +30,15 @@ extern "C" {
 
 using namespace std;
 
+/// <summary>
+/// This class is responsible for solving a problem of sceptical acceptance of an query-argument
+/// in extensions of the preferred semantics.
+/// </summary>
 class Solver_DS_PR {
 public:
 
 	/// <summary>
-	/// Checks if a specified argument is sceptically accepted.
+	/// Checks if a specified argument is sceptically accepted by all preferred extensions.
 	/// </summary>
 	/// <param name="argument">The argument, which could be sceptical accepted or not.</param>
 	/// <param name="framework">The abstract argumentation framework, specifying the underlying attack relations between the arguments.</param>
