@@ -27,9 +27,11 @@ set(HEADERS
 	${INCLD_LOGIC}/Decoding.h 
 	${INCLD_LOGIC}/Encoding.h 
 	${INCLD_LOGIC}/Enums.h 
+	${INCLD_LOGIC}/ExtensionPrioritised.h
+	${INCLD_LOGIC}/Heuristic1.h
 	${INCLD_LOGIC}/Parser_iccma.h
 	${INCLD_LOGIC}/PreProcessor_DS_PR.h
-	${INCLD_LOGIC}/Prioritizer.h
+	${INCLD_LOGIC}/IPrioritizer.h
 	${INCLD_LOGIC}/Reduct.h 
 	${INCLD_LOGIC}/SatSolver.h
 	${INCLD_LOGIC}/SatSolver_cadical.h
@@ -47,9 +49,10 @@ set(SRCFILES
 	${SRC_LOGIC}Decoding.cpp 
 	${SRC_LOGIC}Encoding.cpp 
 	${SRC_LOGIC}Enums.cpp
+	${SRC_LOGIC}ExtensionPrioritised.cpp
+	${SRC_LOGIC}Heuristic1.cpp
 	${SRC_LOGIC}Parser_iccma.cpp
 	${SRC_LOGIC}PreProcessor_DS_PR.cpp
-	${SRC_LOGIC}Prioritizer.cpp
 	${SRC_LOGIC}Reduct.cpp 
 	${SRC_LOGIC}SatSolver_cadical.cpp
 	${SRC_LOGIC}ScepticalCheck.cpp

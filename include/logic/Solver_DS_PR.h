@@ -3,18 +3,23 @@
 
 #include <iostream>
 #include <cstdint>
+#include <string_view>
+#include <functional>
 #include <vector>
+#include <queue>
 
 extern "C" {
 	#include "../util/MemoryWatchDog.h"
 }
 
 #include "AF.h"
+#include "Decoding.h"
 #include "Encoding.h"
 #include "Enums.h"
-#include "Decoding.h"
+#include "ExtensionPrioritised.h"
+#include "Heuristic1.h"
+#include "IPrioritizer.h"
 #include "PreProcessor_DS_PR.h"
-#include "Prioritizer.h"
 #include "Reduct.h"
 #include "SatSolver.h"
 #include "SatSolver_cadical.h"

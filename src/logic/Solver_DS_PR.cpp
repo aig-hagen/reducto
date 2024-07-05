@@ -13,16 +13,18 @@ static list<uint32_t> ExtendExtension(list<uint32_t> &extension_build, list<uint
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, ArrayBitSet &activeArgs, bool *isRejected,
-	list<uint32_t> &extension_build, list<uint32_t> &output_extension)
+static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activeArgs, bool &isRejected, bool &isTerminated,
+	list<uint32_t> &extension_build, list<uint32_t> &output_extension, Heuristic1 &heuristic,
+	std::priority_queue<ExtensionPrioritised, std::vector<ExtensionPrioritised>, extPrioLess_t> &extension_priority_queue,
+	omp_lock_t *lock_prio_queue, omp_lock_t *lock_has_entry)
 {
 	int id = omp_get_thread_num();
-	bool isRejected_tmp = false;
+	bool isTerminated_tmp = false;
 
-#pragma omp flush(isRejected)
+#pragma omp flush(isTerminated)
 #pragma omp atomic read
-	isRejected_tmp = *isRejected;
-	if (isRejected_tmp == true)
+	isTerminated_tmp = isTerminated;
+	if (isTerminated_tmp)
 	{
 		return;
 	}
@@ -49,10 +51,10 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 	solver = new SatSolver_cadical(numVars);
 	Encoding::add_clauses_nonempty_admissible_set(*solver, framework, reduct);
 
-#pragma omp flush(isRejected)
+#pragma omp flush(isTerminated)
 #pragma omp atomic read
-	isRejected_tmp = *isRejected;
-	if (isRejected_tmp == true)
+	isTerminated_tmp = isTerminated;
+	if (isTerminated_tmp == true)
 	{
 		free(isSolved);
 		free(isFirstCalculation);
@@ -82,8 +84,11 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 				// in the calculation, extension_build cannot contain the query argument, so that there exists
 				// an extension not containing the query argument, so that the argument gets sceptical rejected				
 #pragma atomic write
-				*isRejected = true;
+				isRejected = true;
 #pragma omp flush(isRejected)
+#pragma atomic write
+				isTerminated = true;
+#pragma omp flush(isTerminated)
 
 				free(isSolved);
 				free(isFirstCalculation);
@@ -104,8 +109,11 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 				// cannot contain the query argument, so that there exists
 				// an extension not containing the query argument, so that the argument gets sceptical rejected				
 #pragma atomic write
-				*isRejected = true;
+				isRejected = true;
 #pragma omp flush(isRejected)
+#pragma atomic write
+				isTerminated = true;
+#pragma omp flush(isTerminated)
 				free(isSolved);
 				free(isFirstCalculation);
 				delete solver;
@@ -124,8 +132,11 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 		if (ScepticalCheck::check_rejection(argument, initial_set, framework))
 		{
 #pragma atomic write
-			*isRejected = true;			
+			isRejected = true;
 #pragma omp flush(isRejected)
+#pragma atomic write
+			isTerminated = true;
+#pragma omp flush(isTerminated)
 
 			list<uint32_t> new_extension_build = ExtendExtension(extension_build, initial_set);
 #pragma atomic write
@@ -145,22 +156,20 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 
 		list<uint32_t> new_extension_build = ExtendExtension(extension_build, initial_set);		
 		initial_set.clear();
-		uint32_t prio = Prioritizer::calculate_priority(framework, new_extension_build);
-#pragma omp task \
-	firstprivate(new_extension_build) \
-	private(reduct, initial_set, solver) \
-	shared(argument, framework, activeArgs, isRejected, output_extension) \
-	priority(prio)
-		{
-			check_rejection_parallel_recursiv(argument, framework, activeArgs, isRejected, new_extension_build, output_extension);
-			new_extension_build.clear();																												
-		}
-		new_extension_build.clear();
+		
+		ExtensionPrioritised newEntryQueue = ExtensionPrioritised(framework, new_extension_build, heuristic);
 
-#pragma omp flush(isRejected)
+		omp_set_lock(lock_prio_queue);
+		extension_priority_queue.push(newEntryQueue);
+#pragma omp flush(extension_priority_queue)
+		//cout << "push prio " << newEntryQueue.Priority << endl;					////////////////////////////////////////DEBUG
+		omp_unset_lock(lock_prio_queue);
+		omp_unset_lock(lock_has_entry);
+
+#pragma omp flush(isTerminated)
 #pragma omp atomic read
-		isRejected_tmp = *isRejected;
-	} while (has_Solution && !isRejected_tmp);
+		isTerminated_tmp = isTerminated;
+	} while (has_Solution && !isTerminated_tmp);
 
 	free(isSolved);
 	free(isFirstCalculation);
@@ -171,31 +180,106 @@ static void check_rejection_parallel_recursiv(uint32_t argument, AF &framework, 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static bool check_rejection_parallel(uint32_t argument, AF &framework, ArrayBitSet &active_args, list<uint32_t> &proof_extension, uint8_t numCores)
+static list<uint32_t> pop_prio_queue(std::priority_queue<ExtensionPrioritised, std::vector<ExtensionPrioritised>, extPrioLess_t> &extension_priority_queue
+	, omp_lock_t *lock_queue) {
+	omp_set_lock(lock_queue);
+	list<uint32_t> result = extension_priority_queue.top().Extension;
+	ExtensionPrioritised entry = extension_priority_queue.top();
+	//cout << "pop prio " << entry.Priority << endl;			////////////////////////////////////////DEBUG
+	extension_priority_queue.pop();
+#pragma omp flush(extension_priority_queue)
+	omp_unset_lock(lock_queue);
+	return result;
+}
+
+static uint64_t check_prio_queue_size(std::priority_queue<ExtensionPrioritised, std::vector<ExtensionPrioritised>, extPrioLess_t> extension_priority_queue
+	, omp_lock_t *lock_queue) {
+	omp_set_lock(lock_queue);
+	uint64_t result = extension_priority_queue.size();
+	omp_unset_lock(lock_queue);
+	return result;
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
+static bool start_checking_rejection(uint32_t argument, AF &framework, ArrayBitSet &active_args, list<uint32_t> &proof_extension, uint8_t numCores)
 {
-	bool *isRejected = NULL;
-	isRejected = (bool *)malloc(sizeof *isRejected);
-	if (isRejected == NULL) {
+	omp_lock_t *lock_queue = NULL;
+	lock_queue = (omp_lock_t *)malloc(sizeof * lock_queue);
+	if (lock_queue == NULL) {
 		printf("Memory allocation failed\n");
 		exit(1);
 	}
-	*isRejected = false;
+	omp_init_lock(lock_queue);
+
+	omp_lock_t *lock_has_entry = NULL;
+	lock_has_entry = (omp_lock_t *)malloc(sizeof * lock_has_entry);
+	if (lock_queue == NULL) {
+		printf("Memory allocation failed\n");
+		exit(1);
+	}
+	omp_init_lock(lock_has_entry);
+
+	Heuristic1 heuristic = Heuristic1();
 
 	if (numCores > 0)
 	{
 		omp_set_num_threads(numCores);
 	}
 
-#pragma omp parallel shared(argument, framework, active_args, isRejected, proof_extension)
-#pragma omp single
+	std::priority_queue<ExtensionPrioritised, std::vector<ExtensionPrioritised>, extPrioLess_t> extension_priority_queue;
+
+	bool isTerminated = false;
+	bool isRejected = false;
+	omp_set_lock(lock_has_entry);
+#pragma omp parallel shared(argument, framework, active_args, isRejected, isTerminated, proof_extension, heuristic, extension_priority_queue)
 	{
-		list<uint32_t> extension_build;
-		check_rejection_parallel_recursiv(argument, framework, active_args, isRejected, extension_build, proof_extension);
+#pragma omp single nowait
+		{
+			list<uint32_t> extension_build;
+			check_rejection(argument, framework, active_args, isRejected, isTerminated, extension_build, proof_extension,
+				heuristic, extension_priority_queue, lock_queue, lock_has_entry);
+#pragma atomic write
+			isTerminated = true;
+#pragma omp flush(isTerminated)
+			omp_unset_lock(lock_has_entry);
+		}
+
+		bool isTerminated_tmp = false;
+		while (true) {
+			omp_set_lock(lock_has_entry);
+#pragma omp flush(isTerminated)
+#pragma omp atomic read
+			isTerminated_tmp = isTerminated;
+			if (isTerminated_tmp) {
+				omp_unset_lock(lock_has_entry);
+				break;
+			}
+
+			uint64_t size = check_prio_queue_size(extension_priority_queue, lock_queue);
+			
+			if (size > 0) {
+				list<uint32_t> extension = pop_prio_queue(extension_priority_queue, lock_queue);
+
+				if (size > 1) {
+					omp_unset_lock(lock_has_entry);
+				}
+
+				check_rejection(argument, framework, active_args, isRejected, isTerminated, extension, proof_extension,
+					heuristic, extension_priority_queue, lock_queue, lock_has_entry);
+			}
+			else {
+				throw new exception();
+			}
+		}
 	}
 	
-	bool result = *isRejected;
-	free(isRejected);
-	return result;
+	omp_destroy_lock(lock_queue);
+	free(lock_queue);
+	omp_destroy_lock(lock_has_entry);
+	free(lock_has_entry);
+	return isRejected;
 }
 
 /*===========================================================================================================================================================*/
@@ -215,7 +299,7 @@ bool Solver_DS_PR::solve(uint32_t argument, AF &framework, list<uint32_t> &proof
 			return false;
 
 		case unknown:
-			return !check_rejection_parallel(argument, framework, initial_reduct, proof_extension, numCores);
+			return !start_checking_rejection(argument, framework, initial_reduct, proof_extension, numCores);
 
 		default:
 			return unknown;
