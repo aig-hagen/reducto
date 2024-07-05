@@ -123,7 +123,7 @@ void Encoding::add_clauses_nonempty_admissible_set(SatSolver &solver, AF &framew
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-void Encoding::add_complement_clause(SatSolver &solver, ArrayBitSet &activeArgs)
+vector<int64_t> Encoding::add_complement_clause(SatSolver &solver, ArrayBitSet &activeArgs)
 {
 	vector<int64_t> complement_clause;
 	
@@ -138,6 +138,5 @@ void Encoding::add_complement_clause(SatSolver &solver, ArrayBitSet &activeArgs)
 		}
 	}
 
-	solver.add_clause(complement_clause);
-	complement_clause.clear();
+	return complement_clause;
 }

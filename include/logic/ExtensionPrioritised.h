@@ -18,8 +18,11 @@ class ExtensionPrioritised {
 public:
 	list<uint32_t> Extension;
 	uint32_t Priority;
+	vector<vector<int64_t>> Complement_clauses;
 
+	ExtensionPrioritised();
 	ExtensionPrioritised(AF framework, list<uint32_t> extension, Heuristic1 heuristic);
+	ExtensionPrioritised(AF framework, list<uint32_t> extension, Heuristic1 heuristic, vector<vector<int64_t>> complement_clauses);
 	~ExtensionPrioritised();
 };
 

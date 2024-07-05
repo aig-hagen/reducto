@@ -32,7 +32,8 @@ public:
     /// </summary>
     /// <param name="solver">The SATSolver, to which a solution was found</param>
     /// <param name="activeArgs">The set of active arguments, in the current state of the framework.</param>
-    static void add_complement_clause(SatSolver &solver, ArrayBitSet &activeArgs);
+    /// <returns>Returns the complement clause for the current solver status.</returns>
+    static vector<int64_t> add_complement_clause(SatSolver &solver, ArrayBitSet &activeArgs);
 };
 
 #endif

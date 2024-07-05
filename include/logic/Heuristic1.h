@@ -13,9 +13,11 @@ using namespace std;
 /// <summary>
 /// This class is responsible for prioritizing tasks during the process of the solver.
 /// </summary>
-class Heuristic1 : IPrioritizer 
+class Heuristic1 : public IPrioritizer 
 {
 public:
+	Heuristic1() {};
+
 	/// <summary>
 	/// This method calculates the priority of a specified set of arguments, in the specified abstract argumentation framework.
 	/// </summary>

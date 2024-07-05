@@ -13,10 +13,10 @@ static list<uint32_t> ExtendExtension(list<uint32_t> &extension_build, list<uint
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activeArgs, bool &isRejected, bool &isTerminated,
-	list<uint32_t> &extension_build, list<uint32_t> &output_extension, Heuristic1 &heuristic,
+static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activeArgs, bool &isRejected, bool &isTerminated, bool isMain,
+	ExtensionPrioritised state_info, Heuristic1 heuristic, list<uint32_t> &output_extension,
 	std::priority_queue<ExtensionPrioritised, std::vector<ExtensionPrioritised>, extPrioLess_t> &extension_priority_queue,
-	omp_lock_t *lock_prio_queue, omp_lock_t *lock_has_entry)
+	omp_lock_t *lock_prio_queue, omp_lock_t *lock_has_entry, uint32_t lim_iterations)
 {
 	int id = omp_get_thread_num();
 	bool isTerminated_tmp = false;
@@ -29,7 +29,7 @@ static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activ
 		return;
 	}
 
-	ArrayBitSet reduct = extension_build.empty() ? activeArgs.copy() : Reduct::get_reduct_set(activeArgs, framework, extension_build);
+	ArrayBitSet reduct = state_info.Extension.empty() ? activeArgs.copy() : Reduct::get_reduct_set(activeArgs, framework, state_info.Extension);
 
 	if (reduct._array.size() < 2)
 	{
@@ -50,6 +50,13 @@ static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activ
 	SatSolver *solver = NULL;
 	solver = new SatSolver_cadical(numVars);
 	Encoding::add_clauses_nonempty_admissible_set(*solver, framework, reduct);
+	uint32_t num_iterations = 0;
+
+	if (!state_info.Complement_clauses.empty()) {
+		for (int i = 0; i < state_info.Complement_clauses.size(); i++) {
+			solver->add_clause(state_info.Complement_clauses[i]);
+		}
+	}
 
 #pragma omp flush(isTerminated)
 #pragma omp atomic read
@@ -68,11 +75,16 @@ static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activ
 	do {
 		if (*isSolved)
 		{
-			Encoding::add_complement_clause(*solver, reduct);
+			vector<int64_t> complement_clause = Encoding::add_complement_clause(*solver, reduct);
+			solver->add_clause(complement_clause);
+			if (!isMain) {
+				state_info.Complement_clauses.push_back(complement_clause);
+			}
 		}
 
 		*isSolved = true;
 		has_Solution = (*solver).solve();
+		if(!isMain) num_iterations++;
 
 		if (!has_Solution)
 		{
@@ -138,7 +150,7 @@ static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activ
 			isTerminated = true;
 #pragma omp flush(isTerminated)
 
-			list<uint32_t> new_extension_build = ExtendExtension(extension_build, initial_set);
+			list<uint32_t> new_extension_build = ExtendExtension(state_info.Extension, initial_set);
 #pragma atomic write
 			output_extension = new_extension_build;
 
@@ -154,22 +166,22 @@ static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activ
 			continue;
 		}
 
-		list<uint32_t> new_extension_build = ExtendExtension(extension_build, initial_set);		
+		list<uint32_t> new_extension_build = ExtendExtension(state_info.Extension, initial_set);
 		initial_set.clear();
 		
 		ExtensionPrioritised newEntryQueue = ExtensionPrioritised(framework, new_extension_build, heuristic);
 
-		omp_set_lock(lock_prio_queue);
-		extension_priority_queue.push(newEntryQueue);
-#pragma omp flush(extension_priority_queue)
-		//cout << "push prio " << newEntryQueue.Priority << endl;					////////////////////////////////////////DEBUG
-		omp_unset_lock(lock_prio_queue);
-		omp_unset_lock(lock_has_entry);
+		push_priority_queue(lock_prio_queue, extension_priority_queue, newEntryQueue, lock_has_entry);
 
 #pragma omp flush(isTerminated)
 #pragma omp atomic read
 		isTerminated_tmp = isTerminated;
-	} while (has_Solution && !isTerminated_tmp);
+	} while (has_Solution && !isTerminated_tmp &&( isMain || num_iterations < lim_iterations));
+
+	if (!isMain && num_iterations >= lim_iterations) {
+		cout << "interrupt current state "  << endl;					////////////////////////////////////////DEBUG
+		push_priority_queue(lock_prio_queue, extension_priority_queue, state_info, lock_has_entry);
+	}
 
 	free(isSolved);
 	free(isFirstCalculation);
@@ -180,16 +192,25 @@ static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activ
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static list<uint32_t> pop_prio_queue(std::priority_queue<ExtensionPrioritised, std::vector<ExtensionPrioritised>, extPrioLess_t> &extension_priority_queue
+void push_priority_queue(omp_lock_t *lock_prio_queue, std::priority_queue<ExtensionPrioritised, std::vector<ExtensionPrioritised>, extPrioLess_t> &extension_priority_queue, ExtensionPrioritised &newEntryQueue, omp_lock_t *lock_has_entry)
+{
+	omp_set_lock(lock_prio_queue);
+	extension_priority_queue.push(newEntryQueue);
+#pragma omp flush(extension_priority_queue)
+	cout << "push prio " << newEntryQueue.Priority << endl;					////////////////////////////////////////DEBUG
+	omp_unset_lock(lock_prio_queue);
+	omp_unset_lock(lock_has_entry);
+}
+
+static ExtensionPrioritised pop_prio_queue(std::priority_queue<ExtensionPrioritised, std::vector<ExtensionPrioritised>, extPrioLess_t> &extension_priority_queue
 	, omp_lock_t *lock_queue) {
 	omp_set_lock(lock_queue);
-	list<uint32_t> result = extension_priority_queue.top().Extension;
 	ExtensionPrioritised entry = extension_priority_queue.top();
-	//cout << "pop prio " << entry.Priority << endl;			////////////////////////////////////////DEBUG
+	cout << "pop prio " << entry.Priority << endl;			////////////////////////////////////////DEBUG
 	extension_priority_queue.pop();
 #pragma omp flush(extension_priority_queue)
 	omp_unset_lock(lock_queue);
-	return result;
+	return entry;
 }
 
 static uint64_t check_prio_queue_size(std::priority_queue<ExtensionPrioritised, std::vector<ExtensionPrioritised>, extPrioLess_t> extension_priority_queue
@@ -205,6 +226,8 @@ static uint64_t check_prio_queue_size(std::priority_queue<ExtensionPrioritised, 
 
 static bool start_checking_rejection(uint32_t argument, AF &framework, ArrayBitSet &active_args, list<uint32_t> &proof_extension, uint8_t numCores)
 {
+	int lim_iterations = 1;
+
 	omp_lock_t *lock_queue = NULL;
 	lock_queue = (omp_lock_t *)malloc(sizeof * lock_queue);
 	if (lock_queue == NULL) {
@@ -237,9 +260,10 @@ static bool start_checking_rejection(uint32_t argument, AF &framework, ArrayBitS
 	{
 #pragma omp single nowait
 		{
-			list<uint32_t> extension_build;
-			check_rejection(argument, framework, active_args, isRejected, isTerminated, extension_build, proof_extension,
-				heuristic, extension_priority_queue, lock_queue, lock_has_entry);
+			list<uint32_t> extension; 
+			ExtensionPrioritised empty_extension = ExtensionPrioritised();
+			check_rejection(argument, framework, active_args, isRejected, isTerminated, true, empty_extension, heuristic, proof_extension,
+				extension_priority_queue, lock_queue, lock_has_entry, lim_iterations);
 #pragma atomic write
 			isTerminated = true;
 #pragma omp flush(isTerminated)
@@ -260,14 +284,14 @@ static bool start_checking_rejection(uint32_t argument, AF &framework, ArrayBitS
 			uint64_t size = check_prio_queue_size(extension_priority_queue, lock_queue);
 			
 			if (size > 0) {
-				list<uint32_t> extension = pop_prio_queue(extension_priority_queue, lock_queue);
+				ExtensionPrioritised state = pop_prio_queue(extension_priority_queue, lock_queue);
 
 				if (size > 1) {
 					omp_unset_lock(lock_has_entry);
 				}
 
-				check_rejection(argument, framework, active_args, isRejected, isTerminated, extension, proof_extension,
-					heuristic, extension_priority_queue, lock_queue, lock_has_entry);
+				check_rejection(argument, framework, active_args, isRejected, isTerminated, false, state, heuristic, proof_extension,
+					extension_priority_queue, lock_queue, lock_has_entry, lim_iterations);
 			}
 			else {
 				throw new exception();

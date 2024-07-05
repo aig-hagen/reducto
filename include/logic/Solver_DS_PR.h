@@ -50,4 +50,4 @@ public:
 
 #endif
 
-
+static void push_priority_queue(omp_lock_t *lock_prio_queue, std::priority_queue<ExtensionPrioritised, std::vector<ExtensionPrioritised>, extPrioLess_t> &extension_priority_queue, ExtensionPrioritised &newEntryQueue, omp_lock_t *lock_has_entry);
