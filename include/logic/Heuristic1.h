@@ -25,6 +25,6 @@ public:
 	/// <param name="set_args">The set of arguments, for which a priority is to be calculated.</param>
 	/// <returns>Returns a positive integer (not 0), indicating the priority of the specified set. 
 	/// The higher the integer, the higher the calculated priority.</returns>
-	virtual uint32_t calculate_priority(AF &framework, list<uint32_t> &set_args);
+	uint32_t calculate_priority(AF &framework, list<uint32_t> &set_args);
 };
 #endif

@@ -13,8 +13,9 @@ static list<uint32_t> ExtendExtension(list<uint32_t> &extension_build, list<uint
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activeArgs, bool &isRejected, bool &isTerminated, bool isMain,
-	ExtensionPrioritised state_info, Heuristic1 heuristic, list<uint32_t> &output_extension,
+static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activeArgs, bool &isRejected, bool &isTerminated, 
+	bool isMain, ExtensionPrioritised &mainState, omp_lock_t *lock_main_state,
+	ExtensionPrioritised &state_info, Heuristic1 heuristic, list<uint32_t> &output_extension,
 	std::priority_queue<ExtensionPrioritised, std::vector<ExtensionPrioritised>, extPrioLess_t> &extension_priority_queue,
 	omp_lock_t *lock_prio_queue, omp_lock_t *lock_has_entry, uint32_t lim_iterations)
 {
@@ -52,6 +53,15 @@ static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activ
 	Encoding::add_clauses_nonempty_admissible_set(*solver, framework, reduct);
 	uint32_t num_iterations = 0;
 
+	omp_set_lock(lock_main_state);
+#pragma omp flush(mainState)
+	if (!isMain && !mainState.Complement_clauses.empty()) {
+		for (int i = 0; i < mainState.Complement_clauses.size(); i++) {
+			solver->add_clause(mainState.Complement_clauses[i]);
+		}
+	}
+	omp_unset_lock(lock_main_state);
+
 	if (!state_info.Complement_clauses.empty()) {
 		for (int i = 0; i < state_info.Complement_clauses.size(); i++) {
 			solver->add_clause(state_info.Complement_clauses[i]);
@@ -77,9 +87,9 @@ static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activ
 		{
 			vector<int64_t> complement_clause = Encoding::add_complement_clause(*solver, reduct);
 			solver->add_clause(complement_clause);
-			if (!isMain) {
-				state_info.Complement_clauses.push_back(complement_clause);
-			}
+			if(isMain) omp_set_lock(lock_main_state);
+			state_info.Complement_clauses.push_back(complement_clause);
+			if (isMain) omp_unset_lock(lock_main_state);
 		}
 
 		*isSolved = true;
@@ -227,6 +237,22 @@ static bool start_checking_rejection(uint32_t argument, AF &framework, ArrayBitS
 {
 	int lim_iterations = 1;
 
+	omp_lock_t *lock_has_entry = NULL;
+	lock_has_entry = (omp_lock_t *)malloc(sizeof * lock_has_entry);
+	if (lock_has_entry == NULL) {
+		printf("Memory allocation failed\n");
+		exit(1);
+	}
+	omp_init_lock(lock_has_entry);
+
+	omp_lock_t *lock_main_state = NULL;
+	lock_main_state = (omp_lock_t *)malloc(sizeof * lock_main_state);
+	if (lock_main_state == NULL) {
+		printf("Memory allocation failed\n");
+		exit(1);
+	}
+	omp_init_lock(lock_main_state);
+
 	omp_lock_t *lock_queue = NULL;
 	lock_queue = (omp_lock_t *)malloc(sizeof * lock_queue);
 	if (lock_queue == NULL) {
@@ -234,14 +260,6 @@ static bool start_checking_rejection(uint32_t argument, AF &framework, ArrayBitS
 		exit(1);
 	}
 	omp_init_lock(lock_queue);
-
-	omp_lock_t *lock_has_entry = NULL;
-	lock_has_entry = (omp_lock_t *)malloc(sizeof * lock_has_entry);
-	if (lock_queue == NULL) {
-		printf("Memory allocation failed\n");
-		exit(1);
-	}
-	omp_init_lock(lock_has_entry);
 
 	Heuristic1 heuristic = Heuristic1();
 
@@ -256,13 +274,13 @@ static bool start_checking_rejection(uint32_t argument, AF &framework, ArrayBitS
 	bool isFinished = false;
 	bool isRejected = false;
 	omp_set_lock(lock_has_entry);
-#pragma omp parallel shared(argument, framework, active_args, isRejected, isTerminated, isFinished, proof_extension, heuristic, extension_priority_queue)
+	ExtensionPrioritised main_state = ExtensionPrioritised();
+#pragma omp parallel shared(argument, framework, active_args, isRejected, isTerminated, isFinished, proof_extension, heuristic, extension_priority_queue, main_state)
 	{
 #pragma omp single nowait
 		{
 			list<uint32_t> extension; 
-			ExtensionPrioritised empty_extension = ExtensionPrioritised();
-			check_rejection(argument, framework, active_args, isRejected, isTerminated, true, empty_extension, heuristic, proof_extension,
+			check_rejection(argument, framework, active_args, isRejected, isTerminated, true, main_state, lock_main_state, main_state, heuristic, proof_extension,
 				extension_priority_queue, lock_queue, lock_has_entry, lim_iterations);
 			update_isFinished(isTerminated, isFinished, extension_priority_queue, lock_queue, lock_has_entry);
 		}
@@ -287,7 +305,7 @@ static bool start_checking_rejection(uint32_t argument, AF &framework, ArrayBitS
 					omp_unset_lock(lock_has_entry);
 				}
 
-				check_rejection(argument, framework, active_args, isRejected, isTerminated, false, state, heuristic, proof_extension,
+				check_rejection(argument, framework, active_args, isRejected, isTerminated, false, main_state, lock_main_state, state, heuristic, proof_extension,
 					extension_priority_queue, lock_queue, lock_has_entry, lim_iterations);
 				update_isFinished(isTerminated, isFinished, extension_priority_queue, lock_queue, lock_has_entry);
 			}
