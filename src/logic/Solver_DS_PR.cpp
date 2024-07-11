@@ -179,7 +179,6 @@ static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activ
 	} while (has_Solution && !isTerminated_tmp &&( isMain || num_iterations < lim_iterations));
 
 	if (!isMain && num_iterations >= lim_iterations) {
-		cout << "interrupt current state "  << endl;					////////////////////////////////////////DEBUG
 		push_priority_queue(lock_prio_queue, extension_priority_queue, state_info, lock_has_entry);
 	}
 
@@ -192,12 +191,13 @@ static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activ
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-void push_priority_queue(omp_lock_t *lock_prio_queue, std::priority_queue<ExtensionPrioritised, std::vector<ExtensionPrioritised>, extPrioLess_t> &extension_priority_queue, ExtensionPrioritised &newEntryQueue, omp_lock_t *lock_has_entry)
+void push_priority_queue(omp_lock_t *lock_prio_queue, 
+	std::priority_queue<ExtensionPrioritised, std::vector<ExtensionPrioritised>, extPrioLess_t> &extension_priority_queue, 
+	ExtensionPrioritised &newEntryQueue, omp_lock_t *lock_has_entry)
 {
 	omp_set_lock(lock_prio_queue);
 	extension_priority_queue.push(newEntryQueue);
 #pragma omp flush(extension_priority_queue)
-	cout << "push prio " << newEntryQueue.Priority << endl;					////////////////////////////////////////DEBUG
 	omp_unset_lock(lock_prio_queue);
 	omp_unset_lock(lock_has_entry);
 }
@@ -206,7 +206,6 @@ static ExtensionPrioritised pop_prio_queue(std::priority_queue<ExtensionPrioriti
 	, omp_lock_t *lock_queue) {
 	omp_set_lock(lock_queue);
 	ExtensionPrioritised entry = extension_priority_queue.top();
-	cout << "pop prio " << entry.Priority << endl;			////////////////////////////////////////DEBUG
 	extension_priority_queue.pop();
 #pragma omp flush(extension_priority_queue)
 	omp_unset_lock(lock_queue);
