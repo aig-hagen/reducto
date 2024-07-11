@@ -192,7 +192,7 @@ static list<uint32_t> pop_prio_queue(std::priority_queue<ExtensionPrioritised, s
 	return result;
 }
 
-static uint64_t check_prio_queue_size(std::priority_queue<ExtensionPrioritised, std::vector<ExtensionPrioritised>, extPrioLess_t> extension_priority_queue
+static uint64_t check_prio_queue_size(std::priority_queue<ExtensionPrioritised, std::vector<ExtensionPrioritised>, extPrioLess_t> &extension_priority_queue
 	, omp_lock_t *lock_queue) {
 	omp_set_lock(lock_queue);
 	uint64_t result = extension_priority_queue.size();
@@ -285,7 +285,7 @@ static bool start_checking_rejection(uint32_t argument, AF &framework, ArrayBitS
 /*===========================================================================================================================================================*/
 
 bool check_if_finished(bool &isTerminated, bool &isFinished,
-	std::priority_queue<ExtensionPrioritised, std::vector<ExtensionPrioritised>, extPrioLess_t> extension_priority_queue,
+	std::priority_queue<ExtensionPrioritised, std::vector<ExtensionPrioritised>, extPrioLess_t> &extension_priority_queue,
 	omp_lock_t *lock_queue) {
 	bool isTerminated_tmp = false;
 #pragma omp flush(isTerminated)
@@ -299,7 +299,9 @@ bool check_if_finished(bool &isTerminated, bool &isFinished,
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-void update_isFinished(bool &isTerminated, bool &isFinished, std::priority_queue<ExtensionPrioritised, std::vector<ExtensionPrioritised>, extPrioLess_t> &extension_priority_queue, omp_lock_t *lock_queue, omp_lock_t *lock_has_entry)
+void update_isFinished(bool &isTerminated, bool &isFinished, 
+	std::priority_queue<ExtensionPrioritised, std::vector<ExtensionPrioritised>, extPrioLess_t> &extension_priority_queue, 
+	omp_lock_t *lock_queue, omp_lock_t *lock_has_entry)
 {
 	bool isFinished_tmp = check_if_finished(isTerminated, isFinished, extension_priority_queue, lock_queue);
 #pragma atomic write
