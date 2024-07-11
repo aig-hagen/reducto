@@ -254,9 +254,10 @@ static bool start_checking_rejection(uint32_t argument, AF &framework, ArrayBitS
 	std::priority_queue<ExtensionPrioritised, std::vector<ExtensionPrioritised>, extPrioLess_t> extension_priority_queue;
 
 	bool isTerminated = false;
+	bool isFinished = false;
 	bool isRejected = false;
 	omp_set_lock(lock_has_entry);
-#pragma omp parallel shared(argument, framework, active_args, isRejected, isTerminated, proof_extension, heuristic, extension_priority_queue)
+#pragma omp parallel shared(argument, framework, active_args, isRejected, isTerminated, isFinished, proof_extension, heuristic, extension_priority_queue)
 	{
 #pragma omp single nowait
 		{
@@ -264,19 +265,16 @@ static bool start_checking_rejection(uint32_t argument, AF &framework, ArrayBitS
 			ExtensionPrioritised empty_extension = ExtensionPrioritised();
 			check_rejection(argument, framework, active_args, isRejected, isTerminated, true, empty_extension, heuristic, proof_extension,
 				extension_priority_queue, lock_queue, lock_has_entry, lim_iterations);
-#pragma atomic write
-			isTerminated = true;
-#pragma omp flush(isTerminated)
-			omp_unset_lock(lock_has_entry);
+			update_isFinished(isTerminated, isFinished, extension_priority_queue, lock_queue, lock_has_entry);
 		}
 
-		bool isTerminated_tmp = false;
+		bool isFinished_tmp = false;
 		while (true) {
 			omp_set_lock(lock_has_entry);
-#pragma omp flush(isTerminated)
+#pragma omp flush(isFinished)
 #pragma omp atomic read
-			isTerminated_tmp = isTerminated;
-			if (isTerminated_tmp) {
+			isFinished_tmp = isFinished;
+			if (isFinished_tmp) {
 				omp_unset_lock(lock_has_entry);
 				break;
 			}
@@ -292,6 +290,7 @@ static bool start_checking_rejection(uint32_t argument, AF &framework, ArrayBitS
 
 				check_rejection(argument, framework, active_args, isRejected, isTerminated, false, state, heuristic, proof_extension,
 					extension_priority_queue, lock_queue, lock_has_entry, lim_iterations);
+				update_isFinished(isTerminated, isFinished, extension_priority_queue, lock_queue, lock_has_entry);
 			}
 			else {
 				throw new exception();
@@ -304,6 +303,35 @@ static bool start_checking_rejection(uint32_t argument, AF &framework, ArrayBitS
 	omp_destroy_lock(lock_has_entry);
 	free(lock_has_entry);
 	return isRejected;
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
+bool check_if_finished(bool &isTerminated, bool &isFinished,
+	std::priority_queue<ExtensionPrioritised, std::vector<ExtensionPrioritised>, extPrioLess_t> extension_priority_queue,
+	omp_lock_t *lock_queue) {
+	bool isTerminated_tmp = false;
+#pragma omp flush(isTerminated)
+#pragma omp atomic read
+	isTerminated_tmp = isTerminated;
+
+	uint64_t size = check_prio_queue_size(extension_priority_queue, lock_queue);
+	return size == 0 || isTerminated_tmp;
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
+void update_isFinished(bool &isTerminated, bool &isFinished, std::priority_queue<ExtensionPrioritised, std::vector<ExtensionPrioritised>, extPrioLess_t> &extension_priority_queue, omp_lock_t *lock_queue, omp_lock_t *lock_has_entry)
+{
+	bool isFinished_tmp = check_if_finished(isTerminated, isFinished, extension_priority_queue, lock_queue);
+#pragma atomic write
+	isFinished = isFinished_tmp;
+#pragma omp flush(isFinished)
+	if (isFinished_tmp) {
+		omp_unset_lock(lock_has_entry);
+	}
 }
 
 /*===========================================================================================================================================================*/
