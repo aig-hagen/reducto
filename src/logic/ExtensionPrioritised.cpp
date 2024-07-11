@@ -18,5 +18,8 @@ ExtensionPrioritised::ExtensionPrioritised(AF framework, list<uint32_t> extensio
 
 ExtensionPrioritised::~ExtensionPrioritised() {
 	Extension.clear();
+	for (int i = 0; i < Complement_clauses.size(); i++) {
+		Complement_clauses[i].clear();
+	}
 	Complement_clauses.clear();
 }
