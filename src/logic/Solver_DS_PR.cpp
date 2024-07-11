@@ -188,14 +188,18 @@ static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activ
 		{
 			vector<int64_t> complement_clause = Encoding::add_complement_clause(*solver, reduct);
 			solver->add_clause(complement_clause);
-			if (!isMain) {
-				state_info.Complement_clauses.push_back(complement_clause);
-			}
+			state_info.Complement_clauses.push_back(complement_clause);
 		}
-		vector<vector<int64_t>> comp_clauses_copy = copy_complement_clauses(state_info.Complement_clauses);
-		
-		ExtensionPrioritised newEntryQueue = ExtensionPrioritised(framework, new_extension_build, heuristic, comp_clauses_copy);
 
+		ExtensionPrioritised newEntryQueue;
+		if (isMain) {
+			newEntryQueue = ExtensionPrioritised(framework, new_extension_build, heuristic);
+		}
+		else {
+			vector<vector<int64_t>> comp_clauses_copy = copy_complement_clauses(state_info.Complement_clauses);
+			newEntryQueue = ExtensionPrioritised(framework, new_extension_build, heuristic, comp_clauses_copy);
+		}
+		
 		push_priority_queue(lock_prio_queue, extension_priority_queue, newEntryQueue, lock_has_entry);
 
 #pragma omp flush(isTerminated)
