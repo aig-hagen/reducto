@@ -73,15 +73,6 @@ static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activ
 
 	//iterate through initial sets
 	do {
-		if (*isSolved)
-		{
-			vector<int64_t> complement_clause = Encoding::add_complement_clause(*solver, reduct);
-			solver->add_clause(complement_clause);
-			if (!isMain) {
-				state_info.Complement_clauses.push_back(complement_clause);
-			}
-		}
-
 		*isSolved = true;
 		has_Solution = (*solver).solve();
 		if(!isMain) num_iterations++;
@@ -168,6 +159,15 @@ static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activ
 
 		list<uint32_t> new_extension_build = ExtendExtension(state_info.Extension, initial_set);
 		initial_set.clear();
+
+		if (has_Solution)
+		{
+			vector<int64_t> complement_clause = Encoding::add_complement_clause(*solver, reduct);
+			solver->add_clause(complement_clause);
+			if (!isMain) {
+				state_info.Complement_clauses.push_back(complement_clause);
+			}
+		}
 		
 		ExtensionPrioritised newEntryQueue = ExtensionPrioritised(framework, new_extension_build, heuristic);
 
@@ -225,7 +225,7 @@ static uint64_t check_prio_queue_size(std::priority_queue<ExtensionPrioritised, 
 
 static bool start_checking_rejection(uint32_t argument, AF &framework, ArrayBitSet &active_args, list<uint32_t> &proof_extension, uint8_t numCores)
 {
-	int lim_iterations = 1;
+	int lim_iterations = 10;
 
 	omp_lock_t *lock_queue = NULL;
 	lock_queue = (omp_lock_t *)malloc(sizeof * lock_queue);
