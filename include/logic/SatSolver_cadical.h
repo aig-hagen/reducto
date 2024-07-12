@@ -29,7 +29,7 @@ public:
 	/// Adds a new clause to the SAT-problem of the solver.
 	/// </summary>
 	/// <param name="clause">The SAT-clause to add.</param>
-	void add_clause(std::vector<int64_t> clause);
+	void add_clause(std::vector<int64_t> &clause);
 
 	/// <summary>
 	/// Adds a new clause, containing up to 2 literals, to the SAT-problem of the solver.

@@ -1,10 +1,6 @@
 #include "../../include/logic/ExtensionPrioritised.h"
 
-ExtensionPrioritised::ExtensionPrioritised() {
-	Priority = UINT32_MAX;
-}
-
-ExtensionPrioritised::ExtensionPrioritised(AF framework, list<uint32_t> extension, Heuristic1 heuristic) {
+ExtensionPrioritised::ExtensionPrioritised(AF &framework, list<uint32_t> &extension, Heuristic1 &heuristic) {
 	Extension = extension;
 	Priority = heuristic.calculate_priority(framework, extension);
 }
