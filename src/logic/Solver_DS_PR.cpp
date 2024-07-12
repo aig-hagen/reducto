@@ -13,6 +13,29 @@ static list<uint32_t> ExtendExtension(list<uint32_t> &extension_build, list<uint
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
+static list<uint32_t> pop_prio_queue(std::priority_queue<ExtensionPrioritised, std::vector<ExtensionPrioritised>, extPrioLess_t> &extension_priority_queue
+	, omp_lock_t *lock_queue) {
+	omp_set_lock(lock_queue);
+	list<uint32_t> result = extension_priority_queue.top().Extension;
+	ExtensionPrioritised entry = extension_priority_queue.top();
+	//cout << "pop prio " << entry.Priority << endl;			////////////////////////////////////////DEBUG
+	extension_priority_queue.pop();
+#pragma omp flush(extension_priority_queue)
+	omp_unset_lock(lock_queue);
+	return result;
+}
+
+static uint64_t check_prio_queue_size(std::priority_queue<ExtensionPrioritised, std::vector<ExtensionPrioritised>, extPrioLess_t> &extension_priority_queue
+	, omp_lock_t *lock_queue) {
+	omp_set_lock(lock_queue);
+	uint64_t result = extension_priority_queue.size();
+	omp_unset_lock(lock_queue);
+	return result;
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
 static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activeArgs, bool &isRejected, bool &isTerminated,
 	list<uint32_t> &extension_build, list<uint32_t> &output_extension, Heuristic1 &heuristic,
 	std::priority_queue<ExtensionPrioritised, std::vector<ExtensionPrioritised>, extPrioLess_t> &extension_priority_queue,
@@ -180,24 +203,32 @@ static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activ
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static list<uint32_t> pop_prio_queue(std::priority_queue<ExtensionPrioritised, std::vector<ExtensionPrioritised>, extPrioLess_t> &extension_priority_queue
-	, omp_lock_t *lock_queue) {
-	omp_set_lock(lock_queue);
-	list<uint32_t> result = extension_priority_queue.top().Extension;
-	ExtensionPrioritised entry = extension_priority_queue.top();
-	//cout << "pop prio " << entry.Priority << endl;			////////////////////////////////////////DEBUG
-	extension_priority_queue.pop();
-#pragma omp flush(extension_priority_queue)
-	omp_unset_lock(lock_queue);
-	return result;
+static bool check_if_finished(bool &isTerminated, bool &isFinished,
+	std::priority_queue<ExtensionPrioritised, std::vector<ExtensionPrioritised>, extPrioLess_t> &extension_priority_queue,
+	omp_lock_t *lock_queue) {
+	bool isTerminated_tmp = false;
+#pragma omp flush(isTerminated)
+#pragma omp atomic read
+	isTerminated_tmp = isTerminated;
+
+	uint64_t size = check_prio_queue_size(extension_priority_queue, lock_queue);
+	return size == 0 || isTerminated_tmp;
 }
 
-static uint64_t check_prio_queue_size(std::priority_queue<ExtensionPrioritised, std::vector<ExtensionPrioritised>, extPrioLess_t> &extension_priority_queue
-	, omp_lock_t *lock_queue) {
-	omp_set_lock(lock_queue);
-	uint64_t result = extension_priority_queue.size();
-	omp_unset_lock(lock_queue);
-	return result;
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
+static void update_isFinished(bool &isTerminated, bool &isFinished,
+	std::priority_queue<ExtensionPrioritised, std::vector<ExtensionPrioritised>, extPrioLess_t> &extension_priority_queue,
+	omp_lock_t *lock_queue, omp_lock_t *lock_has_entry)
+{
+	bool isFinished_tmp = check_if_finished(isTerminated, isFinished, extension_priority_queue, lock_queue);
+#pragma atomic write
+	isFinished = isFinished_tmp;
+#pragma omp flush(isFinished)
+	if (isFinished_tmp) {
+		omp_unset_lock(lock_has_entry);
+	}
 }
 
 /*===========================================================================================================================================================*/
@@ -279,37 +310,6 @@ static bool start_checking_rejection(uint32_t argument, AF &framework, ArrayBitS
 	omp_destroy_lock(lock_has_entry);
 	free(lock_has_entry);
 	return isRejected;
-}
-
-/*===========================================================================================================================================================*/
-/*===========================================================================================================================================================*/
-
-bool check_if_finished(bool &isTerminated, bool &isFinished,
-	std::priority_queue<ExtensionPrioritised, std::vector<ExtensionPrioritised>, extPrioLess_t> &extension_priority_queue,
-	omp_lock_t *lock_queue) {
-	bool isTerminated_tmp = false;
-#pragma omp flush(isTerminated)
-#pragma omp atomic read
-	isTerminated_tmp = isTerminated;
-
-	uint64_t size = check_prio_queue_size(extension_priority_queue, lock_queue);
-	return size == 0 || isTerminated_tmp;
-}
-
-/*===========================================================================================================================================================*/
-/*===========================================================================================================================================================*/
-
-void update_isFinished(bool &isTerminated, bool &isFinished, 
-	std::priority_queue<ExtensionPrioritised, std::vector<ExtensionPrioritised>, extPrioLess_t> &extension_priority_queue, 
-	omp_lock_t *lock_queue, omp_lock_t *lock_has_entry)
-{
-	bool isFinished_tmp = check_if_finished(isTerminated, isFinished, extension_priority_queue, lock_queue);
-#pragma atomic write
-	isFinished = isFinished_tmp;
-#pragma omp flush(isFinished)
-	if (isFinished_tmp) {
-		omp_unset_lock(lock_has_entry);
-	}
 }
 
 /*===========================================================================================================================================================*/
