@@ -8,7 +8,7 @@ SatSolver_cadical::SatSolver_cadical(uint64_t number_arguments) {
 /*===========================================================================================================================================================*/
 
 
-void SatSolver_cadical::add_clause(std::vector<int64_t> clause) {
+void SatSolver_cadical::add_clause(std::vector<int64_t> &clause) {
     // Add the clause to the CMS solver
     for (auto literal : clause) {
         cadical_solver.add(literal);

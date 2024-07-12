@@ -19,7 +19,7 @@ public:
 	list<uint32_t> Extension;
 	uint32_t Priority;
 
-	ExtensionPrioritised(AF framework, list<uint32_t> extension, Heuristic1 heuristic);
+	ExtensionPrioritised(AF &framework, list<uint32_t> &extension, Heuristic1 &heuristic);
 	~ExtensionPrioritised();
 };
 

@@ -49,7 +49,3 @@ public:
 };
 
 #endif
-
-static void finishWaitingIfQueueEmpty(std::priority_queue<ExtensionPrioritised, std::vector<ExtensionPrioritised>, extPrioLess_t> &extension_priority_queue, omp_lock_t *lock_queue, bool &isTerminated, omp_lock_t *lock_has_entry);
-
-static void update_isFinished(bool &isTerminated, bool &isFinished, std::priority_queue<ExtensionPrioritised, std::vector<ExtensionPrioritised>, extPrioLess_t> &extension_priority_queue, omp_lock_t *lock_queue, omp_lock_t *lock_has_entry);
