@@ -25,7 +25,7 @@ public:
 
     ArrayBitSet() {}
 
-    ArrayBitSet(std::vector<uint32_t> new_vector, std::vector<uint8_t> new_bitset) : _array{ new_vector }, _bitset{ new_bitset } {}
+    ArrayBitSet(std::vector<uint32_t> new_array, std::vector<uint8_t> new_bitset) : _array{ new_array }, _bitset{ new_bitset } {}
 
     ~ArrayBitSet() {
         _bitset.clear();

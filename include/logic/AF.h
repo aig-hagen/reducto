@@ -7,7 +7,7 @@
 #include <iostream>	
 #include <omp.h>
 
-#include "../util/VectorBitSet.h"
+#include "../util/ArrayBitSet.h"
 
 template <class T>
 inline void hash_combine(std::size_t &seed, const T &v)
@@ -42,7 +42,7 @@ public:
     /// </summary>
     uint32_t num_args;
     /// <summary>
-    /// Lists for each argument a list of the arguments, attacking ist.
+    /// Lists for each argument a list of the arguments, attacking it.
     /// </summary>
     std::vector<ArrayBitSet> attackers;
 	/// <summary>
@@ -57,10 +57,6 @@ public:
     /// Set in which the buckets contain pairs of arguments, indicating that the first argument is attacking the second.
     /// </summary>
     std::unordered_set<std::pair<uint32_t, uint32_t>> attacks;
-	/// <summary>
-	/// Set in which the buckets contain pairs of arguments, indicating that each argument is attacking the other.
-	/// </summary>
-	std::unordered_set<std::pair<uint32_t, uint32_t>> symmetric_attacks;
 	/// <summary>
 	/// List for all arguments their distance to the argument of the query.
 	/// </summary>

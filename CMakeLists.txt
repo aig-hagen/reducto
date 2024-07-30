@@ -38,7 +38,7 @@ set(HEADERS
 	${INCLD_LOGIC}/ScepticalCheck.h 
 	${INCLD_LOGIC}/Solver_DS_PR.h 	
 
-	${INCLD_UTIL}/VectorBitSet.h
+	${INCLD_UTIL}/ArrayBitSet.h
 	${INCLD_UTIL}/MemoryWatchDog.h
 	${INCLD_UTIL}/Printer.h
 	)
