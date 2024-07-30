@@ -9,7 +9,7 @@
 
 #include "AF.h"
 
-#include "../util/VectorBitSet.h"
+#include "../util/ArrayBitSet.h"
 
 using namespace std;
 

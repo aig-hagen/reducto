@@ -10,7 +10,7 @@
 
 #include "omp.h"
 
-#include "../util/VectorBitSet.h"
+#include "../util/ArrayBitSet.h"
 #include "../logic/Enums.h"
 
 extern "C" {

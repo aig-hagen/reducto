@@ -8,7 +8,7 @@
 #include "AF.h"
 #include "SatSolver.h"
 
-#include "../util/VectorBitSet.h"
+#include "../util/ArrayBitSet.h"
 #include "../util/Printer.h"
 
 
