@@ -185,7 +185,6 @@ static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activ
 		omp_set_lock(lock_prio_queue);
 		extension_priority_queue.push(newEntryQueue);
 #pragma omp flush(extension_priority_queue)
-		//cout << "push prio " << newEntryQueue.Priority << endl;					////////////////////////////////////////DEBUG
 		omp_unset_lock(lock_prio_queue);
 		omp_unset_lock(lock_has_entry);
 
