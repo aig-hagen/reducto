@@ -264,6 +264,7 @@ static bool start_checking_rejection(uint32_t argument, AF &framework, ArrayBitS
 	}
 
 	std::unordered_set<ExtensionPrioritised, PrioHash> prio_set;
+	prio_set.rehash(20);
 	std::unordered_set<ExtensionPrioritised, PrioHash> *ptr_extension_priority_queue = &prio_set;
 
 	bool isTerminated = false;
