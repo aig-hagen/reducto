@@ -16,16 +16,30 @@ using namespace std;
 /// </summary>
 class ExtensionPrioritised {
 public:
+
+	bool operator == (ExtensionPrioritised const &other)
+	{
+		return (other.Priority == Priority)
+			&& (other.Extension == Extension);
+	};
+
 	list<uint32_t> Extension;
-	uint32_t Priority;
+	uint32_t Priority = 100;
 
 	ExtensionPrioritised(AF &framework, list<uint32_t> &extension, Heuristic1 &heuristic);
 	~ExtensionPrioritised();
 };
 
-typedef struct extPrioLess
+struct PrioHash {
+	auto operator()(ExtensionPrioritised const &extension) const -> size_t {
+		return extension.Priority < 20 ? extension.Priority : 20;
+	}
+};
+
+inline bool operator == (ExtensionPrioritised const &lhs, ExtensionPrioritised const &rhs)
 {
-	bool operator()(const ExtensionPrioritised l, const ExtensionPrioritised r) const { return l.Priority < r.Priority; }
-} extPrioLess_t;
+	return (lhs.Priority == rhs.Priority)
+		&& (lhs.Extension == rhs.Extension);
+};
 
 #endif
