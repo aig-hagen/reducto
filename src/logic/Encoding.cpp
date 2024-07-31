@@ -88,7 +88,7 @@ static void add_admissible(SatSolver &solver, AF &framework, ArrayBitSet &active
 {
 	vector<int64_t> rejection_reason_clause = add_rejected_clauses(solver, framework.num_args, argument);
 	
-	vector<uint32_t> attackers = framework.attackers[argument]._array;
+	vector<uint32_t> attackers = framework.attackers[argument];
 
 	for (int i = 0; i < attackers.size(); i++)
 	{

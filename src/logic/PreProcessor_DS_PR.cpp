@@ -13,8 +13,8 @@ static ArrayBitSet calculate_cone_influence(AF &framework, uint32_t query) {
 	for (list<uint32_t>::iterator mIter = ls_args_unprocessed.begin(); mIter != ls_args_unprocessed.end(); ++mIter) {
 		const auto &argument = *mIter;
 		uint32_t distance = framework.distance_to_query[argument];
-		for (int i = 0; i < framework.attackers[argument]._array.size(); i++) {
-			uint32_t attacker = framework.attackers[argument]._array[i];
+		for (int i = 0; i < framework.attackers[argument].size(); i++) {
+			uint32_t attacker = framework.attackers[argument][i];
 			if (framework.distance_to_query[attacker] > 0 || attacker == query) {
 				//attacker was already visited
 				continue;
@@ -47,11 +47,11 @@ static pre_proc_result reduce_by_grounded(AF &framework, ArrayBitSet &active_arg
 	//iterate through active arguments
 	for (int i = 0; i < active_args._array.size(); i++) {
 		//check if argument is unattacked
-		if (framework.attackers[active_args._array[i]]._array.empty()) {
+		if (framework.attackers[active_args._array[i]].empty()) {
 			ls_unattacked_unprocessed.push_back(active_args._array[i]);
 		}
 
-		num_attacker[active_args._array[i]] = framework.attackers[active_args._array[i]]._array.size();
+		num_attacker[active_args._array[i]] = framework.attackers[active_args._array[i]].size();
 	}
 
 	// init variable of current reduct
@@ -68,21 +68,21 @@ static pre_proc_result reduce_by_grounded(AF &framework, ArrayBitSet &active_arg
 
 
 		//reject query if it gets attacked by argument of grounded extension
-		if (framework.victims[ua]._bitset[query]) {
+		if (framework.exists_attack(ua, query)){
 			return pre_proc_result::rejected;
 		}
 
 		//iterate through victims of the victims of ua
-		for (int i = 0; i < framework.victims[ua]._array.size(); i++) {
-			uint32_t vua = framework.victims[ua]._array[i];
+		for (int i = 0; i < framework.victims[ua].size(); i++) {
+			uint32_t vua = framework.victims[ua][i];
 
 			if (!out_reduct._bitset[vua]) {
 				//only account victims that are still active
 				continue;
 			}
 
-			for (int j = 0; j < framework.victims[vua]._array.size(); j++) {
-				uint32_t vvua = framework.victims[vua]._array[j];
+			for (int j = 0; j < framework.victims[vua].size(); j++) {
+				uint32_t vvua = framework.victims[vua][j];
 
 				if (!out_reduct._bitset[vvua]) {
 					//only account victims of victims that are still active
@@ -111,12 +111,12 @@ static pre_proc_result reduce_by_grounded(AF &framework, ArrayBitSet &active_arg
 
 pre_proc_result PreProc_DS_PR::process(AF &framework, uint32_t query, ArrayBitSet &out_reduct) 
 {
-	if (framework.victims[query]._bitset[query])
+	if (framework.self_attack[query])
 	{
 		return pre_proc_result::rejected;
 	}
 
-	if (framework.attackers[query]._array.empty())
+	if (framework.attackers[query].empty())
 	{
 		return pre_proc_result::accepted;
 	}
