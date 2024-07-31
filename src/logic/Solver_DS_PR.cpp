@@ -43,7 +43,7 @@ static uint64_t check_prio_queue_size(std::unordered_set<ExtensionPrioritised, P
 /*===========================================================================================================================================================*/
 
 static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activeArgs, bool &isRejected, bool &isTerminated,
-	list<uint32_t> &extension_build, list<uint32_t> &output_extension, Heuristic1 &heuristic,
+	list<uint32_t> &extension_build, list<uint32_t> &output_extension, IPrioHeuristic &heuristic,
 	std::unordered_set<ExtensionPrioritised, PrioHash> *extension_priority_queue,
 	omp_lock_t *lock_prio_queue, omp_lock_t *lock_has_entry)
 {
@@ -184,9 +184,8 @@ static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activ
 		}
 
 		list<uint32_t> new_extension_build = ExtendExtension(extension_build, initial_set);		
+		ExtensionPrioritised newEntryQueue = ExtensionPrioritised(framework, argument, new_extension_build, initial_set, heuristic);
 		initial_set.clear();
-		
-		ExtensionPrioritised newEntryQueue = ExtensionPrioritised(framework, new_extension_build, heuristic);
 
 		omp_set_lock(lock_prio_queue);
 		(*extension_priority_queue).insert(newEntryQueue);
@@ -256,7 +255,8 @@ static bool start_checking_rejection(uint32_t argument, AF &framework, ArrayBitS
 	}
 	omp_init_lock(lock_has_entry);
 
-	Heuristic1 heuristic = Heuristic1();
+	IPrioHeuristic *heuristic = NULL;
+	heuristic = new Heuristic1();
 
 	if (numCores > 0)
 	{
@@ -277,7 +277,7 @@ static bool start_checking_rejection(uint32_t argument, AF &framework, ArrayBitS
 		{
 			list<uint32_t> extension_build;
 			check_rejection(argument, framework, active_args, isRejected, isTerminated, extension_build, proof_extension,
-				heuristic, ptr_extension_priority_queue, lock_queue, lock_has_entry);
+				*heuristic, ptr_extension_priority_queue, lock_queue, lock_has_entry);
 			update_isFinished(isTerminated, isFinished, ptr_extension_priority_queue, lock_queue, lock_has_entry);
 		}
 
@@ -302,7 +302,7 @@ static bool start_checking_rejection(uint32_t argument, AF &framework, ArrayBitS
 				}
 
 				check_rejection(argument, framework, active_args, isRejected, isTerminated, extension, proof_extension,
-					heuristic, ptr_extension_priority_queue, lock_queue, lock_has_entry);
+					*heuristic, ptr_extension_priority_queue, lock_queue, lock_has_entry);
 				update_isFinished(isTerminated, isFinished, ptr_extension_priority_queue, lock_queue, lock_has_entry);
 			}
 			else {

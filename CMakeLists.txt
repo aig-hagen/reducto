@@ -31,7 +31,7 @@ set(HEADERS
 	${INCLD_LOGIC}/Heuristic1.h
 	${INCLD_LOGIC}/Parser_iccma.h
 	${INCLD_LOGIC}/PreProcessor_DS_PR.h
-	${INCLD_LOGIC}/IPrioritizer.h
+	${INCLD_LOGIC}/IPrioHeuristic.h
 	${INCLD_LOGIC}/Reduct.h 
 	${INCLD_LOGIC}/SatSolver.h
 	${INCLD_LOGIC}/SatSolver_cadical.h

@@ -5,8 +5,7 @@
 #include <cstdint>
 #include <list>
 
-#include "IPrioritizer.h"
-#include "Heuristic1.h"
+#include "IPrioHeuristic.h"
 #include "AF.h"
 
 using namespace std;
@@ -26,7 +25,7 @@ public:
 	list<uint32_t> Extension;
 	uint32_t Priority = 100;
 
-	ExtensionPrioritised(AF &framework, list<uint32_t> &extension, Heuristic1 &heuristic);
+	ExtensionPrioritised(AF &framework, uint32_t query, list<uint32_t> &extension, list<uint32_t> &initialSet, IPrioHeuristic &heuristic);
 	~ExtensionPrioritised();
 };
 

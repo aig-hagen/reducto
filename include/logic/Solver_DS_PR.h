@@ -18,7 +18,7 @@ extern "C" {
 #include "Enums.h"
 #include "ExtensionPrioritised.h"
 #include "Heuristic1.h"
-#include "IPrioritizer.h"
+#include "IPrioHeuristic.h"
 #include "PreProcessor_DS_PR.h"
 #include "Reduct.h"
 #include "SatSolver.h"
