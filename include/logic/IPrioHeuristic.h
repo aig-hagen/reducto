@@ -9,6 +9,9 @@
 
 using namespace std;
 
+/// <summary>
+/// This interface expects a method to prioritize calculated extensions during the process of the solver.
+/// </summary>
 class IPrioHeuristic
 {
 public:

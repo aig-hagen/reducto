@@ -11,7 +11,7 @@
 using namespace std;
 
 /// <summary>
-/// This class is responsible for prioritizing tasks during the process of the solver.
+/// This class is responsible for prioritizing extensions, based on the minimal distance of one of its members to the query argument.
 /// </summary>
 class Heuristic1 : public IPrioHeuristic 
 {
