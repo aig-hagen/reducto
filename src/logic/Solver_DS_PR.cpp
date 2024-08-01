@@ -18,7 +18,6 @@ static list<uint32_t> pop_prio_queue(std::unordered_set<ExtensionPrioritised, Pr
 	if ((*extension_priority_queue).begin() != (*extension_priority_queue).end()) {
 		ExtensionPrioritised entry = *(*extension_priority_queue).begin();
 		list<uint32_t> result = entry.Extension;
-		//cout << "pop prio " << entry.Priority << endl;			////////////////////////////////////////DEBUG
 		(*extension_priority_queue).erase(entry);
 		omp_unset_lock(lock_queue);
 		return result;
