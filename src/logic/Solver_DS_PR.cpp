@@ -15,12 +15,22 @@ static list<uint32_t> ExtendExtension(list<uint32_t> &extension_build, list<uint
 
 static list<uint32_t> pop_prio_queue(std::unordered_set<ExtensionPrioritised, PrioHash> *extension_priority_queue, omp_lock_t *lock_queue) {
 	omp_set_lock(lock_queue);
-	if ((*extension_priority_queue).begin() != (*extension_priority_queue).end()) {
-		ExtensionPrioritised entry = *(*extension_priority_queue).begin();
-		list<uint32_t> result = entry.Extension;
-		(*extension_priority_queue).erase(entry);
-		omp_unset_lock(lock_queue);
-		return result;
+	std::unordered_set<ExtensionPrioritised, PrioHash> prio_set = *extension_priority_queue;
+	if (prio_set.begin() != prio_set.end()) {
+		//queue is not empty
+		for (int i = 1; i < prio_set.bucket_count() + 1; i++) {
+			//ensure starting to iterate at bucket 1
+			if(prio_set.begin(i) == prio_set.end(i)){
+				//bucket is empty
+				continue;
+			}
+
+			ExtensionPrioritised entry = *prio_set.begin(i);
+			list<uint32_t> result = entry.Extension;
+			prio_set.erase(entry);
+			omp_unset_lock(lock_queue);
+			return result;
+		}
 	}
 	else {
 		omp_unset_lock(lock_queue);
