@@ -8,7 +8,7 @@ ArrayBitSet Reduct::get_reduct(ArrayBitSet &activeArguments, AF &framework, uint
 
 	for (int i = 0; i < activeArguments._array.size(); i++) {
 
-		if (activeArguments._array[i] == argument || framework.victims[argument]._bitset[activeArguments._array[i]]) {
+		if (activeArguments._array[i] == argument || framework.exists_attack(argument, activeArguments._array[i])){
 			continue;
 		}
 
