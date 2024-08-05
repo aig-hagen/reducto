@@ -13,9 +13,8 @@ static list<uint32_t> ExtendExtension(list<uint32_t> &extension_build, list<uint
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static list<uint32_t> pop_prio_queue(std::unordered_set<ExtensionPrioritised, PrioHash> *extension_priority_queue, omp_lock_t *lock_queue) {
+static list<uint32_t> pop_prio_queue(std::unordered_set<ExtensionPrioritised, PrioHash> &prio_set, omp_lock_t *lock_queue) {
 	omp_set_lock(lock_queue);
-	std::unordered_set<ExtensionPrioritised, PrioHash> prio_set = *extension_priority_queue;
 	if (prio_set.begin() != prio_set.end()) {
 		//queue is not empty
 		for (int i = 1; i < prio_set.bucket_count() + 1; i++) {
@@ -41,9 +40,9 @@ static list<uint32_t> pop_prio_queue(std::unordered_set<ExtensionPrioritised, Pr
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static uint64_t check_prio_queue_size(std::unordered_set<ExtensionPrioritised, PrioHash> *extension_priority_queue, omp_lock_t *lock_queue) {
+static uint64_t check_prio_queue_size(std::unordered_set<ExtensionPrioritised, PrioHash> &extension_priority_queue, omp_lock_t *lock_queue) {
 	omp_set_lock(lock_queue);
-	uint64_t result = (*extension_priority_queue).size();
+	uint64_t result = extension_priority_queue.size();
 	omp_unset_lock(lock_queue);
 	return result;
 }
@@ -53,7 +52,7 @@ static uint64_t check_prio_queue_size(std::unordered_set<ExtensionPrioritised, P
 
 static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activeArgs, bool &isRejected, bool &isTerminated,
 	list<uint32_t> &extension_build, list<uint32_t> &output_extension, IPrioHeuristic &heuristic,
-	std::unordered_set<ExtensionPrioritised, PrioHash> *extension_priority_queue,
+	std::unordered_set<ExtensionPrioritised, PrioHash> &extension_priority_queue,
 	omp_lock_t *lock_prio_queue, omp_lock_t *lock_has_entry)
 {
 	int id = omp_get_thread_num();
@@ -197,7 +196,7 @@ static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activ
 		initial_set.clear();
 
 		omp_set_lock(lock_prio_queue);
-		(*extension_priority_queue).insert(newEntryQueue);
+		extension_priority_queue.insert(newEntryQueue);
 		omp_unset_lock(lock_prio_queue);
 		omp_unset_lock(lock_has_entry);
 
@@ -216,7 +215,7 @@ static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activ
 /*===========================================================================================================================================================*/
 
 static bool check_if_finished(bool &isTerminated, bool &isFinished,
-	std::unordered_set<ExtensionPrioritised, PrioHash> *extension_priority_queue,
+	std::unordered_set<ExtensionPrioritised, PrioHash> &extension_priority_queue,
 	omp_lock_t *lock_queue) {
 	bool isTerminated_tmp = false;
 #pragma omp flush(isTerminated)
@@ -231,7 +230,7 @@ static bool check_if_finished(bool &isTerminated, bool &isFinished,
 /*===========================================================================================================================================================*/
 
 static void update_isFinished(bool &isTerminated, bool &isFinished,
-	std::unordered_set<ExtensionPrioritised, PrioHash> *extension_priority_queue,
+	std::unordered_set<ExtensionPrioritised, PrioHash> &extension_priority_queue,
 	omp_lock_t *lock_queue, omp_lock_t *lock_has_entry)
 {
 	bool isFinished_tmp = check_if_finished(isTerminated, isFinished, extension_priority_queue, lock_queue);
@@ -274,20 +273,19 @@ static bool start_checking_rejection(uint32_t argument, AF &framework, ArrayBitS
 
 	std::unordered_set<ExtensionPrioritised, PrioHash> prio_set;
 	prio_set.rehash(20);
-	std::unordered_set<ExtensionPrioritised, PrioHash> *ptr_extension_priority_queue = &prio_set;
 
 	bool isTerminated = false;
 	bool isFinished = false;
 	bool isRejected = false;
 	omp_set_lock(lock_has_entry);
-#pragma omp parallel shared(argument, framework, active_args, isRejected, isTerminated, isFinished, proof_extension, heuristic, ptr_extension_priority_queue)
+#pragma omp parallel shared(argument, framework, active_args, isRejected, isTerminated, isFinished, proof_extension, heuristic, prio_set)
 	{
 #pragma omp single nowait
 		{
 			list<uint32_t> extension_build;
 			check_rejection(argument, framework, active_args, isRejected, isTerminated, extension_build, proof_extension,
-				*heuristic, ptr_extension_priority_queue, lock_queue, lock_has_entry);
-			update_isFinished(isTerminated, isFinished, ptr_extension_priority_queue, lock_queue, lock_has_entry);
+				*heuristic, prio_set, lock_queue, lock_has_entry);
+			update_isFinished(isTerminated, isFinished, prio_set, lock_queue, lock_has_entry);
 		}
 
 		bool isFinished_tmp = false;
@@ -301,18 +299,18 @@ static bool start_checking_rejection(uint32_t argument, AF &framework, ArrayBitS
 				break;
 			}
 
-			uint64_t size = check_prio_queue_size(ptr_extension_priority_queue, lock_queue);
+			uint64_t size = check_prio_queue_size(prio_set, lock_queue);
 			
 			if (size > 0) {
-				list<uint32_t> extension = pop_prio_queue(ptr_extension_priority_queue, lock_queue);
+				list<uint32_t> extension = pop_prio_queue(prio_set, lock_queue);
 
 				if (size > 1) {
 					omp_unset_lock(lock_has_entry);
 				}
 
 				check_rejection(argument, framework, active_args, isRejected, isTerminated, extension, proof_extension,
-					*heuristic, ptr_extension_priority_queue, lock_queue, lock_has_entry);
-				update_isFinished(isTerminated, isFinished, ptr_extension_priority_queue, lock_queue, lock_has_entry);
+					*heuristic, prio_set, lock_queue, lock_has_entry);
+				update_isFinished(isTerminated, isFinished, prio_set, lock_queue, lock_has_entry);
 			}
 			else {
 				throw new exception();
