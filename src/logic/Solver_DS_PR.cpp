@@ -19,22 +19,24 @@ static list<uint32_t> pop_prio_queue(std::unordered_set<ExtensionPrioritised, Pr
 		//queue is not empty
 		for (int i = 1; i < prio_set.bucket_count() + 1; i++) {
 			//ensure starting to iterate at bucket 1
-			if(prio_set.begin(i) == prio_set.end(i)){
-				//bucket is empty
-				continue;
+			for (auto iter = prio_set.begin(i); iter != prio_set.end(i); ++iter) {
+				//iterate through elements of the bucket
+				ExtensionPrioritised entry = *iter;
+				if (!entry.IsDone) {
+					//found unprocessed entry
+					list<uint32_t> result = entry.Extension;
+					entry.IsDone = true;
+#pragma omp flush(entry)
+					omp_unset_lock(lock_queue);
+					return result;
+				}
 			}
-
-			ExtensionPrioritised entry = *prio_set.begin(i);
-			list<uint32_t> result = entry.Extension;
-			prio_set.erase(entry);
-			omp_unset_lock(lock_queue);
-			return result;
 		}
 	}
-	else {
-		omp_unset_lock(lock_queue);
-		throw new invalid_argument("trying to access empty priority queue");
-	}
+	
+	//no unprocessed elements found
+	omp_unset_lock(lock_queue);
+	throw new invalid_argument("no elements found");
 }
 
 /*===========================================================================================================================================================*/
