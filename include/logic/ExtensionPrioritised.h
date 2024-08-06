@@ -24,9 +24,9 @@ public:
 
 	list<uint32_t> Extension;
 	uint32_t Priority = 100;
-	bool IsDone = false;
+	uint64_t Number;
 
-	ExtensionPrioritised(AF &framework, uint32_t query, list<uint32_t> &extension, list<uint32_t> &initialSet, IPrioHeuristic &heuristic);
+	ExtensionPrioritised(AF &framework, uint32_t query, list<uint32_t> &extension, list<uint32_t> &initialSet, IPrioHeuristic &heuristic, uint64_t number);
 	~ExtensionPrioritised();
 };
 

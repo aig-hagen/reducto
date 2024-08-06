@@ -16,7 +16,6 @@ ArrayBitSet Reduct::get_reduct(ArrayBitSet &activeArguments, AF &framework, uint
 		reduct_bitset[activeArguments._array[i]] = true;
 	}
 
-	reduct_vector.shrink_to_fit();
 	return ArrayBitSet(reduct_vector, reduct_bitset);
 }
 
