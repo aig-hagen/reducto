@@ -328,6 +328,7 @@ static bool start_checking_rejection(uint32_t argument, AF &framework, ArrayBitS
 		}
 	}
 	
+	delete heuristic;
 	omp_destroy_lock(lock_queue);
 	free(lock_queue);
 	omp_destroy_lock(lock_has_entry);
