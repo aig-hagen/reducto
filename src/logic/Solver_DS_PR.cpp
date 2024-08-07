@@ -272,7 +272,7 @@ static bool start_checking_rejection(uint32_t argument, AF &framework, ArrayBitS
 	omp_init_lock(lock_has_entry);
 
 	IPrioHeuristic *heuristic = NULL;
-	heuristic = new Heuristic1();
+	heuristic = new Heuristic2();
 
 	if (numCores > 0)
 	{
