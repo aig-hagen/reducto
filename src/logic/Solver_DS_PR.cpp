@@ -193,11 +193,11 @@ static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activ
 		}
 
 		list<uint32_t> new_extension_build = ExtendExtension(extension_build, initial_set);
-		initial_set.clear();
-
+		
 		omp_set_lock(lock_prio_queue);
 		uint64_t numberElement = task_flags.size();
 		ExtensionPrioritised newEntryQueue = ExtensionPrioritised(framework, argument, new_extension_build, initial_set, heuristic, numberElement);
+		initial_set.clear();
 		std::pair<std::unordered_set<ExtensionPrioritised, PrioHash>::iterator, bool> resultInsert = extension_priority_queue.insert(newEntryQueue);
 		if (resultInsert.second) {
 			task_flags.push_back(false);
