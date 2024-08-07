@@ -14,6 +14,7 @@ static list<uint32_t> ExtendExtension(list<uint32_t> &extension_build, list<uint
 /*===========================================================================================================================================================*/
 
 static list<uint32_t> pop_prio_queue(std::unordered_set<ExtensionPrioritised, PrioHash> &prio_set, omp_lock_t *lock_queue, vector<uint8_t> &task_flags) {
+	omp_set_lock(lock_queue);
 	if (prio_set.begin() != prio_set.end()) {
 		//queue is not empty
 		for (int i = 1; i < prio_set.bucket_count() + 1; i++) {
@@ -21,7 +22,6 @@ static list<uint32_t> pop_prio_queue(std::unordered_set<ExtensionPrioritised, Pr
 			for (auto iter = prio_set.begin(i); iter != prio_set.end(i); ++iter) {
 				//iterate through elements of the bucket
 				ExtensionPrioritised entry = *iter;
-				omp_set_lock(lock_queue);
 				if (!task_flags[entry.Number]) {
 					//found unprocessed entry
 					list<uint32_t> result = entry.Extension;
@@ -29,10 +29,10 @@ static list<uint32_t> pop_prio_queue(std::unordered_set<ExtensionPrioritised, Pr
 					omp_unset_lock(lock_queue);
 					return result;
 				}
-				omp_unset_lock(lock_queue);
 			}
 		}
 	}
+	omp_unset_lock(lock_queue);
 	
 	//no unprocessed elements found
 	throw new invalid_argument("no elements found");
@@ -201,10 +201,12 @@ static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activ
 		std::pair<std::unordered_set<ExtensionPrioritised, PrioHash>::iterator, bool> resultInsert = extension_priority_queue.insert(newEntryQueue);
 		if (resultInsert.second) {
 			task_flags.push_back(false);
+			omp_unset_lock(lock_prio_queue);
+			omp_unset_lock(lock_has_entry);
 		}
-		
-		omp_unset_lock(lock_prio_queue);
-		omp_unset_lock(lock_has_entry);
+		else {
+			omp_unset_lock(lock_prio_queue);
+		}
 
 #pragma omp flush(isTerminated)
 #pragma omp atomic read
