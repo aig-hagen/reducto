@@ -44,6 +44,8 @@ static list<uint32_t> pop_prio_queue(std::unordered_set<ExtensionPrioritised, Pr
 
 static uint64_t check_prio_queue_size(vector<uint8_t> &task_flags) {
 #pragma omp flush(task_flags)
+	if (task_flags.empty()) return 0;
+
 	uint64_t num_false = 0;
 	for (uint64_t i = task_flags.size() - 1; i >= 0 ; i--) {
 		if (!task_flags[i]) num_false++;
