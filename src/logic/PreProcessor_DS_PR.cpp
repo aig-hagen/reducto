@@ -121,7 +121,6 @@ pre_proc_result PreProc_DS_PR::process(AF &framework, uint32_t query, ArrayBitSe
 		return pre_proc_result::accepted;
 	}
 
-	ArrayBitSet active_args = calculate_cone_influence(framework, query);
-	
-	return reduce_by_grounded(framework, active_args, query, out_reduct);
+	out_reduct = calculate_cone_influence(framework, query);
+	return pre_proc_result::unknown;
 }
