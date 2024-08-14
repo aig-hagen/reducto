@@ -4,7 +4,8 @@
 uint32_t Heuristic1::calculate_priority(AF &framework, list<uint32_t> &extension, list<uint32_t> &initialSet, uint32_t query) {
 
 	if (extension.empty()) {
-		throw new exception;
+		cout << "calculate_priority:: extension must not be empty" << endl;
+		throw new invalid_argument("extension must not be empty");
 	}
 	uint32_t prio = framework.distance_to_query[*extension.begin()];
 

@@ -332,6 +332,7 @@ static bool start_checking_rejection(uint32_t argument, AF &framework, ArrayBitS
 				update_isFinished(isTerminated, isFinished, lock_has_entry, task_flags);
 			}
 			else {
+				cout << "start_checking_rejection::exception queue empty but not finished" << endl;
 				throw new exception();
 			}
 		}
