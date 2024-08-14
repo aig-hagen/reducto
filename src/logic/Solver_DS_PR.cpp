@@ -200,7 +200,6 @@ static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activ
 
 		if (!initial_set.empty()) {
 			list<uint32_t> new_extension_build = ExtendExtension(extension_build, initial_set);
-			initial_set.clear();
 			ExtensionPrioritised newEntryQueue_dummy = ExtensionPrioritised(framework, argument, new_extension_build, initial_set, heuristic, 0);
 			if (extension_priority_queue.find(newEntryQueue_dummy) == extension_priority_queue.end()) {
 				omp_set_lock(lock_prio_queue);
@@ -212,6 +211,7 @@ static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activ
 				omp_unset_lock(lock_has_entry);
 			}
 		}
+		initial_set.clear();
 
 #pragma omp flush(isTerminated)
 #pragma omp atomic read
