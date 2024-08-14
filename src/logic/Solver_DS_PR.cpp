@@ -198,17 +198,19 @@ static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activ
 			continue;
 		}
 
-		list<uint32_t> new_extension_build = ExtendExtension(extension_build, initial_set);
-		initial_set.clear();
-		ExtensionPrioritised newEntryQueue_dummy = ExtensionPrioritised(framework, argument, new_extension_build, initial_set, heuristic, 0);
-		if (extension_priority_queue.find(newEntryQueue_dummy) == extension_priority_queue.end()) {
-			omp_set_lock(lock_prio_queue);
-			uint64_t numberElement = task_flags.size();
-			ExtensionPrioritised newEntryQueue = ExtensionPrioritised(framework, argument, new_extension_build, initial_set, heuristic, numberElement);
-			extension_priority_queue.insert(newEntryQueue);
-			task_flags.push_back(false);
-			omp_unset_lock(lock_prio_queue);
-			omp_unset_lock(lock_has_entry);
+		if (!initial_set.empty()) {
+			list<uint32_t> new_extension_build = ExtendExtension(extension_build, initial_set);
+			initial_set.clear();
+			ExtensionPrioritised newEntryQueue_dummy = ExtensionPrioritised(framework, argument, new_extension_build, initial_set, heuristic, 0);
+			if (extension_priority_queue.find(newEntryQueue_dummy) == extension_priority_queue.end()) {
+				omp_set_lock(lock_prio_queue);
+				uint64_t numberElement = task_flags.size();
+				ExtensionPrioritised newEntryQueue = ExtensionPrioritised(framework, argument, new_extension_build, initial_set, heuristic, numberElement);
+				extension_priority_queue.insert(newEntryQueue);
+				task_flags.push_back(false);
+				omp_unset_lock(lock_prio_queue);
+				omp_unset_lock(lock_has_entry);
+			}
 		}
 
 #pragma omp flush(isTerminated)
