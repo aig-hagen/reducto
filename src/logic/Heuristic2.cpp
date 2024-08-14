@@ -4,6 +4,7 @@
 uint32_t Heuristic2::calculate_priority(AF &framework, list<uint32_t> &extension, list<uint32_t> &initialSet, uint32_t query) {
 
 	if (initialSet.empty()) {
+		cout << "calculate_priority:: initial set must not be empty" << endl;
 		throw new invalid_argument("initial set must not be empty");
 	}
 	uint32_t prio = framework.distance_to_query[*initialSet.begin()];
