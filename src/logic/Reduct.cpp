@@ -25,6 +25,7 @@ ArrayBitSet Reduct::get_reduct(ArrayBitSet &activeArguments, AF &framework, uint
 ArrayBitSet Reduct::get_reduct_set(ArrayBitSet &activeArguments, AF &framework, list<uint32_t> &set_arguments)
 {
 	if (set_arguments.empty()) {
+		cout << "get_reduct_set:: set of arguments is emptyget_reduct_set" << endl;
 		throw new exception;
 	}
 
