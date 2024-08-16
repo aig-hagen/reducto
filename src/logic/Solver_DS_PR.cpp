@@ -60,7 +60,7 @@ static uint64_t check_prio_queue_size(vector<uint8_t> &task_flags) {
 static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activeArgs, bool &isRejected, bool &isTerminated,
 	list<uint32_t> &extension_build, list<uint32_t> &output_extension, IPrioHeuristic &heuristic,
 	std::unordered_set<ExtensionPrioritised, PrioHash> &extension_priority_queue,
-	omp_lock_t *lock_prio_queue, omp_lock_t *lock_has_entry, vector<uint8_t> &task_flags)
+	omp_lock_t *lock_prio_queue, omp_lock_t *lock_has_entry, vector<uint8_t> &task_flags, vector<uint64_t> &num_ext_calculated, uint64_t &num_all_calculation)
 {
 	int id = omp_get_thread_num();
 	bool isTerminated_tmp = false;
@@ -172,6 +172,8 @@ static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activ
 		}
 
 		*isFirstCalculation = false;
+#pragma atomic write
+		num_all_calculation++;
 
 		if (ScepticalCheck::check_rejection(argument, initial_set, framework))
 		{
@@ -201,6 +203,8 @@ static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activ
 		if (!initial_set.empty()) {
 			list<uint32_t> new_extension_build = ExtendExtension(extension_build, initial_set);
 			ExtensionPrioritised newEntryQueue_dummy = ExtensionPrioritised(framework, argument, new_extension_build, initial_set, heuristic, 0);
+			uint32_t prio = heuristic.calculate_priority(framework, new_extension_build, initial_set, argument);
+			num_ext_calculated[prio]++;
 			if (extension_priority_queue.find(newEntryQueue_dummy) == extension_priority_queue.end()) {
 				omp_set_lock(lock_prio_queue);
 				uint64_t numberElement = task_flags.size();
@@ -254,7 +258,8 @@ static void update_isFinished(bool &isTerminated, bool &isFinished, omp_lock_t *
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static bool start_checking_rejection(uint32_t argument, AF &framework, ArrayBitSet &active_args, list<uint32_t> &proof_extension, uint8_t numCores)
+static bool start_checking_rejection(uint32_t argument, AF &framework, ArrayBitSet &active_args, list<uint32_t> &proof_extension, uint8_t numCores, 
+	vector<uint64_t> &num_ext_calculated, vector<uint64_t> &num_ext_added, vector<uint64_t> &num_ext_processed, uint64_t &num_all_calculation)
 {
 	omp_lock_t *lock_queue = NULL;
 	lock_queue = (omp_lock_t *)malloc(sizeof * lock_queue);
@@ -292,19 +297,22 @@ static bool start_checking_rejection(uint32_t argument, AF &framework, ArrayBitS
 	int num_buckets = 20;
 	prio_set.rehash(num_buckets);
 	std::vector<uint8_t> task_flags;
+	num_ext_added.resize(prio_set.bucket_count());
+	num_ext_calculated.resize(prio_set.bucket_count());
+	num_ext_processed.resize(prio_set.bucket_count());
 
 	bool isTerminated = false;
 	bool isFinished = false;
 	bool isRejected = false;
 	omp_set_lock(lock_has_entry);
-#pragma omp parallel shared(isRejected, isTerminated, isFinished, proof_extension, prio_set, task_flags, lock_task_flag) \
+#pragma omp parallel shared(isRejected, isTerminated, isFinished, proof_extension, prio_set, task_flags, lock_task_flag, num_ext_calculated) \
  firstprivate(argument, framework, active_args, heuristic)
 	{
 #pragma omp single nowait
 		{
 			list<uint32_t> extension_build;
 			check_rejection(argument, framework, active_args, isRejected, isTerminated, extension_build, proof_extension,
-				*heuristic, prio_set, lock_queue, lock_has_entry, task_flags);
+				*heuristic, prio_set, lock_queue, lock_has_entry, task_flags, num_ext_calculated, num_all_calculation);
 			update_isFinished(isTerminated, isFinished, lock_has_entry, task_flags);
 		}
 
@@ -330,7 +338,7 @@ static bool start_checking_rejection(uint32_t argument, AF &framework, ArrayBitS
 				}
 
 				check_rejection(argument, framework, active_args, isRejected, isTerminated, extension, proof_extension,
-					*heuristic, prio_set, lock_queue, lock_has_entry, task_flags);
+					*heuristic, prio_set, lock_queue, lock_has_entry, task_flags, num_ext_calculated, num_all_calculation);
 				update_isFinished(isTerminated, isFinished, lock_has_entry, task_flags);
 			}
 			else {
@@ -340,6 +348,19 @@ static bool start_checking_rejection(uint32_t argument, AF &framework, ArrayBitS
 		}
 	}
 	
+	for (int i = 0; i < num_ext_added.size(); i++) {
+		num_ext_added[i] = prio_set.bucket_size(i);
+	}
+	
+	for (int i = 0; i < num_ext_processed.size(); i++) {
+		num_ext_processed[i] = 0;
+		for (auto iter = prio_set.begin(i); iter != prio_set.end(i); ++iter) {
+			if (task_flags[(*iter).Number]) {
+				num_ext_processed[i]++;
+			}
+		}
+	}
+
 	delete heuristic;
 	omp_destroy_lock(lock_queue);
 	free(lock_queue);
@@ -351,7 +372,8 @@ static bool start_checking_rejection(uint32_t argument, AF &framework, ArrayBitS
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-bool Solver_DS_PR::solve(uint32_t argument, AF &framework, list<uint32_t> &proof_extension, uint8_t numCores) 
+bool Solver_DS_PR::solve(uint32_t argument, AF &framework, list<uint32_t> &proof_extension, uint8_t numCores, 
+	vector<uint64_t> &num_ext_calculated, vector<uint64_t> &num_ext_added, vector<uint64_t> &num_ext_processed, uint64_t &num_all_calculation)
 {
 	ArrayBitSet initial_reduct = ArrayBitSet();
 	pre_proc_result result_preProcessor = PreProc_DS_PR::process(framework, argument, initial_reduct);
@@ -365,7 +387,8 @@ bool Solver_DS_PR::solve(uint32_t argument, AF &framework, list<uint32_t> &proof
 			return false;
 
 		case unknown:
-			return !start_checking_rejection(argument, framework, initial_reduct, proof_extension, numCores);
+			return !start_checking_rejection(argument, framework, initial_reduct, proof_extension, numCores, 
+				num_ext_calculated, num_ext_added, num_ext_processed, num_all_calculation);
 
 		default:
 			return unknown;
