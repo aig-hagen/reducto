@@ -152,15 +152,10 @@ int execute(int argc, char **argv)
 			uint32_t argument = std::stoi(query);
 			list<uint32_t> proof_extension;
 			bool skept_accepted = false;
-			vector<uint64_t> num_ext_calculated;
-			vector<uint64_t> num_ext_added;
-			vector<uint64_t> num_ext_processed;
-			uint64_t num_all_calculation = 0;
 
 			switch (Enums::string_to_sem(sem)) {
 				case PR:
-					skept_accepted = Solver_DS_PR::solve(argument, framework, proof_extension, NUM_CORES, 
-						num_ext_calculated, num_ext_added, num_ext_processed, num_all_calculation);
+					skept_accepted = Solver_DS_PR::solve(argument, framework, proof_extension, NUM_CORES);
 					break;
 				default:
 					cerr << argv[0] << ": Unsupported semantics\n";
@@ -183,26 +178,6 @@ int execute(int argc, char **argv)
 
 			//free allocated memory
 			proof_extension.clear();
-			cout << "Number of all calculations: " << num_all_calculation << endl;
-			uint64_t sum_elements = 0;
-			uint64_t sum_elements_calculated = 0;
-			uint64_t sum_elements_processed = 0;
-			for (int i = 0; i < num_ext_calculated.size(); i++) {
-				sum_elements += num_ext_added[i];
-				sum_elements_calculated += num_ext_calculated[i];
-				sum_elements_processed += num_ext_processed[i];
-			}
-			cout << "Number of all elements in queue: " << sum_elements << endl;
-			cout << "Number of all elements processed: " << sum_elements_processed << endl;
-			cout << "Number of all elements tried to add: " << sum_elements_calculated << endl;
-			for (int i = 0; i < num_ext_calculated.size(); i++) {
-				cout << "-------------" << endl;
-				cout << "Bucket " << i << ":" << endl;
-				cout << "Number of elements: " << num_ext_added[i] << endl;
-				cout << "Number of elements processed: " << num_ext_processed[i] << endl;
-				cout << "Number of elements tried to add: " << num_ext_calculated[i] << endl;
-			}
-
 			break;
 		}
 		default:
