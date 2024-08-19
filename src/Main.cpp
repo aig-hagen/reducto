@@ -132,7 +132,6 @@ int execute(int argc, char **argv)
 	AF framework;
 	if (fileformat == "i23") {
 		ParserICCMA::parse_af(framework, file);
-		cout << file << endl;
 	}
 	else {
 		cerr << argv[0] << ": Unsupported file format\n";
