@@ -168,13 +168,22 @@ int execute(int argc, char **argv)
 			}
 
 			cout << (skept_accepted ? "YES" : "NO") << endl;
-			
+			if (!skept_accepted)
+			{
+				cout << "w " << endl;
+
+				if (!proof_extension.empty()) {
+					for (list<uint32_t>::iterator mIter = proof_extension.begin(); mIter != proof_extension.end(); ++mIter) {
+						cout << *mIter << " ";
+					}
+					proof_extension;
+					cout << endl;
+				}
+			}
+
 			//free allocated memory
 			proof_extension.clear();
-
-
-			cout << "Number of all calculations: " << endl;
-			cout << num_all_calculation << endl;
+			cout << "Number of all calculations: " << num_all_calculation << endl;
 			uint64_t sum_elements = 0;
 			uint64_t sum_elements_calculated = 0;
 			uint64_t sum_elements_processed = 0;
@@ -183,12 +192,9 @@ int execute(int argc, char **argv)
 				sum_elements_calculated += num_ext_calculated[i];
 				sum_elements_processed += num_ext_processed[i];
 			}
-			cout << "Number of all elements in queue: " << endl;
-			cout << sum_elements << endl;
-			cout << "Number of all elements processed: " << endl;
-			cout << sum_elements_processed << endl;
-			cout << "Number of all elements tried to add: " << endl;
-			cout << sum_elements_calculated << endl;
+			cout << "Number of all elements in queue: " << sum_elements << endl;
+			cout << "Number of all elements processed: " << sum_elements_processed << endl;
+			cout << "Number of all elements tried to add: " << sum_elements_calculated << endl;
 			for (int i = 0; i < num_ext_calculated.size(); i++) {
 				cout << "-------------" << endl;
 				cout << "Bucket " << i << ":" << endl;
