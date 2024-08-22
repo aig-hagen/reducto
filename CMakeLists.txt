@@ -32,7 +32,7 @@ set(HEADERS
 	${INCLD_LOGIC}/Heuristic2.h
 	${INCLD_LOGIC}/Parser_iccma.h
 	${INCLD_LOGIC}/PreProcessor_DS_PR.h
-	${INCLD_LOGIC}/PriorityQueueManager.h
+	${INCLD_LOGIC}/PriorityStackManager.h
 	${INCLD_LOGIC}/Processor_DS_PR.h
 	${INCLD_LOGIC}/IPrioHeuristic.h
 	${INCLD_LOGIC}/Reduct.h 
@@ -58,7 +58,7 @@ set(SRCFILES
 	${SRC_LOGIC}Heuristic2.cpp
 	${SRC_LOGIC}Parser_iccma.cpp
 	${SRC_LOGIC}PreProcessor_DS_PR.cpp
-	${SRC_LOGIC}PriorityQueueManager.cpp
+	${SRC_LOGIC}PriorityStackManager.cpp
 	${SRC_LOGIC}Processor_DS_PR.cpp
 	${SRC_LOGIC}Reduct.cpp 
 	${SRC_LOGIC}SatSolver_cadical.cpp
