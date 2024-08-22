@@ -1,15 +1,6 @@
 #include "../../include/logic/Solver_DS_PR.h"
 using namespace std;
 
-static list<uint32_t> ExtendExtension(list<uint32_t> &extension_build, list<uint32_t> &initial_set)
-{
-	list<uint32_t> tmpCopy_1, tmpCopy_2;
-	std::copy(extension_build.begin(), extension_build.end(), std::back_inserter(tmpCopy_1));
-	std::copy(initial_set.begin(), initial_set.end(), std::back_inserter(tmpCopy_2));
-	tmpCopy_1.merge(tmpCopy_2);
-	return tmpCopy_1;
-}
-
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
@@ -182,7 +173,7 @@ static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activ
 			isTerminated = true;
 #pragma omp flush(isTerminated)
 
-			list<uint32_t> new_extension_build = ExtendExtension(extension_build, initial_set);
+			list<uint32_t> new_extension_build = tools::ToolList::extend_list(extension_build, initial_set);
 #pragma atomic write
 			output_extension = new_extension_build;
 
@@ -199,7 +190,7 @@ static void check_rejection(uint32_t argument, AF &framework, ArrayBitSet &activ
 		}
 
 		if (!initial_set.empty()) {
-			list<uint32_t> new_extension_build = ExtendExtension(extension_build, initial_set);
+			list<uint32_t> new_extension_build = tools::ToolList::extend_list(extension_build, initial_set);
 			ExtensionPrioritised newEntryQueue_dummy = ExtensionPrioritised(framework, argument, new_extension_build, initial_set, heuristic, 0);
 			if (extension_priority_queue.find(newEntryQueue_dummy) == extension_priority_queue.end()) {
 				omp_set_lock(lock_prio_queue);

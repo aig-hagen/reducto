@@ -18,9 +18,6 @@ class Proc_DS_PR {
 
 public:
 	static list<uint32_t> process_iteration(uint32_t query_argument, AF &framework, ArrayBitSet &activeArgs, bool &isRejected, bool &isTerminated,
-		SatSolver &solver, bool &continue_calculation);
-}
-
+		SatSolver &solver, bool &continue_calculation, bool is_first_iteration);
+};
 #endif
-
-void set_is_rejected(bool &is_rejected, bool &is_terminated);

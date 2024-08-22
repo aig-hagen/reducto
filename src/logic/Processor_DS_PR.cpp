@@ -26,10 +26,10 @@ list<uint32_t> Proc_DS_PR::process_iteration(uint32_t query_argument, AF &framew
 			// which means we found a complete extension, which is not containing the query argument, hence we found a counter evidence
 			set_is_rejected(is_rejected, is_terminated);
 		}
-		return list<uint32_t>;
+		return list<uint32_t>();
 	}
 
-	list<uint32_t> initial_set = Decoding::get_set_from_solver(*solver, activeArgs);
+	list<uint32_t> initial_set = Decoding::get_set_from_solver(solver, activeArgs);
 
 	if (ScepticalCheck::check_rejection(query_argument, initial_set, framework)) {
 		set_is_rejected(is_rejected, is_terminated);

@@ -43,6 +43,7 @@ set(HEADERS
 	${INCLD_UTIL}/ArrayBitSet.h
 	${INCLD_UTIL}/MemoryWatchDog.h
 	${INCLD_UTIL}/Printer.h
+	${INCLD_UTIL}/ToolList.h
 	)
 
 set(SRCFILES
@@ -64,6 +65,7 @@ set(SRCFILES
 
 	${SRC_UTIL}MemoryWatchDog.c
 	${SRC_UTIL}Printer.cpp
+	${SRC_UTIL}ToolList.cpp
 	)
 
 set(SOURCES ${SRCFILES} ${HEADERS})
