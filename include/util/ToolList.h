@@ -6,6 +6,9 @@
 
 namespace tools {
 
+	/// <summary>
+	/// This class is responsible for offering helping methods for lists.
+	/// </summary>
 	class ToolList {
 
 	public:

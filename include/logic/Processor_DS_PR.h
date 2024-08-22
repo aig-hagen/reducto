@@ -14,6 +14,9 @@
 
 using namespace std;
 
+/// <summary>
+/// This class is responsible for processing solving steps for the DS-PR problem.
+/// </summary>
 class Proc_DS_PR {
 
 public:

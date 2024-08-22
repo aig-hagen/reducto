@@ -21,6 +21,7 @@ extern "C" {
 #include "Heuristic2.h"
 #include "IPrioHeuristic.h"
 #include "PreProcessor_DS_PR.h"
+#include "PriorityQueueManager.h"
 #include "Reduct.h"
 #include "SatSolver.h"
 #include "SatSolver_cadical.h"
