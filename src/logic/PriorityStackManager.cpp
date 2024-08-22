@@ -50,8 +50,8 @@ uint64_t PriorityStackManager::check_number_unprocessed_elements() {
 	if (task_flags.empty()) return 0;
 
 	uint64_t num_false = 0;
-	for (uint64_t i = task_flags.size() - 1; i >= 0; i--) {
-		if (!task_flags[i]) num_false++;
+	for (uint64_t i = task_flags.size(); i > 0; i--) {
+		if (!task_flags[i - 1]) num_false++;
 		if (num_false >= 2) break;
 	}
 	return num_false;
@@ -94,10 +94,10 @@ bool PriorityStackManager::try_insert_extension(uint32_t query_argument, AF &fra
 	ExtensionPrioritised newEntryQueue_dummy = ExtensionPrioritised(framework, query_argument, extension, initial_set, *heuristic, 0);
 	if (prio_stack.find(newEntryQueue_dummy) == prio_stack.end()) {
 		omp_set_lock(lock_stack);
+		omp_set_lock(lock_task_flag);
 		uint64_t numberElement = task_flags.size();
 		ExtensionPrioritised newEntryQueue = ExtensionPrioritised(framework, query_argument, extension, initial_set, *heuristic, numberElement);
 		bool result = prio_stack.insert(newEntryQueue).second;
-		omp_set_lock(lock_task_flag);
 		task_flags.push_back(false);
 		omp_unset_lock(lock_task_flag);
 		omp_unset_lock(lock_stack);

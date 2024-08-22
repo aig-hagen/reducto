@@ -32,7 +32,7 @@ static bool check_termination(bool &is_terminated, bool continue_calculation)
 static void update_is_finished(bool &is_terminated, bool &is_finished, PriorityStackManager &prio_stack)
 {
 	bool is_finished_tmp = prio_stack.check_number_unprocessed_elements() == 0 || check_termination(is_terminated, true);
-#pragma atomic write
+#pragma omp atomic write
 	is_finished = is_finished_tmp;
 #pragma omp flush(is_finished)
 	if (is_finished_tmp) {
@@ -61,18 +61,25 @@ static void check_rejection(uint32_t query_argument, AF &framework, ArrayBitSet 
 	solver = new SatSolver_cadical(numVars);
 	Encoding::add_clauses_nonempty_admissible_set(*solver, framework, reduct);
 	bool continue_calculation = false;
+	bool found_counter_evidence = false;
 	list<uint32_t> initial_set = Proc_DS_PR::calculate_nonempty_adm_set(query_argument, framework, reduct, is_rejected, is_terminated,
-		*solver, continue_calculation, true);
+		*solver, continue_calculation, found_counter_evidence, true);
+	list<uint32_t> new_extension = tools::ToolList::extend_list(extension_build, initial_set);
+	if (found_counter_evidence) output_extension = new_extension;
 	if (!check_termination(is_terminated, continue_calculation)) {
+		prio_queue.try_insert_extension(query_argument, framework, &heuristic, new_extension, initial_set);
+
+
 		//iterate through initial sets
 		do {
 			Encoding::add_complement_clause(*solver, reduct);
 			initial_set = Proc_DS_PR::calculate_nonempty_adm_set(query_argument, framework, reduct, is_rejected, is_terminated,
-				*solver, continue_calculation, false);
+				*solver, continue_calculation, found_counter_evidence, false);
+			list<uint32_t> new_extension_2 = tools::ToolList::extend_list(extension_build, initial_set);
+			if (found_counter_evidence) output_extension = new_extension_2;
 			if (check_termination(is_terminated, continue_calculation)) break;
 
-			list<uint32_t> new_extension_build = tools::ToolList::extend_list(extension_build, initial_set);
-			prio_queue.try_insert_extension(query_argument, framework, &heuristic, new_extension_build, initial_set);
+			prio_queue.try_insert_extension(query_argument, framework, &heuristic, new_extension_2, initial_set);
 		} while (!check_termination(is_terminated, continue_calculation));
 	}
 
@@ -109,7 +116,10 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 
 		while (true) {
 			omp_set_lock(prio_stack.lock_has_entry);
-			if (check_finished(is_finished, prio_stack)) break;
+			if (check_finished(is_finished, prio_stack)) {
+				omp_unset_lock(prio_stack.lock_has_entry);
+				break;
+			} 
 			
 			if (prio_stack.check_number_unprocessed_elements() > 0) {
 				list<uint32_t> extension = prio_stack.pop_prio_queue();

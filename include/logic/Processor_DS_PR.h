@@ -31,8 +31,9 @@ public:
 	/// <param name="solver">The solver used to calculate sets for this state of the framework.</param>
 	/// <param name="continue_calculation">Flag used to signal if the calculation of sets in state should be continued.</param>
 	/// <param name="is_first_iteration">Flag indicating if this iteration to calculate a set is the first in the specified state or not.</param>
+	/// <param name="found_counter_evidence">Flag that indicates that the processor has found an nonempty adm. set that is a counter evidence</param>
 	/// <returns>An non emtpy admissible set, if such a set can be computed. Empty list otherwise.</returns>
 	static list<uint32_t> calculate_nonempty_adm_set(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &is_rejected, bool &is_terminated,
-		SatSolver &solver, bool &continue_calculation, bool is_first_iteration);
+		SatSolver &solver, bool &continue_calculation, bool &found_counter_evidence, bool is_first_iteration);
 };
 #endif

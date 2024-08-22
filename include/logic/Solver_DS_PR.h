@@ -53,3 +53,5 @@ public:
 };
 
 #endif
+
+static void output_counter_evidence(bool found_counter_evidence, std::__cxx11::list<uint32_t> &output_extension, std::__cxx11::list<uint32_t> &new_extension);
