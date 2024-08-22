@@ -20,6 +20,21 @@ using namespace std;
 class Encoding {
 public:
     /// <summary>
+    /// Calculates the accepting literal of the SAT-problem for the specified argument.
+    /// </summary>
+    /// <param name="argument">Argument to be converted in a literal of the SAT-problem.</param>
+    /// <param name="isInverted">Bool indicating wheter the literal has to be inverted or not.</param>
+    /// <returns>Returns an accepting literal.</returns>
+    static int64_t get_literal_accepted(uint32_t argument, bool isInverted);
+    /// <summary>
+    /// Calculates the rejecting literal of the SAT-problem for the specified argument.
+    /// </summary>
+    /// <param name="argsSize">Number of arguments in the framework.</param>
+    /// <param name="argument">Argument to be converted in a literal of the SAT-problem.</param>
+    /// <param name="isInverted">Bool indicating wheter the literal has to be inverted or not.</param>
+    /// <returns>Returns an accepting literal.</returns>
+    static int64_t get_literal_rejected(uint32_t argsSize, uint32_t argument, bool isInverted);
+    /// <summary>
     /// Adds all clauses necessary to encode a current state of the framework.
     /// </summary>
     /// <param name="solver">The SATSolver, to which the clauses will be added.</param>

@@ -44,6 +44,13 @@ public:
 	/// </summary>
 	/// <returns> <c>TRUE</c> iff a solution was found. Otherwise <c>FALSE</c></returns>
 	virtual bool solve() = 0;
+
+	/// <summary>
+	/// This method calculates a solution for the SAT-Problem of the solver.
+	/// </summary>
+	/// <param name="assumptions">Variable the SAT-solver has to assume to be true if positive and false if negative.</param>
+	/// <returns> <c>TRUE</c> iff a solution was found. Otherwise <c>FALSE</c></returns>
+	virtual bool solve(int64_t assumption) = 0;
 };
 
 

@@ -59,3 +59,11 @@ bool SatSolver_cadical::solve() {
     // Solve the SAT problem using the CMS solver
     return cadical_solver.solve() == 10; // Returns true if a solution is found, false otherwise
 }
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
+bool SatSolver_cadical::solve(int64_t assumption) {
+    cadical_solver.assume(assumption);
+    return solve();
+}

@@ -3,13 +3,13 @@
 using namespace std;
 using std::vector;
 
-static int64_t get_literal_accepted(uint32_t argument, bool isInverted)
+int64_t Encoding::get_literal_accepted(uint32_t argument, bool isInverted)
 {
 	int64_t variable = static_cast<int64_t>(argument);
 	return isInverted ? -1 * variable: variable;
 }
 
-static int64_t get_literal_rejected(uint32_t argsSize, uint32_t argument, bool isInverted)
+int64_t Encoding::get_literal_rejected(uint32_t argsSize, uint32_t argument, bool isInverted)
 {
 	int64_t variable = static_cast<int64_t>(argument) + argsSize;
 	return isInverted ? -1 * variable : variable;
@@ -23,12 +23,12 @@ static vector<int64_t> add_rejected_clauses(SatSolver &solver, uint32_t argsSize
 	// basic acceptance and rejection clause
 	// Part I:  models that an argument cannot be accepted and rejected at the same time
 	solver.add_clause_short(
-		get_literal_rejected(argsSize, argument, true),
-		get_literal_accepted(argument, true));
+		Encoding::get_literal_rejected(argsSize, argument, true),
+		Encoding::get_literal_accepted(argument, true));
 
 	// Part III: constitutes that if an argument 'a' is rejected, one of its attackers must be accepted
 	vector<int64_t> rejection_reason_clause;
-	rejection_reason_clause.push_back(get_literal_rejected(argsSize, argument, true));
+	rejection_reason_clause.push_back(Encoding::get_literal_rejected(argsSize, argument, true));
 	return rejection_reason_clause;
 }
 
@@ -39,11 +39,11 @@ static void add_rejected_clauses_per_attacker(SatSolver &solver, uint32_t argsSi
 {
 	// Part II: ensures that if an attacker 'b' of an argument 'a' is accepted, then 'a' must be rejected
 	solver.add_clause_short(
-		get_literal_rejected(argsSize, argument, false),
-		get_literal_accepted(attacker, true));
+		Encoding::get_literal_rejected(argsSize, argument, false),
+		Encoding::get_literal_accepted(attacker, true));
 
 	// Part III: constitutes that if an argument 'a' is rejected, one of its attackers must be accepted
-	rejection_reason_clause.push_back(get_literal_accepted(attacker, false));
+	rejection_reason_clause.push_back(Encoding::get_literal_accepted(attacker, false));
 }
 
 /*===========================================================================================================================================================*/
@@ -54,12 +54,12 @@ static void add_conflict_free_per_attacker(SatSolver &solver, uint32_t argument,
 	if (argument != attacker)
 	{
 		solver.add_clause_short(
-			get_literal_accepted(argument, true),
-			get_literal_accepted(attacker, true));
+			Encoding::get_literal_accepted(argument, true),
+			Encoding::get_literal_accepted(attacker, true));
 	}
 	else
 	{
-		solver.add_clause_short(get_literal_accepted(argument, true), 0);
+		solver.add_clause_short(Encoding::get_literal_accepted(argument, true), 0);
 	}
 }
 
@@ -77,8 +77,8 @@ static void add_defense_per_attacker(SatSolver &solver, uint32_t argsSize, uint3
 	//models the notion of defense in an abstract argumentation framework: 
 	// if an argument is accepted to be in the admissible set, all its attackers must be rejected
 	solver.add_clause_short(
-		get_literal_accepted(argument, true),
-		get_literal_rejected(argsSize, attacker, false));
+		Encoding::get_literal_accepted(argument, true),
+		Encoding::get_literal_rejected(argsSize, attacker, false));
 }
 
 /*===========================================================================================================================================================*/
