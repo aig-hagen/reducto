@@ -20,7 +20,7 @@ list<uint32_t> Proc_DS_PR::calculate_nonempty_adm_set(uint32_t query_argument, A
 	continue_calculation = has_solution_without_query;
 	if (!has_solution_without_query) {
 		//there is no nonempty adm. set, which is not containing the query, there might be solutions containing the query
-		if (is_first_iteration && !solver.solve(Encoding::get_literal_rejected(framework.num_args, query_argument, false))) {
+		if (is_first_iteration && !solver.solve()) {
 			// this is the first iteration, so there have been no solution excluded by a complement clause
 			// there is no nonempty adm. set, with or without the query argument, that's why there is only the empty set as adm. set
 			// which means we found a complete extension, which is not containing the query argument, hence we found a counter evidence
