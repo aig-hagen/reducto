@@ -21,6 +21,8 @@ class ScepticalCheck {
 		/// <summary>
 		/// Checks if a query about the sceptical acceptance of a specified argument can be rejected using the specified set of arguments. For example, 
 		/// this is the case if any argument of the initial set attacks the argument in question.
+		/// <br> - <\br>
+		/// Precondition: Before calling this method it has to be checked, that the query argument is not contained in the specified set of arguments.
 		/// </summary>
 		/// <param name="query">The argument, which could be sceptical accepted or not.</param>
 		/// <param name="set_arguments">Set of arguments of the framework.</param>

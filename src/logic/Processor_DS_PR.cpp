@@ -15,7 +15,7 @@ static void set_is_rejected(bool &is_rejected, bool &is_terminated, bool &found_
 /*===========================================================================================================================================================*/
 
 list<uint32_t> Proc_DS_PR::calculate_nonempty_adm_set(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &is_rejected, bool &is_terminated,
-	SatSolver &solver, bool &continue_calculation, bool &found_counter_evidence, bool is_first_iteration) {
+	SatSolver &solver, bool &continue_calculation, bool &found_counter_evidence, bool is_first_iteration, bool &contains_query) {
 	bool has_solution = solver.solve();
 	continue_calculation = has_solution;
 	if (!has_solution) {
@@ -30,9 +30,11 @@ list<uint32_t> Proc_DS_PR::calculate_nonempty_adm_set(uint32_t query_argument, A
 	}
 
 	list<uint32_t> initial_set = Decoding::get_set_from_solver(solver, active_args);
-
-	if (ScepticalCheck::check_rejection(query_argument, initial_set, framework)) {
-		set_is_rejected(is_rejected, is_terminated, found_counter_evidence);
+	contains_query = ScepticalCheck::check_terminate_extension_build(query_argument, initial_set);
+	if (!contains_query) {
+		if (ScepticalCheck::check_rejection(query_argument, initial_set, framework)) {
+			set_is_rejected(is_rejected, is_terminated, found_counter_evidence);
+		}
 	}
 
 	return initial_set;

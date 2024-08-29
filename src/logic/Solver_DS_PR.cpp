@@ -62,29 +62,31 @@ static void check_rejection(uint32_t query_argument, AF &framework, ArrayBitSet 
 	Encoding::add_clauses_nonempty_admissible_set(*solver, framework, reduct);
 	bool continue_calculation = false;
 	bool found_counter_evidence = false;
+	bool contains_query = false;
 	list<uint32_t> initial_set = Proc_DS_PR::calculate_nonempty_adm_set(query_argument, framework, reduct, is_rejected, is_terminated,
-		*solver, continue_calculation, found_counter_evidence, true);
-	list<uint32_t> new_extension = tools::ToolList::extend_list(extension_build, initial_set);
-	if (found_counter_evidence) output_extension = new_extension;
-	if (!check_termination(is_terminated, continue_calculation)) {
-		prio_queue.try_insert_extension(query_argument, framework, &heuristic, new_extension, initial_set);
-
-		//iterate through initial sets
-		do {
-			Encoding::add_complement_clause(*solver, reduct);
-			initial_set = Proc_DS_PR::calculate_nonempty_adm_set(query_argument, framework, reduct, is_rejected, is_terminated,
-				*solver, continue_calculation, found_counter_evidence, false);
-			if (ScepticalCheck::check_terminate_extension_build(query_argument, initial_set)) {
-				continue;
-			}
-			list<uint32_t> new_extension_2 = tools::ToolList::extend_list(extension_build, initial_set);
-			if (found_counter_evidence) output_extension = new_extension_2;
-			if (check_termination(is_terminated, continue_calculation)) break;
-
-			prio_queue.try_insert_extension(query_argument, framework, &heuristic, new_extension_2, initial_set);
-		} while (!check_termination(is_terminated, continue_calculation));
+		*solver, continue_calculation, found_counter_evidence, true, contains_query);
+	if (!contains_query) {
+		list<uint32_t> new_extension = tools::ToolList::extend_list(extension_build, initial_set);
+		if (found_counter_evidence) output_extension = new_extension;
+		if (!check_termination(is_terminated, continue_calculation)) {
+			prio_queue.try_insert_extension(query_argument, framework, &heuristic, new_extension, initial_set);
+		}
 	}
 
+	//iterate through initial sets
+	while (!check_termination(is_terminated, continue_calculation)) {
+		Encoding::add_complement_clause(*solver, reduct);
+		initial_set = Proc_DS_PR::calculate_nonempty_adm_set(query_argument, framework, reduct, is_rejected, is_terminated,
+			*solver, continue_calculation, found_counter_evidence, false, contains_query);
+		if (contains_query) {
+			continue;
+		}
+		list<uint32_t> new_extension_2 = tools::ToolList::extend_list(extension_build, initial_set);
+		if (found_counter_evidence) output_extension = new_extension_2;
+		if (check_termination(is_terminated, continue_calculation)) break;
+
+		prio_queue.try_insert_extension(query_argument, framework, &heuristic, new_extension_2, initial_set);
+	};
 	delete solver;
 	return;
 }
