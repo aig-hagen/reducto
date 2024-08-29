@@ -49,7 +49,7 @@ public:
 	/// This method returns the element with the highest priority from the queue, without removing it, and marks it as processed.
 	/// </summary>
 	/// <returns></returns>
-	list<uint32_t> pop_prio_queue();
+	list<uint32_t> pop_prio_stack();
 
 	/// <summary>
 	/// This method tries to insert an extension in the specified priority queue.

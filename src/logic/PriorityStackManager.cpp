@@ -60,7 +60,7 @@ uint64_t PriorityStackManager::check_number_unprocessed_elements() {
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-list<uint32_t> PriorityStackManager::pop_prio_queue() {
+list<uint32_t> PriorityStackManager::pop_prio_stack() {
 	for (int i = 0; i < prio_stack.bucket_count(); i++) {
 		//ensure starting to iterate at bucket 0
 		for (auto iter = prio_stack.begin(i); iter != prio_stack.end(i); ++iter) {
