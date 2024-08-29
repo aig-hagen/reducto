@@ -69,7 +69,6 @@ static void check_rejection(uint32_t query_argument, AF &framework, ArrayBitSet 
 	if (!check_termination(is_terminated, continue_calculation)) {
 		prio_queue.try_insert_extension(query_argument, framework, &heuristic, new_extension, initial_set);
 
-
 		//iterate through initial sets
 		do {
 			Encoding::add_complement_clause(*solver, reduct);
@@ -122,10 +121,7 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 			} 
 			
 			if (prio_stack.check_number_unprocessed_elements() > 0) {
-				list<uint32_t> extension = prio_stack.pop_prio_queue();
-				if (extension.empty()) {
-					continue;
-				}
+				list<uint32_t> extension = prio_stack.pop_prio_extension();
 
 				if (prio_stack.check_number_unprocessed_elements() > 0) {
 					omp_unset_lock(prio_stack.lock_has_entry);
