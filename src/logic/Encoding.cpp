@@ -125,19 +125,16 @@ void Encoding::add_clauses_nonempty_admissible_set(SatSolver &solver, AF &framew
 
 void Encoding::add_complement_clause(SatSolver &solver, ArrayBitSet &activeArgs)
 {
-	vector<int64_t> complement_clause;
-	
+	vector<int64_t> clause;
+
 	for (int i = 0; i < activeArgs._array.size(); i++) {
-
-		int64_t arg_64 = static_cast<int64_t>(activeArgs._array[i]);
-
-		if (solver.check_var_model(arg_64))
-		{
-			int64_t arg_64_inv = -1 * arg_64;
-			complement_clause.push_back(arg_64_inv);
+		int64_t in_variable = get_literal_accepted(activeArgs._array[i], false);
+		if (!solver.check_var_model(in_variable)) {
+			// new solutions have to contain at least one input variable, that is not contained in the current solution
+			clause.push_back(in_variable);
 		}
 	}
 
-	solver.add_clause(complement_clause);
-	complement_clause.clear();
+	solver.add_clause(clause);
+	clause.clear();
 }
