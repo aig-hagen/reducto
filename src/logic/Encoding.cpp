@@ -126,25 +126,18 @@ void Encoding::add_clauses_nonempty_admissible_set(SatSolver &solver, AF &framew
 void Encoding::add_complement_clause(SatSolver &solver, ArrayBitSet &activeArgs)
 {
 	vector<uint32_t> args_not_in_model;
-	vector<uint32_t> args_in_model;
 
 	for (int i = 0; i < activeArgs._array.size(); i++) {
 		int64_t arg_64 = get_literal_accepted(activeArgs._array[i], false);
-		if (solver.check_var_model(arg_64)) {
-			args_in_model.push_back(activeArgs._array[i]);
-		}
-		else {
+		if (!solver.check_var_model(arg_64)){
 			args_not_in_model.push_back(activeArgs._array[i]);
 		}
 	}
 
-	for (int i = 0; i < args_in_model.size(); i++) {
-		vector<int64_t> clause;
-		for (int i = 0; i < args_not_in_model.size(); i++) {
-			clause.push_back(get_literal_accepted(args_not_in_model[i], false));
-		}
-		clause.push_back(get_literal_accepted(args_in_model[i], true));
-		solver.add_clause(clause);
-		clause.clear();
+	vector<int64_t> clause;
+	for (int i = 0; i < args_not_in_model.size(); i++) {
+		clause.push_back(get_literal_accepted(args_not_in_model[i], false));
 	}
+	solver.add_clause(clause);
+	clause.clear();
 }
