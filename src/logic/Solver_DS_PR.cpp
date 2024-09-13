@@ -45,7 +45,7 @@ static void update_is_finished(bool &is_terminated, bool &is_finished, PriorityS
 
 static void check_rejection(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &is_rejected, bool &is_terminated,
 	list<uint32_t> &extension_build, list<uint32_t> &output_extension, IPrioHeuristic &heuristic,
-	PriorityStackManager &prio_queue)
+	PriorityStackManager &prio_queue, int &num_sat_calls, int &num_iniSet_added)
 {
 	if (check_termination(is_terminated, true)) return;
 	ArrayBitSet reduct = extension_build.empty() ? active_args.copy() : Reduct::get_reduct_set(active_args, framework, extension_build);
@@ -63,22 +63,22 @@ static void check_rejection(uint32_t query_argument, AF &framework, ArrayBitSet 
 	bool continue_calculation = false;
 	bool found_counter_evidence = false;
 	list<uint32_t> initial_set = Proc_DS_PR::calculate_nonempty_adm_set(query_argument, framework, reduct, is_rejected, is_terminated,
-		*solver, continue_calculation, found_counter_evidence, true);
+		*solver, continue_calculation, found_counter_evidence, true, num_sat_calls);
 	list<uint32_t> new_extension = tools::ToolList::extend_list(extension_build, initial_set);
 	if (found_counter_evidence) output_extension = new_extension;
 	if (!check_termination(is_terminated, continue_calculation)) {
-		prio_queue.try_insert_extension(query_argument, framework, &heuristic, new_extension, initial_set);
+		prio_queue.try_insert_extension(query_argument, framework, &heuristic, new_extension, initial_set, num_iniSet_added);
 
 		//iterate through initial sets
 		do {
 			Encoding::add_complement_clause(*solver, reduct);
 			initial_set = Proc_DS_PR::calculate_nonempty_adm_set(query_argument, framework, reduct, is_rejected, is_terminated,
-				*solver, continue_calculation, found_counter_evidence, false);
+				*solver, continue_calculation, found_counter_evidence, false, num_sat_calls);
 			list<uint32_t> new_extension_2 = tools::ToolList::extend_list(extension_build, initial_set);
 			if (found_counter_evidence) output_extension = new_extension_2;
 			if (check_termination(is_terminated, continue_calculation)) break;
 
-			prio_queue.try_insert_extension(query_argument, framework, &heuristic, new_extension_2, initial_set);
+			prio_queue.try_insert_extension(query_argument, framework, &heuristic, new_extension_2, initial_set, num_iniSet_added);
 		} while (!check_termination(is_terminated, continue_calculation));
 	}
 
@@ -102,14 +102,16 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 	bool is_finished = false;
 	bool is_rejected = false;
 	omp_set_lock(prio_stack.lock_has_entry);
-#pragma omp parallel shared(is_rejected, is_terminated, is_finished, proof_extension, prio_stack) \
+	int num_sat_calls = 0;
+	int num_iniSet_added = 0;
+#pragma omp parallel shared(is_rejected, is_terminated, is_finished, proof_extension, prio_stack, num_sat_calls, num_iniSet_added) \
  firstprivate(query_argument, framework, active_args, heuristic)
 	{
 #pragma omp single nowait
 		{
 			list<uint32_t> extension_build;
 			check_rejection(query_argument, framework, active_args, is_rejected, is_terminated, extension_build, proof_extension,
-				*heuristic, prio_stack);
+				*heuristic, prio_stack, num_sat_calls, num_iniSet_added);
 			update_is_finished(is_terminated, is_finished, prio_stack);
 		}
 
@@ -128,7 +130,7 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 				}
 
 				check_rejection(query_argument, framework, active_args, is_rejected, is_terminated, extension, proof_extension,
-					*heuristic, prio_stack);
+					*heuristic, prio_stack, num_sat_calls, num_iniSet_added);
 				update_is_finished(is_terminated, is_finished, prio_stack);
 			}
 			else {
@@ -137,7 +139,8 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 			}
 		}
 	}
-	
+	cout << "Number of SAT calls: " << num_sat_calls << endl;
+	cout << "Number of initial sets added to queue: " << num_iniSet_added << endl;
 	delete heuristic;
 	return is_rejected;
 }
