@@ -60,6 +60,6 @@ public:
 	/// <param name="extension">The extension to add to the priority stack.</param>
 	/// <param name="initial_set">The initial set of the extension to add.</param>
 	/// <returns>TRUE iff the element could be added to the priority stack, otherwise FALSE.</returns>
-	bool try_insert_extension(uint32_t query_argument, AF &framework, IPrioHeuristic *heuristic, list<uint32_t> &extension, list<uint32_t> &initial_set, int &num_iniSet_added);
+	bool try_insert_extension(uint32_t query_argument, AF &framework, IPrioHeuristic *heuristic, list<uint32_t> &extension, list<uint32_t> &initial_set);
 };
 #endif

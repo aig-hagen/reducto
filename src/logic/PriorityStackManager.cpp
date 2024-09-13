@@ -90,7 +90,7 @@ list<uint32_t> PriorityStackManager::pop_prio_extension() {
 /*===========================================================================================================================================================*/
 
 bool PriorityStackManager::try_insert_extension(uint32_t query_argument, AF &framework, IPrioHeuristic *heuristic,
-	list<uint32_t> &extension, list<uint32_t> &initial_set, int &num_iniSet_added) {
+	list<uint32_t> &extension, list<uint32_t> &initial_set) {
 	ExtensionPrioritised newEntryQueue_dummy = ExtensionPrioritised(framework, query_argument, extension, initial_set, *heuristic, 0);
 	if (prio_stack.find(newEntryQueue_dummy) == prio_stack.end()) {
 		omp_set_lock(lock_stack);
@@ -98,8 +98,6 @@ bool PriorityStackManager::try_insert_extension(uint32_t query_argument, AF &fra
 		uint64_t numberElement = task_flags.size();
 		ExtensionPrioritised newEntryQueue = ExtensionPrioritised(framework, query_argument, extension, initial_set, *heuristic, numberElement);
 		bool result = prio_stack.insert(newEntryQueue).second;
-#pragma atomic write
-		num_iniSet_added++;
 		task_flags.push_back(false);
 		omp_unset_lock(lock_task_flag);
 		omp_unset_lock(lock_stack);
