@@ -155,7 +155,7 @@ int execute(int argc, char **argv)
 
 			switch (Enums::string_to_sem(sem)) {
 				case PR:
-					skept_accepted = Solver_DS_PR::solve(argument, framework, proof_extension, NUM_CORES);
+					skept_accepted = Solver_DS_PR::solve(argument, framework, proof_extension, NUM_CORES, LIMIT_CALCULATIONS_INITIAL_SET_PER_REDUCT);
 					break;
 				default:
 					cerr << argv[0] << ": Unsupported semantics\n";
