@@ -19,6 +19,7 @@ extern "C" {
 #include "ExtensionPrioritised.h"
 #include "Heuristic1.h"
 #include "Heuristic2.h"
+#include "Heuristic3.h"
 #include "IPrioHeuristic.h"
 #include "PreProcessor_DS_PR.h"
 #include "PriorityStackManager.h"
@@ -53,5 +54,3 @@ public:
 };
 
 #endif
-
-static void output_counter_evidence(bool found_counter_evidence, std::__cxx11::list<uint32_t> &output_extension, std::__cxx11::list<uint32_t> &new_extension);
