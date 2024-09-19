@@ -26,5 +26,6 @@ uint32_t Heuristic3::calculate_priority(AF &framework, list<uint32_t> &extension
 		}
 	}
 
-	return prio;
+	return prio - 3; // -3 because: distance 0 is impossible since query cannot be contained in initial set; distance 1 is impossible since extension would lead to a 
+	//rejection, therefore the extension would not be pushed to the priority stack; 2 is impossible because of the punishment of event distances
 }
