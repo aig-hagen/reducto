@@ -96,7 +96,7 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 		omp_set_num_threads(numCores);
 	}
 	IPrioHeuristic *heuristic = NULL;
-	heuristic = new Heuristic3();
+	heuristic = new Heuristic4();
 	PriorityStackManager prio_stack;
 	bool is_terminated = false;
 	bool is_finished = false;
