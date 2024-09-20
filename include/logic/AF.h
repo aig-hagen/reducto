@@ -34,7 +34,6 @@ namespace std
 /// This class is responsible for representing the data of an abstract argumentation framework.
 /// </summary>
 class AF {
-
 public:
 
     /// <summary>
@@ -49,6 +48,10 @@ public:
 	/// Lists for each argument a list of the arguments, which are attacked by it.
 	/// </summary>
 	std::vector<vector<uint32_t>> victims;
+	/// <summary>
+	/// List of the arguments in the framework, sorted according to their number of victims.
+	/// </summary>
+	std::vector<uint32_t> sorted_by_num_victims;
 	/// <summary>
 	/// Booleans indicating if an arguments attacks itself.
 	/// </summary>
@@ -87,6 +90,22 @@ public:
 	/// </summary>
 	/// <param name="number_args">The number of arguments in the framework to initialize.</param>
 	void initialize(uint32_t number_args);
+};
+
+/// <summary>
+/// This class is responsible for sorting arguments based on the number of their vecitims
+/// </summary>
+class ComparatorNumVictims {
+public:
+    ComparatorNumVictims(AF &framework) : _framework(framework) {}
+
+    bool operator()(uint32_t argumentA, uint32_t argumentB) const {
+        // Custom comparison logic involving state 
+        return _framework.victims[argumentA].size() > _framework.victims[argumentB].size(); // it sorts in descending order 
+    }
+
+private:
+    AF _framework;
 };
 
 #endif

@@ -62,23 +62,29 @@ static void check_rejection(uint32_t query_argument, AF &framework, ArrayBitSet 
 	Encoding::add_clauses_nonempty_admissible_set(*solver, framework, reduct);
 	bool continue_calculation = false;
 	bool found_counter_evidence = false;
+	uint32_t lim_assumptions = framework.num_args / 4;
 	list<uint32_t> initial_set = Proc_DS_PR::calculate_nonempty_adm_set(query_argument, framework, reduct, is_rejected, is_terminated,
-		*solver, continue_calculation, found_counter_evidence, true);
+		*solver, continue_calculation, found_counter_evidence, true, lim_assumptions);
 	list<uint32_t> new_extension = tools::ToolList::extend_list(extension_build, initial_set);
 	if (found_counter_evidence) output_extension = new_extension;
 	if (!check_termination(is_terminated, continue_calculation)) {
+		if (!initial_set.empty()) {
 		prio_queue.try_insert_extension(query_argument, framework, &heuristic, new_extension, initial_set);
+		}
 
 		//iterate through initial sets
 		do {
-			Encoding::add_complement_clause(*solver, reduct);
+			if (!initial_set.empty()) {
+				Encoding::add_complement_clause(*solver, reduct);
+			}
 			initial_set = Proc_DS_PR::calculate_nonempty_adm_set(query_argument, framework, reduct, is_rejected, is_terminated,
-				*solver, continue_calculation, found_counter_evidence, false);
+				*solver, continue_calculation, found_counter_evidence, false, lim_assumptions);
 			list<uint32_t> new_extension_2 = tools::ToolList::extend_list(extension_build, initial_set);
 			if (found_counter_evidence) output_extension = new_extension_2;
 			if (check_termination(is_terminated, continue_calculation)) break;
-
-			prio_queue.try_insert_extension(query_argument, framework, &heuristic, new_extension_2, initial_set);
+			if (!initial_set.empty()) {
+				prio_queue.try_insert_extension(query_argument, framework, &heuristic, new_extension_2, initial_set);
+			}
 		} while (!check_termination(is_terminated, continue_calculation));
 	}
 

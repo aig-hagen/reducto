@@ -67,3 +67,11 @@ bool SatSolver_cadical::solve(int64_t assumption) {
     cadical_solver.assume(assumption);
     return solve();
 }
+
+
+bool SatSolver_cadical::solve(std::vector<int64_t> assumptions) {
+    for (int i = 0; i < assumptions.size(); i++) {
+        cadical_solver.assume(assumptions[i]);
+    }
+    return solve();
+}
