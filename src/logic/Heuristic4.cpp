@@ -8,7 +8,7 @@ uint32_t Heuristic4::calculate_priority(AF &framework, list<uint32_t> &extension
 		throw new invalid_argument("initial set must not be empty");
 	}
 
-	uint32_t sum_victims = 0;
+	float sum_victims = 0.0f;
 	for (list<uint32_t>::iterator mIter = extension.begin(); mIter != extension.end(); ++mIter) {
 		uint32_t argument = *mIter;
 
