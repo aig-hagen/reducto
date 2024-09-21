@@ -8,6 +8,8 @@
 
 #include "ExtensionPrioritised.h"
 
+#include "../util/Printer.h"
+
 
 
 /// <summary>
