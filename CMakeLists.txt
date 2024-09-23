@@ -28,6 +28,7 @@ set(HEADERS
 	${INCLD_LOGIC}/Encoding.h 
 	${INCLD_LOGIC}/Enums.h 
 	${INCLD_LOGIC}/ExtensionPrioritised.h
+	${INCLD_LOGIC}/HeuristicDummy.h
 	${INCLD_LOGIC}/Heuristic1.h
 	${INCLD_LOGIC}/Heuristic2.h
 	${INCLD_LOGIC}/Heuristic3.h
@@ -56,6 +57,7 @@ set(SRCFILES
 	${SRC_LOGIC}Encoding.cpp 
 	${SRC_LOGIC}Enums.cpp
 	${SRC_LOGIC}ExtensionPrioritised.cpp
+	${SRC_LOGIC}HeuristicDummy.cpp
 	${SRC_LOGIC}Heuristic1.cpp
 	${SRC_LOGIC}Heuristic2.cpp
 	${SRC_LOGIC}Heuristic3.cpp

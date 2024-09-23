@@ -17,6 +17,7 @@ extern "C" {
 #include "Encoding.h"
 #include "Enums.h"
 #include "ExtensionPrioritised.h"
+#include "HeuristicDummy.h"
 #include "Heuristic1.h"
 #include "Heuristic2.h"
 #include "Heuristic3.h"
