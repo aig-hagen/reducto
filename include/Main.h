@@ -56,7 +56,7 @@ constexpr auto VERSIONNUMBER = "1.33";
 /// restrictions.
 /// </summary>
 constexpr auto NUM_CORES = 0;
-constexpr auto LIMIT_CALCULATIONS_INITIAL_SET_PER_REDUCT = 10;
+constexpr auto LIMIT_CALCULATIONS_INITIAL_SET_PER_REDUCT = 2;
 
 /// <summary>
 /// Flags used for internal processing.

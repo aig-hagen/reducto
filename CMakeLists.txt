@@ -33,6 +33,7 @@ set(HEADERS
 	${INCLD_LOGIC}/Heuristic2.h
 	${INCLD_LOGIC}/Heuristic3.h
 	${INCLD_LOGIC}/Heuristic4.h
+	${INCLD_LOGIC}/Heuristic5.h
 	${INCLD_LOGIC}/Parser_iccma.h
 	${INCLD_LOGIC}/PreProcessor_DS_PR.h
 	${INCLD_LOGIC}/PriorityStackManager.h
@@ -62,6 +63,7 @@ set(SRCFILES
 	${SRC_LOGIC}Heuristic2.cpp
 	${SRC_LOGIC}Heuristic3.cpp
 	${SRC_LOGIC}Heuristic4.cpp
+	${SRC_LOGIC}Heuristic5.cpp
 	${SRC_LOGIC}Parser_iccma.cpp
 	${SRC_LOGIC}PreProcessor_DS_PR.cpp
 	${SRC_LOGIC}PriorityStackManager.cpp

@@ -22,6 +22,7 @@ extern "C" {
 #include "Heuristic2.h"
 #include "Heuristic3.h"
 #include "Heuristic4.h"
+#include "Heuristic5.h"
 #include "IPrioHeuristic.h"
 #include "PreProcessor_DS_PR.h"
 #include "PriorityStackManager.h"
