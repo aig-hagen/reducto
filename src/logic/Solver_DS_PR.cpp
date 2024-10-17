@@ -91,6 +91,18 @@ static void check_rejection(uint32_t query_argument, AF &framework, ArrayBitSet 
 	return;
 }
 
+static void check_existance_counter_evidence(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &is_rejected, 
+	bool &is_terminated, list<uint32_t> &output_extension) {
+	uint64_t numVars = active_args._array.size();
+	SatSolver *solver = NULL;
+	solver = new SatSolver_cadical(numVars);
+	Encoding::add_clauses_nonempty_admissible_set(*solver, framework, active_args);
+	bool found_counter_evidence = false;
+	list<uint32_t> counter_evidence = Proc_DS_PR::calculate_counter_evidence(query_argument, framework, active_args, is_rejected, is_terminated,
+		*solver, found_counter_evidence);
+	if (found_counter_evidence) output_extension = counter_evidence;
+}
+
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
@@ -102,7 +114,7 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 		omp_set_num_threads(numCores);
 	}
 	IPrioHeuristic *heuristic = NULL;
-	heuristic = new Heuristic5();
+	heuristic = new Heuristic1();
 	PriorityStackManager prio_stack;
 	bool is_terminated = false;
 	bool is_finished = false;
@@ -116,6 +128,13 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 			list<uint32_t> extension_build;
 			check_rejection(query_argument, framework, active_args, is_rejected, is_terminated, extension_build, proof_extension,
 				*heuristic, prio_stack, limit_calculations_iniSet, true);
+			update_is_finished(is_terminated, is_finished, prio_stack);
+		}
+
+#pragma omp single nowait
+		{
+			list<uint32_t> extension_build;
+			check_existance_counter_evidence(query_argument, framework, active_args, is_rejected, is_terminated, proof_extension);
 			update_is_finished(is_terminated, is_finished, prio_stack);
 		}
 
