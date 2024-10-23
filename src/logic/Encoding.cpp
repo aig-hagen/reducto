@@ -35,6 +35,17 @@ static vector<int64_t> add_rejected_clauses(SatSolver &solver, uint32_t argsSize
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
+static vector<int64_t> add_completeness_clause(SatSolver& solver, uint32_t argument)
+{
+	//constitutes that if an argument is not labelled IN, at least one of it's attacker has to be NOT_OUT
+	vector<int64_t> completeness_clause;
+	completeness_clause.push_back(Encoding::get_literal_accepted(argument, false));
+	return completeness_clause;
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
 static void add_rejected_clauses_per_attacker(SatSolver &solver, uint32_t argsSize, uint32_t argument, uint32_t attacker, vector<int64_t> &rejection_reason_clause)
 {
 	// Part II: ensures that if an attacker 'b' of an argument 'a' is accepted, then 'a' must be rejected
@@ -84,9 +95,18 @@ static void add_defense_per_attacker(SatSolver &solver, uint32_t argsSize, uint3
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static void add_admissible(SatSolver &solver, AF &framework, ArrayBitSet &activeArgs, uint32_t argument)
+static void add_completeness_clause_per_attacker(SatSolver& solver, uint32_t argsSize, uint32_t argument, uint32_t attacker, vector<int64_t>& completeness_clause) {
+	//constitutes that if an argument is not labelled IN, at least one of it's attacker has to be NOT_OUT
+	completeness_clause.push_back(Encoding::get_literal_rejected(argsSize, attacker, true));
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
+static void add_complete_encoding(SatSolver &solver, AF &framework, ArrayBitSet &activeArgs, uint32_t argument)
 {
 	vector<int64_t> rejection_reason_clause = add_rejected_clauses(solver, framework.num_args, argument);
+	vector<int64_t> completeness_clause = add_completeness_clause(solver, argument);
 	
 	vector<uint32_t> attackers = framework.attackers[argument];
 
@@ -97,11 +117,14 @@ static void add_admissible(SatSolver &solver, AF &framework, ArrayBitSet &active
 			add_rejected_clauses_per_attacker(solver, framework.num_args, argument, attackers[i], rejection_reason_clause);
 			add_conflict_free_per_attacker(solver, argument, attackers[i]);
 			add_defense_per_attacker(solver, framework.num_args, argument, attackers[i]);
+			add_completeness_clause_per_attacker(solver, framework.num_args, argument, attackers[i]);
 		}
 	}
 
 	solver.add_clause(rejection_reason_clause);
+	solver.add_clause(completeness_clause);
 	rejection_reason_clause.clear();
+	completeness_clause.clear();
 }
 
 /*===========================================================================================================================================================*/
@@ -113,7 +136,7 @@ void Encoding::add_clauses_nonempty_admissible_set(SatSolver &solver, AF &framew
 
 	for (int i = 0; i < activeArgs._array.size(); i++) {
 		non_empty_clause.push_back(get_literal_accepted(activeArgs._array[i], false));
-		add_admissible(solver, framework, activeArgs, activeArgs._array[i]);
+		add_complete_encoding(solver, framework, activeArgs, activeArgs._array[i]);
 	}
 
 	solver.add_clause(non_empty_clause);
