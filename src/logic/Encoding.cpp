@@ -117,7 +117,7 @@ static void add_complete_encoding(SatSolver &solver, AF &framework, ArrayBitSet 
 			add_rejected_clauses_per_attacker(solver, framework.num_args, argument, attackers[i], rejection_reason_clause);
 			add_conflict_free_per_attacker(solver, argument, attackers[i]);
 			add_defense_per_attacker(solver, framework.num_args, argument, attackers[i]);
-			add_completeness_clause_per_attacker(solver, framework.num_args, argument, attackers[i]);
+			add_completeness_clause_per_attacker(solver, framework.num_args, argument, attackers[i], completeness_clause);
 		}
 	}
 
