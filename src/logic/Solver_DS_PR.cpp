@@ -146,10 +146,14 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 					*heuristic, prio_stack, limit_calculations_iniSet, true);
 				update_is_finished(is_terminated, is_finished, prio_stack);
 			}
-
 #pragma omp section
 			{
 				check_existance_accepting_solution(query_argument, framework, active_args, is_rejected, is_terminated);
+				update_is_finished(is_terminated, is_finished, prio_stack);
+			}
+#pragma omp section
+			{
+				check_existance_counter_evidence(query_argument, framework, active_args, is_rejected, is_terminated);
 				update_is_finished(is_terminated, is_finished, prio_stack);
 			}
 		}
