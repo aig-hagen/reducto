@@ -90,6 +90,21 @@ static void check_rejection(uint32_t query_argument, AF &framework, ArrayBitSet 
 	delete solver;
 	return;
 }
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
+static void check_existance_accepting_solution(uint32_t query_argument, AF& framework, ArrayBitSet& active_args, bool& is_rejected,
+	bool& is_terminated) {
+	uint64_t numVars = active_args._array.size();
+	SatSolver* solver = NULL;
+	solver = new SatSolver_cadical(numVars);
+	Encoding::add_clauses_nonempty_admissible_set(*solver, framework, active_args);
+	Proc_DS_PR::check_existance_accepting_solution(query_argument, framework, active_args, is_rejected, is_terminated, *solver);
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
 
 static void check_existance_counter_evidence(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &is_rejected, 
 	bool &is_terminated, list<uint32_t> &output_extension) {
@@ -120,8 +135,7 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 	bool is_finished = false;
 	bool is_rejected = false;
 	omp_set_lock(prio_stack.lock_has_entry);
-#pragma omp parallel shared(is_rejected, is_terminated, is_finished, proof_extension, prio_stack) \
- firstprivate(query_argument, framework, active_args, heuristic, limit_calculations_iniSet)
+#pragma omp parallel shared(is_rejected, is_terminated, is_finished, proof_extension, prio_stack) firstprivate(query_argument, framework, active_args, heuristic, limit_calculations_iniSet)
 	{
 #pragma omp sections nowait
 		{
@@ -135,8 +149,7 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 
 #pragma omp section
 			{
-				list<uint32_t> extension_build;
-				check_existance_counter_evidence(query_argument, framework, active_args, is_rejected, is_terminated, proof_extension);
+				check_existance_accepting_solution(query_argument, framework, active_args, is_rejected, is_terminated);
 				update_is_finished(is_terminated, is_finished, prio_stack);
 			}
 		}

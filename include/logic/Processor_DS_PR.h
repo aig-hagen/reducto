@@ -38,5 +38,8 @@ public:
 
 	static list<uint32_t> calculate_counter_evidence(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &is_rejected, bool &is_terminated,
 		SatSolver &solver, bool &found_counter_evidence);
+
+	static void check_existance_accepting_solution(uint32_t query_argument, AF& framework, ArrayBitSet& active_args, bool& is_rejected, bool& is_terminated,
+		SatSolver& solver);
 };
 #endif
