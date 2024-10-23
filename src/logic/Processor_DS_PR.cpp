@@ -16,8 +16,18 @@ static void set_is_rejected(bool &is_rejected, bool &is_terminated, bool &found_
 
 list<uint32_t> Proc_DS_PR::calculate_nonempty_adm_set(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &is_rejected, bool &is_terminated,
 	SatSolver &solver, bool &continue_calculation, bool &found_counter_evidence, bool is_first_iteration) {
-	bool has_solution_without_query = solver.solve(Encoding::get_literal_accepted(query_argument, true),
-		Encoding::get_literal_rejected(framework.num_args, query_argument, false));
+	if (is_first_iteration) {
+		bool has_counter_evidence = solver.solve(Encoding::get_literal_accepted(query_argument, true),
+			Encoding::get_literal_rejected(framework.num_args, query_argument, false));
+		continue_calculation = !has_counter_evidence;
+		if (has_counter_evidence) {
+			list<uint32_t> initial_set = Decoding::get_set_from_solver(solver, active_args);
+			set_is_rejected(is_rejected, is_terminated, found_counter_evidence);
+			return initial_set;
+		}
+	}
+
+	bool has_solution_without_query = solver.solve(Encoding::get_literal_accepted(query_argument, true));
 	continue_calculation = has_solution_without_query;
 	if (!has_solution_without_query) {
 		//there is no nonempty adm. set, which is not containing the query, there might be solutions containing the query
@@ -31,10 +41,7 @@ list<uint32_t> Proc_DS_PR::calculate_nonempty_adm_set(uint32_t query_argument, A
 	}
 
 	list<uint32_t> initial_set = Decoding::get_set_from_solver(solver, active_args);
-
-	if (ScepticalCheck::check_rejection(query_argument, initial_set, framework)) {
-		set_is_rejected(is_rejected, is_terminated, found_counter_evidence);
-	}
-
+	//no check if rejecting query, since every solution with OUT_query would have been found in first iteration, hence following the NOT_IN_query assumption query has to be UNDEC
+	// which means that there cannot be an attacker of the query in the extension
 	return initial_set;
 }
