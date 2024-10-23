@@ -153,7 +153,7 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 			}
 #pragma omp section
 			{
-				check_existance_counter_evidence(query_argument, framework, active_args, is_rejected, is_terminated);
+				check_existance_counter_evidence(query_argument, framework, active_args, is_rejected, is_terminated, proof_extension);
 				update_is_finished(is_terminated, is_finished, prio_stack);
 			}
 		}
