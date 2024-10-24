@@ -35,5 +35,11 @@ public:
 	/// <returns>An non emtpy admissible set, if such a set can be computed. Empty list otherwise.</returns>
 	static list<uint32_t> calculate_nonempty_adm_set(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &is_rejected, bool &is_terminated,
 		SatSolver &solver, bool &continue_calculation, bool &found_counter_evidence, bool is_first_iteration);
+
+	static list<uint32_t> calculate_counter_evidence(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &is_rejected, bool &is_terminated,
+		SatSolver &solver, bool &found_counter_evidence);
+
+	static void check_existance_accepting_solution(uint32_t query_argument, AF& framework, ArrayBitSet& active_args, bool& is_rejected, bool& is_terminated,
+		SatSolver& solver);
 };
 #endif

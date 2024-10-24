@@ -47,7 +47,7 @@ extern "C" {
 #include "../include/logic/Enums.h"
 
 constexpr auto PROGRAM_NAME = "ParallelSolver";
-constexpr auto VERSIONNUMBER = "1.33";
+constexpr auto VERSIONNUMBER = "1.34";
 /// <summary>
 /// Number of cores requested to use during the computation of a solution.
 /// Keep in mind that the actual number of cores used depends on the 

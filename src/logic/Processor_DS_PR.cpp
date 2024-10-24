@@ -37,3 +37,28 @@ list<uint32_t> Proc_DS_PR::calculate_nonempty_adm_set(uint32_t query_argument, A
 
 	return initial_set;
 }
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
+list<uint32_t> Proc_DS_PR::calculate_counter_evidence(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &is_rejected, bool &is_terminated,
+	SatSolver &solver, bool &found_counter_evidence) {
+	if (solver.solve(Encoding::get_literal_rejected(framework.num_args, query_argument, false))) {
+		set_is_rejected(is_rejected, is_terminated, found_counter_evidence);
+		return Decoding::get_set_from_solver(solver, active_args);
+	}
+	else {
+		return list<uint32_t>();
+	}
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
+void Proc_DS_PR::check_existance_accepting_solution(uint32_t query_argument, AF& framework, ArrayBitSet& active_args, bool& is_rejected, bool& is_terminated,
+	SatSolver& solver) {
+	bool isIrrelevant;
+	if (!solver.solve(Encoding::get_literal_accepted(query_argument, false))) {
+		set_is_rejected(is_rejected, is_terminated, isIrrelevant);
+	}
+}
