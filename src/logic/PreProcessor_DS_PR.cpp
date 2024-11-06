@@ -40,44 +40,6 @@ static ArrayBitSet calculate_cone_influence(AF &framework, uint32_t query) {
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static ArrayBitSet calculate_cone_influence(AF &framework, ArrayBitSet reduct, uint32_t query) {
-	vector<uint32_t> active_args_vector;
-	vector<uint8_t> active_args_bitset(framework.num_args + 1, 0);
-
-	list<uint32_t> ls_args_unprocessed;
-	ls_args_unprocessed.push_back(query);
-	framework.distance_to_query[query] = 0;
-	active_args_vector.push_back(query);
-	active_args_bitset[query] = true;
-
-	for (list<uint32_t>::iterator mIter = ls_args_unprocessed.begin(); mIter != ls_args_unprocessed.end(); ++mIter) {
-		const auto &argument = *mIter;
-		for (int i = 0; i < framework.attackers[argument].size(); i++) {
-			uint32_t attacker = framework.attackers[argument][i];
-			if (active_args_bitset[attacker] == true) {
-				//attacker was already visited
-				continue;
-			}
-
-			if (reduct._bitset[attacker] == false) {
-				//attacker was not part of the reduct
-				continue;
-			}
-
-			active_args_vector.push_back(attacker);
-			active_args_bitset[attacker] = true;
-
-			ls_args_unprocessed.push_back(attacker);
-		}
-	}
-
-	ArrayBitSet active_args = ArrayBitSet(active_args_vector, active_args_bitset);
-	return active_args;
-}
-
-/*===========================================================================================================================================================*/
-/*===========================================================================================================================================================*/
-
 static pre_proc_result reduce_by_grounded(AF &framework, ArrayBitSet &active_args, uint32_t query, ArrayBitSet &out_reduct)
 {
 	// fill list with unattacked arguments
@@ -171,7 +133,5 @@ pre_proc_result PreProc_DS_PR::process(AF &framework, uint32_t query, ArrayBitSe
 
 pre_proc_result PreProc_DS_PR::process_reduct(AF &framework, ArrayBitSet &reduct, uint32_t query, ArrayBitSet &out_reduct)
 {
-	ArrayBitSet active_args = calculate_cone_influence(framework, reduct, query);
-
-	return reduce_by_grounded(framework, active_args, query, out_reduct);
+	return reduce_by_grounded(framework, reduct, query, out_reduct);
 }
