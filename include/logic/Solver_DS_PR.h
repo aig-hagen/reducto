@@ -53,7 +53,7 @@ public:
 	/// <param name="proof_extension"> Extension proving, that the argument cannot be sceptically accepted.</param>
 	/// <param name="numCores"> Number of cores requested to be used to solve the problem. Actual number can be lower depending on the OS scheduler.</param>
 	/// <returns>TRUE iff the argument is sceptical accepted. FALSE otherwise.</returns>
-	static bool solve(uint32_t argument, AF &framework, list<uint32_t> &proof_extension, uint16_t numCores, uint16_t limit_calculations_iniSet);
+	static bool solve(uint32_t argument, AF &framework, list<uint32_t> &proof_extension, uint16_t numCores);
 };
 
 #endif

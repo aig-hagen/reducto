@@ -45,7 +45,7 @@ static void update_is_finished(bool &is_terminated, bool &is_finished, PriorityS
 
 static void check_rejection(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &is_rejected, bool &is_terminated,
 	list<uint32_t> &extension_build, list<uint32_t> &output_extension, IPrioHeuristic &heuristic,
-	PriorityStackManager &prio_queue, uint16_t limit_calculations_iniSet, bool isMain)
+	PriorityStackManager &prio_queue)
 {
 	if (check_termination(is_terminated, true)) return;
 	ArrayBitSet reduct = extension_build.empty() ? active_args.copy() : Reduct::get_reduct_set(active_args, framework, extension_build);
@@ -69,7 +69,6 @@ static void check_rejection(uint32_t query_argument, AF &framework, ArrayBitSet 
 	if (!check_termination(is_terminated, continue_calculation)) {
 		prio_queue.try_insert_extension(query_argument, framework, &heuristic, new_extension, initial_set);
 
-		uint16_t num_iterations = 0;
 		//iterate through initial sets
 		do {
 			Encoding::add_complement_clause(*solver, reduct);
@@ -80,11 +79,8 @@ static void check_rejection(uint32_t query_argument, AF &framework, ArrayBitSet 
 			if (check_termination(is_terminated, continue_calculation)) break;
 
 			prio_queue.try_insert_extension(query_argument, framework, &heuristic, new_extension_2, initial_set);
-			if (!isMain)
-			{
-				num_iterations++;
-			}
-		} while (!check_termination(is_terminated, continue_calculation) && (isMain || num_iterations < limit_calculations_iniSet));
+			
+		} while (!check_termination(is_terminated, continue_calculation));
 	}
 
 	delete solver;
@@ -94,8 +90,7 @@ static void check_rejection(uint32_t query_argument, AF &framework, ArrayBitSet 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static bool start_checking_rejection(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, list<uint32_t> &proof_extension, uint16_t numCores,
-	uint16_t limit_calculations_iniSet)
+static bool start_checking_rejection(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, list<uint32_t> &proof_extension, uint16_t numCores)
 {
 	if (numCores > 0)
 	{
@@ -115,7 +110,7 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 		{
 			list<uint32_t> extension_build;
 			check_rejection(query_argument, framework, active_args, is_rejected, is_terminated, extension_build, proof_extension,
-				*heuristic, prio_stack, limit_calculations_iniSet, true);
+				*heuristic, prio_stack);
 			update_is_finished(is_terminated, is_finished, prio_stack);
 		}
 
@@ -134,7 +129,7 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 				}
 
 				check_rejection(query_argument, framework, active_args, is_rejected, is_terminated, extension, proof_extension,
-					*heuristic, prio_stack, limit_calculations_iniSet, false);
+					*heuristic, prio_stack);
 				update_is_finished(is_terminated, is_finished, prio_stack);
 			}
 			else {
@@ -151,7 +146,7 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-bool Solver_DS_PR::solve(uint32_t query_argument, AF &framework, list<uint32_t> &proof_extension, uint16_t numCores, uint16_t limit_calculations_iniSet)
+bool Solver_DS_PR::solve(uint32_t query_argument, AF &framework, list<uint32_t> &proof_extension, uint16_t numCores)
 {
 	ArrayBitSet initial_reduct = ArrayBitSet();
 	pre_proc_result result_preProcessor = PreProc_DS_PR::process(framework, query_argument, initial_reduct);
@@ -165,7 +160,7 @@ bool Solver_DS_PR::solve(uint32_t query_argument, AF &framework, list<uint32_t> 
 			return false;
 
 		case unknown:
-			return !start_checking_rejection(query_argument, framework, initial_reduct, proof_extension, numCores, limit_calculations_iniSet);
+			return !start_checking_rejection(query_argument, framework, initial_reduct, proof_extension, numCores);
 
 		default:
 			return unknown;
