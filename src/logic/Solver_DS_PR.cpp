@@ -143,7 +143,7 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 	bool is_rejected = false;
 	omp_set_lock(prio_stack.lock_has_entry);
 #pragma omp parallel shared(is_rejected, is_terminated, is_finished, proof_extension, prio_stack) \
- firstprivate(query_argument, framework, active_args, heuristic, limit_calculations_iniSet)
+ firstprivate(query_argument, framework, active_args, heuristic)
 	{
 #pragma omp single nowait
 		{
