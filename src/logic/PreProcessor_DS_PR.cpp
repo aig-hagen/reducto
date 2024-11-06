@@ -171,7 +171,7 @@ pre_proc_result PreProc_DS_PR::process(AF &framework, uint32_t query, ArrayBitSe
 
 pre_proc_result PreProc_DS_PR::process_reduct(AF &framework, ArrayBitSet &reduct, uint32_t query, ArrayBitSet &out_reduct)
 {
-	ArrayBitSet active_args = calculate_cone_influence(framework, reduct, query);
+	out_reduct = calculate_cone_influence(framework, reduct, query);
 
-	return reduce_by_grounded(framework, active_args, query, out_reduct);
+	return pre_proc_result::unknown;
 }
