@@ -43,21 +43,24 @@ static void update_is_finished(bool &is_terminated, bool &is_finished, PriorityS
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static void check_rejection(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &is_rejected, bool &is_terminated,
-	list<uint32_t> &extension_build, list<uint32_t> &output_extension, IPrioHeuristic &heuristic,
-	PriorityStackManager &prio_queue)
+static void set_is_rejected(bool &is_rejected, bool &is_terminated)
 {
-	if (check_termination(is_terminated, true)) return;
-	ArrayBitSet reduct = extension_build.empty() ? active_args.copy() : Reduct::get_reduct_set(active_args, framework, extension_build);
-	if (reduct._array.size() < 2)
-	{
-		// there is only 1 active argument, this has to be the argument to check, 
-		// if not then there should have been a rejection check earlier who did not work
-		return;
-	}
-	
+#pragma atomic write
+	is_rejected = true;
+#pragma omp flush(is_rejected)
+#pragma atomic write
+	is_terminated = true;
+#pragma omp flush(is_terminated)
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
+void check_reduct(ArrayBitSet& reduct, AF& framework, uint32_t query_argument, bool& is_rejected, bool& is_terminated, std::__cxx11::list<uint32_t>& extension_build, 
+	std::__cxx11::list<uint32_t>& output_extension, PriorityStackManager& prio_queue, IPrioHeuristic& heuristic)
+{
 	uint64_t numVars = reduct._array.size();
-	SatSolver *solver = NULL;
+	SatSolver* solver = NULL;
 	solver = new SatSolver_cadical(numVars);
 	Encoding::add_clauses_nonempty_admissible_set(*solver, framework, reduct);
 	bool continue_calculation = false;
@@ -79,11 +82,47 @@ static void check_rejection(uint32_t query_argument, AF &framework, ArrayBitSet 
 			if (check_termination(is_terminated, continue_calculation)) break;
 
 			prio_queue.try_insert_extension(query_argument, framework, &heuristic, new_extension_2, initial_set);
-			
+
 		} while (!check_termination(is_terminated, continue_calculation));
 	}
 
 	delete solver;
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
+static void check_rejection(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &is_rejected, bool &is_terminated,
+	list<uint32_t> &extension_build, list<uint32_t> &output_extension, IPrioHeuristic &heuristic,
+	PriorityStackManager &prio_queue)
+{
+	if (check_termination(is_terminated, true)) return;
+	ArrayBitSet reduct = extension_build.empty() ? active_args.copy() : Reduct::get_reduct_set(active_args, framework, extension_build);
+	if (reduct._array.size() < 2)
+	{
+		// there is only 1 active argument, this has to be the argument to check, 
+		// if not then there should have been a rejection check earlier who did not work
+		return;
+	}
+
+	//Preprocess created reduct
+	ArrayBitSet preprocessed_reduct = ArrayBitSet();
+	pre_proc_result result_preProcessor = PreProc_DS_PR::process_reduct(framework, reduct, query_argument, preprocessed_reduct);
+
+	switch (result_preProcessor) {
+	case accepted:
+		break;
+
+	case rejected:
+		set_is_rejected(is_rejected, is_terminated);
+		output_extension = extension_build;
+		break;
+
+	default:
+		check_reduct(preprocessed_reduct, framework, query_argument, is_rejected, is_terminated, extension_build, output_extension, prio_queue, heuristic);
+		break;
+	}
+	
 	return;
 }
 
@@ -159,10 +198,7 @@ bool Solver_DS_PR::solve(uint32_t query_argument, AF &framework, list<uint32_t> 
 		case rejected:
 			return false;
 
-		case unknown:
-			return !start_checking_rejection(query_argument, framework, initial_reduct, proof_extension, numCores);
-
 		default:
-			return unknown;
+			return !start_checking_rejection(query_argument, framework, initial_reduct, proof_extension, numCores);
 	}
 }

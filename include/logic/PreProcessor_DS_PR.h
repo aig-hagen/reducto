@@ -34,10 +34,12 @@ public:
 	/// by the help of some properties.
 	/// </summary>
 	/// <param name="framework">The original abstract argumentation framework of the situation.</param>
-	/// <param name="argument">The query argument, whose sceptical acceptance is to check.</param>
+	/// <param name="query">The query argument, whose sceptical acceptance is to check.</param>
 	/// <param name="out_reduct">[Output-Parameter]The set of active arguments, which remain of the original framework after the preprocessor if finished.
 	/// Keep in mind, that the value of this parameter will be overwritten during this method, as it's an output-parameter.</param>
 	/// <returns>Returns an Enum indicating if the method has solved the problem, and if so to which conclusion it came.</returns>
-	static pre_proc_result process(AF &framework, uint32_t argument, ArrayBitSet &out_reduct);
+	static pre_proc_result process(AF &framework, uint32_t query, ArrayBitSet &out_reduct);
+
+	static pre_proc_result process_reduct(AF &framework, ArrayBitSet &reduct, uint32_t query, ArrayBitSet &out_reduct);
 };
 #endif
