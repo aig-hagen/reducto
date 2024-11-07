@@ -184,6 +184,9 @@ int execute(int argc, char **argv)
 				case PR:
 					skept_accepted = Solver_DS_PR::solve(argument, framework, proof_extension, NUM_CORES);
 					break;
+				case ST:
+					skept_accepted = Solver_DS_ST::solve(argument, framework, proof_extension);
+					break;
 				default:
 					cerr << argv[0] << ": Unsupported semantics\n";
 					return 1;

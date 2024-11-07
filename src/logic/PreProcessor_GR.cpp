@@ -1,4 +1,4 @@
-#include "../../include/logic/PreProcessor_DS_PR.h"
+#include "../../include/logic/PreProcessor_GR.h"
 
 static ArrayBitSet calculate_cone_influence(AF &framework, uint32_t query) {
 	vector<uint32_t> active_args_vector;
@@ -109,7 +109,7 @@ static pre_proc_result reduce_by_grounded(AF &framework, ArrayBitSet &active_arg
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-pre_proc_result PreProc_DS_PR::process(AF &framework, uint32_t query, ArrayBitSet &out_reduct) 
+pre_proc_result PreProc_GR::process(AF &framework, uint32_t query, ArrayBitSet &out_reduct) 
 {
 	if (framework.self_attack[query])
 	{

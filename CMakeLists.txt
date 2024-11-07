@@ -35,7 +35,7 @@ set(HEADERS
 	${INCLD_LOGIC}/Heuristic4.h
 	${INCLD_LOGIC}/Heuristic5.h
 	${INCLD_LOGIC}/Parser_iccma.h
-	${INCLD_LOGIC}/PreProcessor_DS_PR.h
+	${INCLD_LOGIC}/PreProcessor_GR.h
 	${INCLD_LOGIC}/PriorityStackManager.h
 	${INCLD_LOGIC}/Processor_DS_PR.h
 	${INCLD_LOGIC}/IPrioHeuristic.h
@@ -44,12 +44,14 @@ set(HEADERS
 	${INCLD_LOGIC}/SatSolver_cadical.h
 	${INCLD_LOGIC}/ScepticalCheck.h 
 	${INCLD_LOGIC}/Solver_DC_CO.h 
-	${INCLD_LOGIC}/Solver_DS_PR.h 	
+	${INCLD_LOGIC}/Solver_DS_PR.h
+	${INCLD_LOGIC}/Solver_DS_ST.h 
 
 	${INCLD_UTIL}/ArrayBitSet.h
 	${INCLD_UTIL}/MemoryWatchDog.h
 	${INCLD_UTIL}/Printer.h
 	${INCLD_UTIL}/ToolList.h
+	${INCLD_UTIL}/Tools_omp.h
 	)
 
 set(SRCFILES
@@ -66,7 +68,7 @@ set(SRCFILES
 	${SRC_LOGIC}Heuristic4.cpp
 	${SRC_LOGIC}Heuristic5.cpp
 	${SRC_LOGIC}Parser_iccma.cpp
-	${SRC_LOGIC}PreProcessor_DS_PR.cpp
+	${SRC_LOGIC}PreProcessor_GR.cpp
 	${SRC_LOGIC}PriorityStackManager.cpp
 	${SRC_LOGIC}Processor_DS_PR.cpp
 	${SRC_LOGIC}Reduct.cpp 
@@ -74,10 +76,12 @@ set(SRCFILES
 	${SRC_LOGIC}ScepticalCheck.cpp
 	${SRC_LOGIC}Solver_DC_CO.cpp
 	${SRC_LOGIC}Solver_DS_PR.cpp
+	${SRC_LOGIC}Solver_DS_ST.cpp
 
 	${SRC_UTIL}MemoryWatchDog.c
 	${SRC_UTIL}Printer.cpp
 	${SRC_UTIL}ToolList.cpp
+	${SRC_UTIL}Tools_omp.cpp
 	)
 
 set(SOURCES ${SRCFILES} ${HEADERS})

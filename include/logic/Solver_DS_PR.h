@@ -24,7 +24,7 @@ extern "C" {
 #include "Heuristic4.h"
 #include "Heuristic5.h"
 #include "IPrioHeuristic.h"
-#include "PreProcessor_DS_PR.h"
+#include "PreProcessor_GR.h"
 #include "PriorityStackManager.h"
 #include "Processor_DS_PR.h"
 #include "Reduct.h"
@@ -35,6 +35,7 @@ extern "C" {
 
 #include "../util/Printer.h"
 #include "../util/ToolList.h"
+#include "../util/Tools_omp.h"
 
 using namespace std;
 

@@ -24,7 +24,7 @@ extern "C" {
 /// The preprocessor checks if the problem can be trivially solved by the use of some properties, without actually
 /// calculating a solution.
 /// </summary>
-class PreProc_DS_PR {
+class PreProc_GR {
 public:
 	/// <summary>
 	/// This method prepares the data before it being processed by the solver and checks if a solution can be easily drawn
