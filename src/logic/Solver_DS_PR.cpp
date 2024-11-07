@@ -59,7 +59,7 @@ static void check_rejection(uint32_t query_argument, AF &framework, ArrayBitSet 
 	uint64_t numVars = reduct._array.size();
 	SatSolver *solver = NULL;
 	solver = new SatSolver_cadical(numVars);
-	Encoding::add_clauses_nonempty_admissible_set(*solver, framework, reduct);
+	Encoding::add_clauses_nonempty_complete_set(*solver, framework, reduct);
 	bool continue_calculation = false;
 	bool found_counter_evidence = false;
 	list<uint32_t> initial_set = Proc_DS_PR::calculate_nonempty_adm_set(query_argument, framework, reduct, is_rejected, is_terminated,

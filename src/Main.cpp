@@ -63,6 +63,34 @@ void static print_problems()
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
+void print_proof(std::__cxx11::list<uint32_t> &proof_extension)
+{
+	cout << "w " << endl;
+
+	if (!proof_extension.empty()) {
+		for (list<uint32_t>::iterator mIter = proof_extension.begin(); mIter != proof_extension.end(); ++mIter) {
+			cout << *mIter << " ";
+		}
+		proof_extension;
+		cout << endl;
+	}
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
+bool CheckQuery(std::string &query, char **argv)
+{
+	if (query.empty()) {
+		cerr << argv[0] << ": Query argument must be specified via -a flag\n";
+		return false;
+	}
+	return true;
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
 int execute(int argc, char **argv)
 {
 	if (argc == 1) {
@@ -144,10 +172,9 @@ int execute(int argc, char **argv)
 	switch (Enums::string_to_task(task)) {
 		case DS:
 		{
-			if (query.empty()) {
-				cerr << argv[0] << ": Query argument must be specified via -a flag\n";
+			if (!CheckQuery(query, argv)) {
 				return 1;
-			}
+			}			
 
 			uint32_t argument = std::stoi(query);
 			list<uint32_t> proof_extension;
@@ -165,21 +192,44 @@ int execute(int argc, char **argv)
 			cout << (skept_accepted ? "YES" : "NO") << endl;
 			if (!skept_accepted)
 			{
-				cout << "w " << endl;
+				print_proof(proof_extension);
+			}
 
-				if (!proof_extension.empty()) {
-					for (list<uint32_t>::iterator mIter = proof_extension.begin(); mIter != proof_extension.end(); ++mIter) {
-						cout << *mIter << " ";
-					}
-					proof_extension;
-					cout << endl;
-				}
+			//free allocated memory
+			proof_extension.clear();			
+		}
+		break;
+
+		case DC:
+		{
+			if (!CheckQuery(query, argv)) {
+				return 1;
+			}
+
+			uint32_t argument = std::stoi(query);
+			list<uint32_t> proof_extension;
+			bool skept_accepted = false;
+
+			switch (Enums::string_to_sem(sem)) {
+			case CO:
+				skept_accepted = Solver_DC_CO::solve(argument, framework, proof_extension);
+				break;
+			default:
+				cerr << argv[0] << ": Unsupported semantics\n";
+				return 1;
+			}
+
+			cout << (skept_accepted ? "YES" : "NO") << endl;
+			if (skept_accepted)
+			{
+				print_proof(proof_extension);
 			}
 
 			//free allocated memory
 			proof_extension.clear();
-			break;
 		}
+		break;
+			
 		default:
 			cerr << argv[0] << ": Problem not supported!\n";
 			return 1;

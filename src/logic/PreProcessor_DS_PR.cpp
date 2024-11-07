@@ -61,7 +61,7 @@ static pre_proc_result reduce_by_grounded(AF &framework, ArrayBitSet &active_arg
 	for (list<uint32_t>::iterator mIter = ls_unattacked_unprocessed.begin(); mIter != ls_unattacked_unprocessed.end(); ++mIter) {
 		const auto &ua = *mIter;
 
-		//reject query if it gets attacked by argument of grounded extension
+		//accept query if query is part of grounded extension
 		if( ua == query) {
 			return pre_proc_result::accepted;
 		}

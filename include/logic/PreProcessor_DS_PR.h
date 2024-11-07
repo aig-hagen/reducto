@@ -17,10 +17,7 @@ extern "C" {
 	#include "../util/MemoryWatchDog.h"
 }
 
-/// <summary>
-/// Return values of the preprocessor, indicating if the preprocessor solved the problem, and if so to what conclusion
-/// </summary>
-enum pre_proc_result { accepted, rejected, unknown };
+
 
 /// <summary>
 /// This class is responsible for preparing data, before the data is used in the actual process of solving the problem.

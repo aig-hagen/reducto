@@ -130,7 +130,7 @@ static void add_complete_encoding(SatSolver &solver, AF &framework, ArrayBitSet 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-void Encoding::add_clauses_nonempty_admissible_set(SatSolver &solver, AF &framework, ArrayBitSet &activeArgs)
+void Encoding::add_clauses_nonempty_complete_set(SatSolver &solver, AF &framework, ArrayBitSet &activeArgs)
 {
 	vector<int64_t> non_empty_clause;
 
