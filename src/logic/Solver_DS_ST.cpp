@@ -8,14 +8,27 @@ static bool start_checking(uint32_t query_argument, AF &framework, ArrayBitSet &
 	SatSolver *solver = NULL;
 	solver = new SatSolver_cadical(numVars);
 	Encoding::add_clauses_stable_set(*solver, framework, active_args);
-	bool has_solution_without_query = (*solver).solve(Encoding::get_literal_accepted(query_argument, true),
+	bool has_solution_without_query, has_solution_with_query;
+	has_solution_without_query = (*solver).solve(Encoding::get_literal_accepted(query_argument, true),
 		Encoding::get_literal_rejected(framework.num_args, query_argument, false));
 	if (has_solution_without_query) {
 		proof_extension = Decoding::get_set_from_solver(*solver, active_args);
 	}
+	else {
+		bool has_solution_with_query = (*solver).solve(Encoding::get_literal_accepted(query_argument, false),
+			Encoding::get_literal_rejected(framework.num_args, query_argument, true));
+	}
+
+	bool is_accepted;
+	if (has_solution_without_query) {
+		is_accepted = false;
+	}
+	else {
+		is_accepted = has_solution_with_query;
+	}
 	
 	delete solver;
-	return has_solution_without_query;
+	return is_accepted;
 }
 
 /*===========================================================================================================================================================*/
@@ -35,7 +48,7 @@ bool Solver_DS_ST::solve(uint32_t query_argument, AF &framework, list<uint32_t> 
 		return false;
 
 	case unknown:
-		return !start_checking(query_argument, framework, initial_reduct, proof_extension);
+		return start_checking(query_argument, framework, initial_reduct, proof_extension);
 
 	default:
 		return unknown;
