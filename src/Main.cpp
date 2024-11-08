@@ -39,25 +39,7 @@ void static print_formats()
 
 void static print_problems()
 {
-	/*vector<string> tasks = { "DC", "DS", "SE", "EE", "CE" };
-	vector<string> sems = { "IT", "PR", "UC" };*/
-	vector<string> tasks = { "DS"};
-	vector<string> sems = { "PR"};
-	cout << "[";
-	for (uint32_t i = 0; i < tasks.size(); i++) {
-		for (uint32_t j = 0; j < sems.size(); j++) {
-			string problem = tasks[i] + "-" + sems[j];
-			if (j != sems.size() - 1)
-			{
-				cout << problem << ",";
-			}
-			else
-			{
-				cout << problem;
-			}
-		}
-	}
-	cout << "]\n";
+	cout << "[DC-CO,DC-ST,DS-PR,DS-ST,SE-PR,SE-ST]" << endl;
 }
 
 /*===========================================================================================================================================================*/
