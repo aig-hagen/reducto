@@ -16,6 +16,7 @@ static bool start_checking(AF &framework, ArrayBitSet &active_args, list<uint32_
 			list<uint32_t> calculated_extension = Decoding::get_set_from_solver(*solver, reduct);
 			list<uint32_t> new_proof = tools::ToolList::extend_list(proof_extension, calculated_extension);
 			proof_extension = new_proof;
+			calculated_extension.clear();
 
 			ArrayBitSet new_reduct = Reduct::get_reduct_set(reduct, framework, calculated_extension);
 			if (new_reduct._array.empty()) {
