@@ -46,6 +46,8 @@ extern "C" {
 #include "../include/logic/Solver_DC_ST.h"
 #include "../include/logic/Solver_DS_PR.h"
 #include "../include/logic/Solver_DS_ST.h"
+#include "../include/logic/Solver_SE_PR.h"
+#include "../include/logic/Solver_SE_ST.h"
 
 #include "../include/logic/Enums.h"
 
