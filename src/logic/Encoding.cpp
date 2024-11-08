@@ -146,6 +146,20 @@ void Encoding::add_clauses_nonempty_complete_set(SatSolver &solver, AF &framewor
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
+void Encoding::add_clauses_stable_set(SatSolver &solver, AF &framework, ArrayBitSet &activeArgs)
+{
+	for (int i = 0; i < activeArgs._array.size(); i++) {
+		add_complete_encoding(solver, framework, activeArgs, activeArgs._array[i]);
+
+		solver.add_clause_short(
+			Encoding::get_literal_accepted(activeArgs._array[i], false),
+			Encoding::get_literal_rejected(framework.num_args, activeArgs._array[i], false));
+	}
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
 void Encoding::add_complement_clause(SatSolver &solver, ArrayBitSet &activeArgs)
 {
 	vector<int64_t> clause;
