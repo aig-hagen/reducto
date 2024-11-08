@@ -13,6 +13,7 @@ static bool start_checking(AF &framework, ArrayBitSet &active_args, list<uint32_
 		list<uint32_t> calculated_extension = Decoding::get_set_from_solver(*solver, active_args);
 		list<uint32_t> new_proof = tools::ToolList::extend_list(proof_extension, calculated_extension);
 		proof_extension = new_proof;
+		calculated_extension.clear();
 	}
 
 	delete solver;
