@@ -43,6 +43,7 @@ extern "C" {
 #include "../include/logic/AF.h"
 #include "../include/logic/Parser_iccma.h"
 #include "../include/logic/Solver_DC_CO.h"
+#include "../include/logic/Solver_DC_ST.h"
 #include "../include/logic/Solver_DS_PR.h"
 #include "../include/logic/Solver_DS_ST.h"
 

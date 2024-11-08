@@ -211,19 +211,22 @@ int execute(int argc, char **argv)
 
 			uint32_t argument = std::stoi(query);
 			list<uint32_t> proof_extension;
-			bool skept_accepted = false;
+			bool cred_accepted = false;
 
 			switch (Enums::string_to_sem(sem)) {
 			case CO:
-				skept_accepted = Solver_DC_CO::solve(argument, framework, proof_extension);
+				cred_accepted = Solver_DC_CO::solve(argument, framework, proof_extension);
+				break;
+			case ST:
+				cred_accepted = Solver_DC_ST::solve(argument, framework, proof_extension);
 				break;
 			default:
 				cerr << argv[0] << ": Unsupported semantics\n";
 				return 1;
 			}
 
-			cout << (skept_accepted ? "YES" : "NO") << endl;
-			if (skept_accepted)
+			cout << (cred_accepted ? "YES" : "NO") << endl;
+			if (cred_accepted)
 			{
 				print_proof(proof_extension);
 			}

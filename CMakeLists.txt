@@ -43,7 +43,8 @@ set(HEADERS
 	${INCLD_LOGIC}/SatSolver.h
 	${INCLD_LOGIC}/SatSolver_cadical.h
 	${INCLD_LOGIC}/ScepticalCheck.h 
-	${INCLD_LOGIC}/Solver_DC_CO.h 
+	${INCLD_LOGIC}/Solver_DC_CO.h
+	${INCLD_LOGIC}/Solver_DC_ST.h
 	${INCLD_LOGIC}/Solver_DS_PR.h
 	${INCLD_LOGIC}/Solver_DS_ST.h 
 
@@ -75,6 +76,7 @@ set(SRCFILES
 	${SRC_LOGIC}SatSolver_cadical.cpp
 	${SRC_LOGIC}ScepticalCheck.cpp
 	${SRC_LOGIC}Solver_DC_CO.cpp
+	${SRC_LOGIC}Solver_DC_ST.cpp
 	${SRC_LOGIC}Solver_DS_PR.cpp
 	${SRC_LOGIC}Solver_DS_ST.cpp
 
