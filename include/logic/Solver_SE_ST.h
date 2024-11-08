@@ -1,5 +1,5 @@
-#ifndef SOLVER_DC_ST_H
-#define SOLVER_DC_ST_H
+#ifndef SOLVER_SE_ST_H
+#define SOLVER_SE_ST_H
 
 #include <iostream>
 #include <cstdint>
@@ -21,20 +21,18 @@
 using namespace std;
 
 /// <summary>
-/// This class is responsible for solving a problem of credulous acceptance of an query-argument
-/// in extensions of the stable semantics.
+/// This class is responsible for calculating an extension of the stable semantics.
 /// </summary>
-class Solver_DC_ST {
+class Solver_SE_ST {
 public:
 
 	/// <summary>
-	/// Checks if a specified argument is credulously accepted by at least one stable extension.
+	/// Checks if an extension of the stable semantics can be calculated.
 	/// </summary>
-	/// <param name="argument">The argument, which could be sceptical accepted or not.</param>
 	/// <param name="framework">The abstract argumentation framework, specifying the underlying attack relations between the arguments.</param>
-	/// <param name="proof_extension"> Extension proving, that the argument can be credulously accepted.</param>
+	/// <param name="proof_extension"> Calculated stable extension.</param>
 	/// <returns>TRUE iff the argument is credulously accepted. FALSE otherwise.</returns>
-	static bool solve(uint32_t query_argument, AF &framework, list<uint32_t> &proof_extension);
+	static bool solve(AF &framework, list<uint32_t> &proof_extension);
 };
 
 #endif

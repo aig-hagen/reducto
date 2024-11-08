@@ -32,7 +32,7 @@ public:
 	/// </summary>
 	/// <param name="argument">The argument, which could be sceptical accepted or not.</param>
 	/// <param name="framework">The abstract argumentation framework, specifying the underlying attack relations between the arguments.</param>
-	/// <param name="proof_extension"> Extension proving, that the argument cannot be sceptically accepted.</param>
+	/// <param name="proof_extension"> Extension proving, that the argument can be credulously accepted.</param>
 	/// <returns>TRUE iff the argument is credulously accepted. FALSE otherwise.</returns>
 	static bool solve(uint32_t query_argument, AF &framework, list<uint32_t> &proof_extension);
 };

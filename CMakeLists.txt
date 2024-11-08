@@ -46,7 +46,9 @@ set(HEADERS
 	${INCLD_LOGIC}/Solver_DC_CO.h
 	${INCLD_LOGIC}/Solver_DC_ST.h
 	${INCLD_LOGIC}/Solver_DS_PR.h
-	${INCLD_LOGIC}/Solver_DS_ST.h 
+	${INCLD_LOGIC}/Solver_DS_ST.h
+	${INCLD_LOGIC}/Solver_SE_PR.h
+	${INCLD_LOGIC}/Solver_SE_ST.h 
 
 	${INCLD_UTIL}/ArrayBitSet.h
 	${INCLD_UTIL}/MemoryWatchDog.h
@@ -79,6 +81,8 @@ set(SRCFILES
 	${SRC_LOGIC}Solver_DC_ST.cpp
 	${SRC_LOGIC}Solver_DS_PR.cpp
 	${SRC_LOGIC}Solver_DS_ST.cpp
+	${SRC_LOGIC}Solver_SE_PR.cpp
+	${SRC_LOGIC}Solver_SE_ST.cpp
 
 	${SRC_UTIL}MemoryWatchDog.c
 	${SRC_UTIL}Printer.cpp

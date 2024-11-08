@@ -108,7 +108,7 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 bool Solver_DS_PR::solve(uint32_t query_argument, AF &framework, list<uint32_t> &proof_extension, uint16_t numCores)
 {
 	ArrayBitSet initial_reduct = ArrayBitSet();
-	pre_proc_result result_preProcessor = PreProc_GR::process(framework, query_argument, initial_reduct);
+	pre_proc_result result_preProcessor = PreProc_GR::process(framework, query_argument, initial_reduct, proof_extension);
 
 	switch (result_preProcessor){
 

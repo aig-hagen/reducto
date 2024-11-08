@@ -65,7 +65,7 @@ void static print_problems()
 
 void print_proof(std::__cxx11::list<uint32_t> &proof_extension)
 {
-	cout << "w " << endl;
+	cout << "w ";
 
 	if (!proof_extension.empty()) {
 		for (list<uint32_t>::iterator mIter = proof_extension.begin(); mIter != proof_extension.end(); ++mIter) {
@@ -229,6 +229,35 @@ int execute(int argc, char **argv)
 			if (cred_accepted)
 			{
 				print_proof(proof_extension);
+			}
+
+			//free allocated memory
+			proof_extension.clear();
+		}
+		break;
+
+		case SE:
+		{
+			list<uint32_t> proof_extension;
+			bool has_extension = false;
+			switch (Enums::string_to_sem(sem)) {
+			case CO:
+				has_extension = Solver_SE_PR::solve(framework, proof_extension);
+				break;
+			case ST:
+				has_extension = Solver_SE_ST::solve(framework, proof_extension);
+				break;
+			default:
+				cerr << argv[0] << ": Unsupported semantics\n";
+				return 1;
+			}
+
+			if (has_extension)
+			{
+				print_proof(proof_extension);
+			}
+			else {
+				cout << "NO" << endl;
 			}
 
 			//free allocated memory
