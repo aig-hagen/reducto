@@ -241,7 +241,7 @@ int execute(int argc, char **argv)
 			list<uint32_t> proof_extension;
 			bool has_extension = false;
 			switch (Enums::string_to_sem(sem)) {
-			case CO:
+			case PR:
 				has_extension = Solver_SE_PR::solve(framework, proof_extension);
 				break;
 			case ST:
