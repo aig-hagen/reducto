@@ -12,7 +12,7 @@ static bool start_checking(uint32_t query_argument, AF &framework, ArrayBitSet &
 	has_solution_without_query = (*solver).solve(Encoding::get_literal_accepted(query_argument, true),
 		Encoding::get_literal_rejected(framework.num_args, query_argument, false));
 	if (has_solution_without_query) {
-		proof_extension = Decoding::get_set_from_solver(*solver, active_args);
+		Tools_Solver::UpdateCertificate(solver, active_args, proof_extension);
 	}
 	else {
 		bool has_solution_with_query = (*solver).solve(Encoding::get_literal_accepted(query_argument, false),

@@ -14,6 +14,7 @@
 #include "Reduct.h"
 #include "SatSolver.h"
 #include "SatSolver_cadical.h"
+#include "ToolsSolver.h"
 
 #include "../util/Printer.h"
 #include "../util/ToolList.h"

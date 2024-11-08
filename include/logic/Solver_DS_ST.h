@@ -14,6 +14,7 @@
 #include "SatSolver.h"
 #include "SatSolver_cadical.h"
 #include "ScepticalCheck.h"
+#include "ToolsSolver.h"
 #include "omp.h"
 
 #include "../util/Printer.h"

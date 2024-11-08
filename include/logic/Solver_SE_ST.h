@@ -14,6 +14,7 @@
 #include "Reduct.h"
 #include "SatSolver.h"
 #include "SatSolver_cadical.h"
+#include "ToolsSolver.h"
 
 #include "../util/Printer.h"
 #include "../util/ToolList.h"
@@ -36,3 +37,5 @@ public:
 };
 
 #endif
+
+static void UpdateProof(SatSolver *solver, ArrayBitSet &active_args, std::__cxx11::list<uint32_t> &proof_extension);

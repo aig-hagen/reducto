@@ -8,12 +8,10 @@ bool start_checking(uint32_t query_argument, AF &framework, ArrayBitSet &active_
 	SatSolver *solver = NULL;
 	solver = new SatSolver_cadical(numVars);
 	Encoding::add_clauses_nonempty_complete_set(*solver, framework, active_args);
-	bool has_solution_with_query = (*solver).solve(Encoding::get_literal_accepted(query_argument, false));
+	bool has_solution_with_query = (*solver).solve(Encoding::get_literal_accepted(query_argument, false),
+		Encoding::get_literal_rejected(framework.num_args, query_argument, true));
 	if (has_solution_with_query) {
-		list<uint32_t> calculated_extension = Decoding::get_set_from_solver(*solver, active_args);
-		list<uint32_t> new_proof = tools::ToolList::extend_list(proof_extension, calculated_extension);
-		proof_extension = new_proof;
-		calculated_extension.clear();
+		Tools_Solver::UpdateCertificate(solver, active_args, proof_extension);
 	}
 	
 	delete solver;
