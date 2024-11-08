@@ -4,7 +4,7 @@
 /*===========================================================================================================================================================*/
 
 static void check_rejection(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &is_rejected, bool &is_terminated,
-	list<uint32_t> &extension_build, list<uint32_t> &output_extension, IPrioHeuristic &heuristic,
+	list<uint32_t> &extension_build, list<uint32_t> &certificate_extension, IPrioHeuristic &heuristic,
 	PriorityStackManager &prio_queue)
 {
 	if (tools::ToolsOMP::check_termination(is_terminated, true)) return;
@@ -21,23 +21,24 @@ static void check_rejection(uint32_t query_argument, AF &framework, ArrayBitSet 
 	solver = new SatSolver_cadical(numVars);
 	Encoding::add_clauses_nonempty_complete_set(*solver, framework, reduct);
 	bool continue_calculation = false;
-	list<uint32_t> initial_set = Proc_DS_PR::calculate_rejecting_set(query_argument, framework, reduct, is_rejected, is_terminated,
+	list<uint32_t> calculated_set = Proc_DS_PR::calculate_rejecting_set(query_argument, framework, reduct, is_rejected, is_terminated,
 		*solver, continue_calculation, true);
-	list<uint32_t> new_extension = tools::ToolList::extend_list(extension_build, initial_set);
-	if (is_rejected) output_extension = new_extension;
+	if (is_rejected) Tools_Solver::UpdateCertificate(certificate_extension, calculated_set);
 	if (!tools::ToolsOMP::check_termination(is_terminated, continue_calculation)) {
-		prio_queue.try_insert_extension(query_argument, framework, &heuristic, new_extension, initial_set);
+		list<uint32_t> new_extension = tools::ToolList::extend_list(extension_build, calculated_set);
+		prio_queue.try_insert_extension(query_argument, framework, &heuristic, new_extension, calculated_set);
+		new_extension.clear();
 
 		//iterate through initial sets
 		do {
 			Encoding::add_complement_clause(*solver, reduct);
-			initial_set = Proc_DS_PR::calculate_rejecting_set(query_argument, framework, reduct, is_rejected, is_terminated,
+			calculated_set = Proc_DS_PR::calculate_rejecting_set(query_argument, framework, reduct, is_rejected, is_terminated,
 				*solver, continue_calculation, false);
-			list<uint32_t> new_extension_2 = tools::ToolList::extend_list(extension_build, initial_set);
-			if (is_rejected) output_extension = new_extension_2;
+			if (is_rejected) Tools_Solver::UpdateCertificate(certificate_extension, calculated_set);
 			if (tools::ToolsOMP::check_termination(is_terminated, continue_calculation)) break;
-
-			prio_queue.try_insert_extension(query_argument, framework, &heuristic, new_extension_2, initial_set);
+			list<uint32_t> new_extension = tools::ToolList::extend_list(extension_build, calculated_set);
+			prio_queue.try_insert_extension(query_argument, framework, &heuristic, new_extension, calculated_set);
+			new_extension.clear();
 			
 		} while (!tools::ToolsOMP::check_termination(is_terminated, continue_calculation));
 	}
@@ -49,7 +50,7 @@ static void check_rejection(uint32_t query_argument, AF &framework, ArrayBitSet 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static bool start_checking_rejection(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, list<uint32_t> &proof_extension, uint16_t numCores)
+static bool start_checking_rejection(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, list<uint32_t> &certificate_extension, uint16_t numCores)
 {
 	if (numCores > 0)
 	{
@@ -62,13 +63,13 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 	bool is_finished = false;
 	bool is_rejected = false;
 	omp_set_lock(prio_stack.lock_has_entry);
-#pragma omp parallel shared(is_rejected, is_terminated, is_finished, proof_extension, prio_stack) \
+#pragma omp parallel shared(is_rejected, is_terminated, is_finished, certificate_extension, prio_stack) \
  firstprivate(query_argument, framework, active_args, heuristic)
 	{
 #pragma omp single nowait
 		{
 			list<uint32_t> extension_build;
-			check_rejection(query_argument, framework, active_args, is_rejected, is_terminated, extension_build, proof_extension,
+			check_rejection(query_argument, framework, active_args, is_rejected, is_terminated, extension_build, certificate_extension,
 				*heuristic, prio_stack);
 			tools::ToolsOMP::update_is_finished(is_terminated, is_finished, prio_stack);
 		}
@@ -87,7 +88,7 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 					omp_unset_lock(prio_stack.lock_has_entry);
 				}
 
-				check_rejection(query_argument, framework, active_args, is_rejected, is_terminated, extension, proof_extension,
+				check_rejection(query_argument, framework, active_args, is_rejected, is_terminated, extension, certificate_extension,
 					*heuristic, prio_stack);
 				tools::ToolsOMP::update_is_finished(is_terminated, is_finished, prio_stack);
 			}
@@ -105,10 +106,10 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-bool Solver_DS_PR::solve(uint32_t query_argument, AF &framework, list<uint32_t> &proof_extension, uint16_t numCores)
+bool Solver_DS_PR::solve(uint32_t query_argument, AF &framework, list<uint32_t> &certificate_extension, uint16_t numCores)
 {
 	ArrayBitSet initial_reduct = ArrayBitSet();
-	pre_proc_result result_preProcessor = PreProc_GR::process(framework, query_argument, initial_reduct, proof_extension);
+	pre_proc_result result_preProcessor = PreProc_GR::process(framework, query_argument, initial_reduct, certificate_extension);
 
 	switch (result_preProcessor){
 
@@ -119,7 +120,7 @@ bool Solver_DS_PR::solve(uint32_t query_argument, AF &framework, list<uint32_t> 
 			return false;
 
 		case unknown:
-			return !start_checking_rejection(query_argument, framework, initial_reduct, proof_extension, numCores);
+			return !start_checking_rejection(query_argument, framework, initial_reduct, certificate_extension, numCores);
 
 		default:
 			return unknown;

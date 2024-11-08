@@ -31,6 +31,7 @@ extern "C" {
 #include "SatSolver.h"
 #include "SatSolver_cadical.h"
 #include "ScepticalCheck.h"
+#include "ToolsSolver.h"
 #include "omp.h"
 
 #include "../util/Printer.h"
@@ -58,3 +59,5 @@ public:
 };
 
 #endif
+
+static void UpdateCertificate(std::__cxx11::list<uint32_t> &output_extension, std::__cxx11::list<uint32_t> &new_extension);

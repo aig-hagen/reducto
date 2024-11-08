@@ -29,6 +29,8 @@ public:
 	/// <param name="active_args">The arguments that are active in the current state of the framework.</param>
 	/// <param name="certificate_extension"> The extension used as certificate/proof of the result.</param>
 	static void UpdateCertificate(SatSolver *solver, ArrayBitSet &active_args, std::__cxx11::list<uint32_t> &certificate_extension);
+
+	static void UpdateCertificate(std::__cxx11::list<uint32_t> &certificate_extension, std::__cxx11::list<uint32_t> &set_to_extend_with);
 };
 
 #endif
