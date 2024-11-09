@@ -20,8 +20,6 @@ static bool start_checking(AF &framework, ArrayBitSet &active_args, list<uint32_
 			break;
 		}
 		// calculate complete extension in new reduct
-		delete solver;
-		SatSolver *solver = NULL;
 		solver = new SatSolver_cadical(active_args._array.size());
 		Encoding::add_clauses_nonempty_complete_set(*solver, framework, active_args);
 		has_solution = (*solver).solve();

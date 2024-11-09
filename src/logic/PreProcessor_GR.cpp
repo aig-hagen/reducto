@@ -135,7 +135,6 @@ ArrayBitSet PreProc_GR::process(AF &framework, list<uint32_t> &out_gr_extension)
 	//build basic active arguments
 	vector<uint32_t> active_args_vector;
 	vector<uint8_t> active_args_bitset(framework.num_args + 1, 0);
-	std::fill(active_args_bitset.begin(), active_args_bitset.end(), true);
 	for (int i = 0; i < framework.num_args; i++) {
 		active_args_vector.push_back(i + 1);
 	}
