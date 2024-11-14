@@ -40,11 +40,11 @@ public:
 
 	/// <summary>
 	/// This method prepares the data before it being processed by the solver and checks if a solution can be easily drawn
-	/// by the help of some properties.
+	/// by reducing the framework by the grounded extension.
 	/// </summary>
 	/// <param name="framework">The original abstract argumentation framework of the situation.</param>
 	/// <param name"out_gr_extension">[Output-Parameter] The calculated grounded extension of the framework.</param>
 	/// <returns>Returns the set of active arguments, which remain of the original framework after the preprocessor if finished.</returns>
-	static ArrayBitSet process(AF &framework, list<uint32_t> &out_gr_extension);
+	static ArrayBitSet process_only_grounded(AF &framework, list<uint32_t> &out_gr_extension);
 };
 #endif

@@ -131,7 +131,7 @@ pre_proc_result PreProc_GR::process(AF &framework, uint32_t query, ArrayBitSet &
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-ArrayBitSet PreProc_GR::process(AF &framework, list<uint32_t> &out_gr_extension) {
+ArrayBitSet PreProc_GR::process_only_grounded(AF &framework, list<uint32_t> &out_gr_extension) {
 	//build basic active arguments
 	vector<uint32_t> active_args_vector;
 	vector<uint8_t> active_args_bitset(framework.num_args + 1, 0);

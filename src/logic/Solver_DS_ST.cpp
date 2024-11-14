@@ -14,21 +14,10 @@ static bool start_checking(uint32_t query_argument, AF &framework, ArrayBitSet &
 	if (has_solution_without_query) {
 		Tools_Solver::UpdateCertificate(solver, active_args, proof_extension);
 	}
-	else {
-		bool has_solution_with_query = (*solver).solve(Encoding::get_literal_accepted(query_argument, false),
-			Encoding::get_literal_rejected(framework.num_args, query_argument, true));
-	}
-
-	bool is_accepted;
-	if (has_solution_without_query) {
-		is_accepted = false;
-	}
-	else {
-		is_accepted = has_solution_with_query;
-	}
-	
+	//only two cases remain: 1. no stable solution is computable; 2. all stable solutions contain the query; both cases lead to scetical acceptance
+		
 	delete solver;
-	return is_accepted;
+	return !has_solution_without_query;
 }
 
 /*===========================================================================================================================================================*/
@@ -36,21 +25,6 @@ static bool start_checking(uint32_t query_argument, AF &framework, ArrayBitSet &
 
 bool Solver_DS_ST::solve(uint32_t query_argument, AF &framework, list<uint32_t> &proof_extension)
 {
-	ArrayBitSet initial_reduct = ArrayBitSet();
-	pre_proc_result result_preProcessor = PreProc_GR::process(framework, query_argument, initial_reduct, proof_extension);
-
-	switch (result_preProcessor) {
-
-	case accepted:
-		return true;
-
-	case rejected:
-		return false;
-
-	case unknown:
-		return start_checking(query_argument, framework, initial_reduct, proof_extension);
-
-	default:
-		return unknown;
-	}
+	ArrayBitSet initial_reduct = PreProc_GR::process_only_grounded(framework, proof_extension);
+	return start_checking(query_argument, framework, initial_reduct, proof_extension);
 }
