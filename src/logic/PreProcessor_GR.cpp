@@ -144,3 +144,30 @@ ArrayBitSet PreProc_GR::process_only_grounded(AF &framework, list<uint32_t> &out
 	reduce_by_grounded(framework, active_args, 0, false, initial_reduct, out_gr_extension);
 	return initial_reduct;
 }
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
+pre_proc_result PreProc_GR::process_only_grounded(AF &framework, uint32_t query, ArrayBitSet &out_reduct, list<uint32_t> &out_gr_extension)
+{
+	if (framework.self_attack[query])
+	{
+		return pre_proc_result::rejected;
+	}
+
+	if (framework.attackers[query].empty())
+	{
+		return pre_proc_result::accepted;
+	}
+
+	//build basic active arguments
+	vector<uint32_t> active_args_vector;
+	vector<uint8_t> active_args_bitset(framework.num_args + 1, 0);
+	for (int i = 0; i < framework.num_args; i++) {
+		active_args_vector.push_back(i + 1);
+	}
+	ArrayBitSet active_args = ArrayBitSet(active_args_vector, active_args_bitset);
+
+	//reduce by grounded extension
+	return reduce_by_grounded(framework, active_args, query, true, out_reduct, out_gr_extension);
+}

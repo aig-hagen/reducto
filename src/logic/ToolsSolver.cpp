@@ -14,9 +14,7 @@ void Tools_Solver::UpdateCertificate(SatSolver *solver, ArrayBitSet &active_args
 
 void Tools_Solver::UpdateCertificate(std::__cxx11::list<uint32_t> &certificate_extension, std::__cxx11::list<uint32_t> &set_to_extend_with)
 {
-	{
-		list<uint32_t> new_certificate = tools::ToolList::extend_list(certificate_extension, set_to_extend_with);
-		certificate_extension.clear();
-		certificate_extension = new_certificate;
-	}
+	list<uint32_t> new_certificate = tools::ToolList::extend_list(certificate_extension, set_to_extend_with);
+	certificate_extension.clear();
+	certificate_extension = new_certificate;
 }

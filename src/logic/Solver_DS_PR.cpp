@@ -119,10 +119,7 @@ bool Solver_DS_PR::solve(uint32_t query_argument, AF &framework, list<uint32_t> 
 		case rejected:
 			return false;
 
-		case unknown:
-			return !start_checking_rejection(query_argument, framework, initial_reduct, certificate_extension, numCores);
-
 		default:
-			return unknown;
+			return !start_checking_rejection(query_argument, framework, initial_reduct, certificate_extension, numCores);
 	}
 }
