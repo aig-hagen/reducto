@@ -28,7 +28,7 @@ static bool start_checking(AF &framework, ArrayBitSet &active_args, list<uint32_
 	}
 
 	delete solver;
-	return calculated_extension;
+	return true;
 }
 
 /*===========================================================================================================================================================*/

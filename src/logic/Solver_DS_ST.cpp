@@ -25,7 +25,7 @@ static bool start_checking(uint32_t query_argument, AF &framework, ArrayBitSet &
 bool Solver_DS_ST::solve(uint32_t query_argument, AF &framework, list<uint32_t> &proof_extension)
 {
 	ArrayBitSet initial_reduct = ArrayBitSet();
-	pre_proc_result result_preProcessor = PreProc_GR::process_only_grounded(framework, query_argument, false, false, initial_reduct, proof_extension);
+	pre_proc_result result_preProcessor = PreProc_GR::process_only_grounded(framework, query_argument, true, false, initial_reduct, proof_extension);
 
 	switch (result_preProcessor) {
 

@@ -119,7 +119,7 @@ static pre_proc_result reduce_by_grounded(AF &framework, ArrayBitSet &active_arg
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-pre_proc_result PreProc_GR::process(AF &framework, uint32_t query, ArrayBitSet &out_reduct, list<uint32_t> &out_gr_extension)
+pre_proc_result PreProc_GR::process(AF &framework, uint32_t query, bool break_accepted, bool break_rejected, ArrayBitSet &out_reduct, list<uint32_t> &out_gr_extension)
 {
 	if (framework.self_attack[query])
 	{
@@ -133,7 +133,7 @@ pre_proc_result PreProc_GR::process(AF &framework, uint32_t query, ArrayBitSet &
 
 	ArrayBitSet active_args = calculate_cone_influence(framework, query);
 	
-	return reduce_by_grounded(framework, active_args, query, false, false, out_reduct, out_gr_extension);
+	return reduce_by_grounded(framework, active_args, query, break_accepted, break_rejected, out_reduct, out_gr_extension);
 }
 
 /*===========================================================================================================================================================*/
