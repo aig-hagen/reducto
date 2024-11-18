@@ -38,8 +38,9 @@ static ArrayBitSet calculate_cone_influence(AF &framework, uint32_t query) {
 /*===========================================================================================================================================================*/
 
 
-static pre_proc_result reduce_by_grounded(AF &framework, ArrayBitSet &active_args, uint32_t query, bool check_query, ArrayBitSet &out_reduct, list<uint32_t> &out_gr_extension)
+static pre_proc_result reduce_by_grounded(AF &framework, ArrayBitSet &active_args, uint32_t query, bool break_accepted, bool break_rejected, ArrayBitSet &out_reduct, list<uint32_t> &out_gr_extension)
 {
+	pre_proc_result result = pre_proc_result::unknown;
 	// fill list with unattacked arguments
 	list<uint32_t> ls_unattacked_unprocessed;
 	vector<uint32_t> num_attacker;
@@ -63,14 +64,21 @@ static pre_proc_result reduce_by_grounded(AF &framework, ArrayBitSet &active_arg
 		const auto &ua = *mIter;
 
 		//accept query if query is part of grounded extension
-		if( check_query && ua == query) {
-			return pre_proc_result::accepted;
+		if(ua == query) {
+			if (break_accepted) {
+				return pre_proc_result::accepted;
+			}
+
+			result = pre_proc_result::accepted;
 		}
-
-
+		
 		//reject query if it gets attacked by argument of grounded extension
-		if (check_query && framework.exists_attack(ua, query)){
-			return pre_proc_result::rejected;
+		if (framework.exists_attack(ua, query)){
+			if (break_rejected) {
+				return pre_proc_result::rejected;
+			}
+			
+			result = pre_proc_result::rejected;
 		}
 
 		//iterate through victims of the victims of ua
@@ -105,7 +113,7 @@ static pre_proc_result reduce_by_grounded(AF &framework, ArrayBitSet &active_arg
 		out_reduct = Reduct::get_reduct(out_reduct, framework, ua);
 	}
 
-	return pre_proc_result::unknown;
+	return result;
 }
 
 /*===========================================================================================================================================================*/
@@ -125,7 +133,7 @@ pre_proc_result PreProc_GR::process(AF &framework, uint32_t query, ArrayBitSet &
 
 	ArrayBitSet active_args = calculate_cone_influence(framework, query);
 	
-	return reduce_by_grounded(framework, active_args, query, true, out_reduct, out_gr_extension);
+	return reduce_by_grounded(framework, active_args, query, false, false, out_reduct, out_gr_extension);
 }
 
 /*===========================================================================================================================================================*/
@@ -141,14 +149,14 @@ ArrayBitSet PreProc_GR::process_only_grounded(AF &framework, list<uint32_t> &out
 	ArrayBitSet active_args = ArrayBitSet(active_args_vector, active_args_bitset);
 	//reduce by grounded extension
 	ArrayBitSet initial_reduct = ArrayBitSet();
-	reduce_by_grounded(framework, active_args, 0, false, initial_reduct, out_gr_extension);
+	reduce_by_grounded(framework, active_args, 0, false, false, initial_reduct, out_gr_extension);
 	return initial_reduct;
 }
 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-pre_proc_result PreProc_GR::process_only_grounded(AF &framework, uint32_t query, ArrayBitSet &out_reduct, list<uint32_t> &out_gr_extension)
+pre_proc_result PreProc_GR::process_only_grounded(AF &framework, uint32_t query, bool break_acception, bool break_rejection, ArrayBitSet &out_reduct, list<uint32_t> &out_gr_extension)
 {
 	if (framework.self_attack[query])
 	{
@@ -169,5 +177,5 @@ pre_proc_result PreProc_GR::process_only_grounded(AF &framework, uint32_t query,
 	ArrayBitSet active_args = ArrayBitSet(active_args_vector, active_args_bitset);
 
 	//reduce by grounded extension
-	return reduce_by_grounded(framework, active_args, query, true, out_reduct, out_gr_extension);
+	return reduce_by_grounded(framework, active_args, query, break_acception, break_rejection, out_reduct, out_gr_extension);
 }

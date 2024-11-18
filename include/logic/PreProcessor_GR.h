@@ -53,10 +53,12 @@ public:
 	/// </summary>
 	/// <param name="framework">The original abstract argumentation framework of the situation.</param>
 	/// <param name="query">The query argument, whose acceptance is to check.</param>
+	/// <param name="break_acception"> If TRUE, the preprocessing will abort the process, in case the grounded extension contains the query argument.
+	/// <param name="break_rejection"> If TRUE, the preprocessing will abort the process, in case the grounded extension attacks the query argument.
 	/// <param name="out_reduct">[Output-Parameter]The set of active arguments, which remain of the original framework after the preprocessor if finished.
 	/// Keep in mind, that the value of this parameter will be overwritten during this method, as it's an output-parameter.</param>
 	/// <param name"out_gr_extension">[Output-Parameter] The calculated grounded extension of the framework.</param>
 	/// <returns>Returns an Enum indicating if the method has solved the problem, and if so to which conclusion it came.</returns>
-	static pre_proc_result process_only_grounded(AF &framework, uint32_t query, ArrayBitSet &out_reduct, list<uint32_t> &out_gr_extension);
+	static pre_proc_result process_only_grounded(AF &framework, uint32_t query, bool break_acception, bool break_rejection, ArrayBitSet &out_reduct, list<uint32_t> &out_gr_extension);
 };
 #endif
