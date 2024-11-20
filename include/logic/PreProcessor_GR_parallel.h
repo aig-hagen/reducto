@@ -1,5 +1,5 @@
-#ifndef PREPROC_GR_H
-#define PREPROC_GR_H
+#ifndef PREPROC_GR_PARA_H
+#define PREPROC_GR_PARA_H
 
 #include <iostream>
 #include <cstdint>
@@ -14,7 +14,7 @@
 #include "../logic/Enums.h"
 
 extern "C" {
-	#include "../util/MemoryWatchDog.h"
+#include "../util/MemoryWatchDog.h"
 }
 
 
@@ -24,7 +24,7 @@ extern "C" {
 /// The preprocessor checks if the problem can be trivially solved by the use of some properties, without actually
 /// calculating a solution.
 /// </summary>
-class PreProc_GR {
+class PreProc_GR_parallel {
 public:
 	/// <summary>
 	/// This method prepares the data before it being processed by the solver and checks if a solution can be easily drawn
@@ -38,7 +38,7 @@ public:
 	/// Keep in mind, that the value of this parameter will be overwritten during this method, as it's an output-parameter.</param>
 	/// <param name"out_gr_extension">[Output-Parameter] The calculated grounded extension of the framework.</param>
 	/// <returns>Returns an Enum indicating if the method has solved the problem, and if so to which conclusion it came.</returns>
-	static pre_proc_result process(AF &framework, uint32_t query, bool break_acception, bool break_rejection, 
+	static pre_proc_result process(AF &framework, uint32_t query, bool break_acception, bool break_rejection,
 		ArrayBitSet &out_reduct, list<uint32_t> &out_gr_extension);
 
 	/// <summary>
@@ -62,7 +62,7 @@ public:
 	/// Keep in mind, that the value of this parameter will be overwritten during this method, as it's an output-parameter.</param>
 	/// <param name"out_gr_extension">[Output-Parameter] The calculated grounded extension of the framework.</param>
 	/// <returns>Returns an Enum indicating if the method has solved the problem, and if so to which conclusion it came.</returns>
-	static pre_proc_result process_only_grounded(AF &framework, uint32_t query, bool break_acception, bool break_rejection, 
+	static pre_proc_result process_only_grounded(AF &framework, uint32_t query, bool break_acception, bool break_rejection,
 		ArrayBitSet &out_reduct, list<uint32_t> &out_gr_extension);
 };
 #endif
