@@ -32,7 +32,7 @@ list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &
 list<uint32_t> Proc_DS_PR::calculate_rejecting_set_in_random_coi(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &is_rejected, bool &is_terminated,
 	SatSolver &solver, bool &continue_calculation, bool is_first_iteration) {
 	int i = 0;
-	int lim = 5;
+	int lim = 6;
 	bool has_solution_without_query;
 	SatSolver *solver_coi = NULL;
 	solver_coi = new SatSolver_cadical(framework.num_args);
@@ -47,7 +47,8 @@ list<uint32_t> Proc_DS_PR::calculate_rejecting_set_in_random_coi(uint32_t query_
 		ArrayBitSet reduct_coi = PreProc_GR_parallel::calculate_cone_influence(framework, random_argument);
 		Encoding::add_clauses_nonempty_admissible_set(*solver_coi, framework, reduct_coi);
 		has_solution_without_query = (*solver_coi).solve(Encoding::get_literal_accepted(query_argument, true));
-	} while (!has_solution_without_query);
+		i++;
+	} while (i < lim && !has_solution_without_query);
 
 	if (!has_solution_without_query) {
 		delete solver_coi;
