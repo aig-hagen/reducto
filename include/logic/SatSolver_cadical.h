@@ -74,6 +74,13 @@ public:
 	/// <returns> <c>TRUE</c> iff a solution was found. Otherwise <c>FALSE</c></returns>
 	bool solve(int64_t assumption1, int64_t assumption2);
 
+	/// <summary>
+	/// This method calculates a solution for the SAT-Problem of the solver under the given assumptions.
+	/// </summary>
+	/// <param name="assumptions">List of variables the SAT-solver has to assume to be true if positive and false if negative.</param>
+	/// <returns> <c>TRUE</c> iff a solution was found. Otherwise <c>FALSE</c></returns>
+	virtual bool solve(std::vector<int64_t> assumptions);
+
 private:
 	/// <summary>
 	/// The SAT-solver used to solve the SAT-problem.

@@ -25,3 +25,30 @@ list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &
 
 	return initial_set;
 }
+
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
+list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &is_rejected, bool &is_terminated,
+	SatSolver &solver, bool &continue_calculation, bool is_first_iteration, uint32_t index_begin_assumptions) {
+	vector<int64_t> assumptions;
+	for (int i = index_begin_assumptions; i < active_args._array.size(); i++) {
+		assumptions.push_back(Encoding::get_literal_rejected(framework.num_args, active_args._array[i], false));
+		assumptions.push_back(Encoding::get_literal_accepted(active_args._array[i], true));
+	}
+	assumptions.push_back(Encoding::get_literal_accepted(query_argument, true));
+	bool has_solution_without_query = solver.solve(assumptions);
+
+	if (!has_solution_without_query) {
+		return calculate_rejecting_set(query_argument, framework, active_args, is_rejected, is_terminated, solver, continue_calculation, is_first_iteration);
+	}
+
+	continue_calculation = true;
+	list<uint32_t> initial_set = Decoding::get_set_from_solver(solver, active_args);
+	if (ScepticalCheck::check_rejection(query_argument, initial_set, framework)) {
+		tools::ToolsOMP::set_is_rejected(is_rejected, is_terminated);
+	}
+
+	return initial_set;
+}
