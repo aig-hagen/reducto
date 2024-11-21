@@ -130,8 +130,8 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 
 bool Solver_DS_PR::solve(uint32_t query_argument, AF &framework, list<uint32_t> &certificate_extension, uint16_t numCores)
 {
-	int num_args_10_perc = framework.num_args * 9 / 10;
-	int index_begin_assumptions = num_args_10_perc > 100 ? num_args_10_perc : 20;
+	uint32_t num_args_10_perc = framework.num_args * 9 / 10;
+	uint32_t index_begin_assumptions = num_args_10_perc > 100 ? num_args_10_perc : 20;
 
 	ArrayBitSet initial_reduct = ArrayBitSet();
 	pre_proc_result result_preProcessor = PreProc_GR_parallel::process(framework, query_argument, true, true, initial_reduct, certificate_extension);
