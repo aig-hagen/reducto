@@ -5,7 +5,7 @@
 
 static void check_rejection(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &is_rejected, bool &is_terminated,
 	list<uint32_t> &extension_build, list<uint32_t> &certificate_extension, IPrioHeuristic &heuristic,
-	PriorityStackManager &prio_queue)
+	PriorityStackManager &prio_queue, bool isMain)
 {
 	if (tools::ToolsOMP::check_termination(is_terminated, true)) return;
 	ArrayBitSet reduct = extension_build.empty() ? active_args.copy() : Reduct::get_reduct_set(active_args, framework, extension_build);
@@ -19,7 +19,13 @@ static void check_rejection(uint32_t query_argument, AF &framework, ArrayBitSet 
 	uint64_t numVars = reduct._array.size();
 	SatSolver *solver = NULL;
 	solver = new SatSolver_cadical(numVars);
-	Encoding::add_clauses_nonempty_complete_set(*solver, framework, reduct);
+	if (isMain) {
+		Encoding::add_clauses_nonempty_admissible_set(*solver, framework, reduct);
+	}
+	else {
+		Encoding::add_clauses_nonempty_complete_set(*solver, framework, reduct);
+	}
+	
 	bool continue_calculation = false;
 	list<uint32_t> calculated_set = Proc_DS_PR::calculate_rejecting_set(query_argument, framework, reduct, is_rejected, is_terminated,
 		*solver, continue_calculation, true);
@@ -70,7 +76,7 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 		{
 			list<uint32_t> extension_build;
 			check_rejection(query_argument, framework, active_args, is_rejected, is_terminated, extension_build, certificate_extension,
-				*heuristic, prio_stack);
+				*heuristic, prio_stack, true);
 			tools::ToolsOMP::update_is_finished(is_terminated, is_finished, prio_stack);
 		}
 
@@ -89,7 +95,7 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 				}
 
 				check_rejection(query_argument, framework, active_args, is_rejected, is_terminated, extension, certificate_extension,
-					*heuristic, prio_stack);
+					*heuristic, prio_stack, false);
 				tools::ToolsOMP::update_is_finished(is_terminated, is_finished, prio_stack);
 			}
 			else {

@@ -35,6 +35,13 @@ public:
     /// <returns>Returns an accepting literal.</returns>
     static int64_t get_literal_rejected(uint32_t argsSize, uint32_t argument, bool isInverted);
     /// <summary>
+    /// Adds all clauses necessary to encode the calculation of nonempty admissible sets.
+    /// </summary>
+    /// <param name="solver">The SATSolver, to which the clauses will be added.</param>
+    /// <param name="framework">The abstract argumentation framework, based upon which the attacks are analysed.</param>
+    /// <param name="activeArgs">The set of active arguments, in the current state of the framework.</param>
+    static void add_clauses_nonempty_admissible_set(SatSolver &solver, AF &framework, ArrayBitSet &activeArgs);
+    /// <summary>
     /// Adds all clauses necessary to encode the calculation of nonempty complete sets.
     /// </summary>
     /// <param name="solver">The SATSolver, to which the clauses will be added.</param>
