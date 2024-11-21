@@ -1,6 +1,6 @@
 #include "../../include/logic/PreProcessor_GR_parallel.h"
 
-static ArrayBitSet calculate_cone_influence(AF &framework, uint32_t query) {
+ArrayBitSet PreProc_GR_parallel::calculate_cone_influence(AF &framework, uint32_t query) {
 	//init shared variables
 	omp_lock_t *lock_has_entry = (omp_lock_t *)malloc(sizeof * lock_has_entry);
 	if (lock_has_entry == NULL) {

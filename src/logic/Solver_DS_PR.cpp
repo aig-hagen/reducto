@@ -27,8 +27,16 @@ static void check_rejection(uint32_t query_argument, AF &framework, ArrayBitSet 
 	}
 	
 	bool continue_calculation = false;
-	list<uint32_t> calculated_set = Proc_DS_PR::calculate_rejecting_set(query_argument, framework, reduct, is_rejected, is_terminated,
-		*solver, continue_calculation, true);
+	list<uint32_t> calculated_set;
+	if (isMain) {
+		calculated_set = Proc_DS_PR::calculate_rejecting_set_in_random_coi(query_argument, framework, reduct, is_rejected, is_terminated,
+			*solver, continue_calculation, true);
+	}
+	else {
+		calculated_set = Proc_DS_PR::calculate_rejecting_set(query_argument, framework, reduct, is_rejected, is_terminated,
+			*solver, continue_calculation, true);
+	}
+	
 	if (is_rejected) Tools_Solver::UpdateCertificate(certificate_extension, calculated_set);
 	if (!tools::ToolsOMP::check_termination(is_terminated, continue_calculation)) {
 		list<uint32_t> new_extension = tools::ToolList::extend_list(extension_build, calculated_set);
@@ -38,8 +46,15 @@ static void check_rejection(uint32_t query_argument, AF &framework, ArrayBitSet 
 		//iterate through initial sets
 		do {
 			Encoding::add_complement_clause(*solver, reduct);
-			calculated_set = Proc_DS_PR::calculate_rejecting_set(query_argument, framework, reduct, is_rejected, is_terminated,
-				*solver, continue_calculation, false);
+			if (isMain) {
+				calculated_set = Proc_DS_PR::calculate_rejecting_set_in_random_coi(query_argument, framework, reduct, is_rejected, is_terminated,
+					*solver, continue_calculation, false);
+			}
+			else {
+				calculated_set = Proc_DS_PR::calculate_rejecting_set(query_argument, framework, reduct, is_rejected, is_terminated,
+					*solver, continue_calculation, false);
+			}
+			
 			if (is_rejected) Tools_Solver::UpdateCertificate(certificate_extension, calculated_set);
 			if (tools::ToolsOMP::check_termination(is_terminated, continue_calculation)) break;
 			list<uint32_t> new_extension = tools::ToolList::extend_list(extension_build, calculated_set);
