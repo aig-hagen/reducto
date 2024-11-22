@@ -83,6 +83,14 @@ static void add_completeness_clause_per_attacker(SatSolver& solver, uint32_t arg
 	completeness_clause.push_back(Encoding::get_literal_rejected(argsSize, attacker, true));
 }
 
+static void add_selfattack_literal(SatSolver &solver,  uint32_t argument, uint32_t attacker) {
+	//assume self attacking arguments as not included in solution
+	if (argument == attacker) {
+		solver.add_clause_short(Encoding::get_literal_accepted(argument, true), 0);
+	}
+}
+
+
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
@@ -98,6 +106,7 @@ static void add_admissible_encoding(SatSolver &solver, AF &framework, ArrayBitSe
 		{
 			add_rejected_clauses_per_attacker(solver, framework.num_args, argument, attackers[i], rejection_reason_clause);
 			add_defense_per_attacker(solver, framework.num_args, argument, attackers[i]);
+			add_selfattack_literal(solver, argument, attackers[i]);
 		}
 	}
 
@@ -121,6 +130,7 @@ static void add_complete_encoding(SatSolver &solver, AF &framework, ArrayBitSet 
 		{
 			add_rejected_clauses_per_attacker(solver, framework.num_args, argument, attackers[i], rejection_reason_clause);
 			add_defense_per_attacker(solver, framework.num_args, argument, attackers[i]);
+			add_selfattack_literal(solver, argument, attackers[i]);
 			add_completeness_clause_per_attacker(solver, framework.num_args, argument, attackers[i], completeness_clause);
 		}
 	}
