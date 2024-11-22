@@ -5,7 +5,7 @@
 
 static void check_rejection(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &is_rejected, bool &is_terminated,
 	list<uint32_t> &extension_build, list<uint32_t> &certificate_extension, IPrioHeuristic &heuristic,
-	PriorityStackManager &prio_queue, bool isMain)
+	PriorityStackManager &prio_queue, bool isMain, uint32_t index_begin_assumptions)
 {
 	if (tools::ToolsOMP::check_termination(is_terminated, true)) return;
 	ArrayBitSet reduct = extension_build.empty() ? active_args.copy() : Reduct::get_reduct_set(active_args, framework, extension_build);
@@ -71,7 +71,8 @@ static void check_rejection(uint32_t query_argument, AF &framework, ArrayBitSet 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static bool start_checking_rejection(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, list<uint32_t> &certificate_extension, uint16_t numCores)
+static bool start_checking_rejection(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, list<uint32_t> &certificate_extension, 
+	uint16_t numCores, uint32_t index_begin_assumptions)
 {
 	if (numCores > 0)
 	{
@@ -91,7 +92,7 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 		{
 			list<uint32_t> extension_build;
 			check_rejection(query_argument, framework, active_args, is_rejected, is_terminated, extension_build, certificate_extension,
-				*heuristic, prio_stack, true);
+				*heuristic, prio_stack, true, index_begin_assumptions);
 			tools::ToolsOMP::update_is_finished(is_terminated, is_finished, prio_stack);
 		}
 
@@ -110,7 +111,7 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 				}
 
 				check_rejection(query_argument, framework, active_args, is_rejected, is_terminated, extension, certificate_extension,
-					*heuristic, prio_stack, false);
+					*heuristic, prio_stack, false, index_begin_assumptions);
 				tools::ToolsOMP::update_is_finished(is_terminated, is_finished, prio_stack);
 			}
 			else {
@@ -129,6 +130,9 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 
 bool Solver_DS_PR::solve(uint32_t query_argument, AF &framework, list<uint32_t> &certificate_extension, uint16_t numCores)
 {
+	uint32_t num_args_10_perc = framework.num_args * 9 / 10;
+	uint32_t index_begin_assumptions = num_args_10_perc > 100 ? num_args_10_perc : 20;
+
 	ArrayBitSet initial_reduct = ArrayBitSet();
 	pre_proc_result result_preProcessor = PreProc_GR_parallel::process(framework, query_argument, true, true, initial_reduct, certificate_extension);
 
@@ -141,6 +145,6 @@ bool Solver_DS_PR::solve(uint32_t query_argument, AF &framework, list<uint32_t> 
 			return false;
 
 		default:
-			return !start_checking_rejection(query_argument, framework, initial_reduct, certificate_extension, numCores);
+			return !start_checking_rejection(query_argument, framework, initial_reduct, certificate_extension, numCores, index_begin_assumptions);
 	}
 }
