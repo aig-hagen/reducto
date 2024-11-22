@@ -60,23 +60,6 @@ static void add_rejected_clauses_per_attacker(SatSolver &solver, uint32_t argsSi
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static void add_conflict_free_per_attacker(SatSolver &solver, uint32_t argument, uint32_t attacker)
-{
-	if (argument != attacker)
-	{
-		solver.add_clause_short(
-			Encoding::get_literal_accepted(argument, true),
-			Encoding::get_literal_accepted(attacker, true));
-	}
-	else
-	{
-		solver.add_clause_short(Encoding::get_literal_accepted(argument, true), 0);
-	}
-}
-
-/*===========================================================================================================================================================*/
-/*===========================================================================================================================================================*/
-
 static void add_defense_per_attacker(SatSolver &solver, uint32_t argsSize, uint32_t argument, uint32_t attacker)
 {
 	if (argument == attacker)
@@ -114,7 +97,6 @@ static void add_admissible_encoding(SatSolver &solver, AF &framework, ArrayBitSe
 		if (activeArgs._bitset[attackers[i]])
 		{
 			add_rejected_clauses_per_attacker(solver, framework.num_args, argument, attackers[i], rejection_reason_clause);
-			add_conflict_free_per_attacker(solver, argument, attackers[i]);
 			add_defense_per_attacker(solver, framework.num_args, argument, attackers[i]);
 		}
 	}
@@ -138,7 +120,6 @@ static void add_complete_encoding(SatSolver &solver, AF &framework, ArrayBitSet 
 		if (activeArgs._bitset[attackers[i]])
 		{
 			add_rejected_clauses_per_attacker(solver, framework.num_args, argument, attackers[i], rejection_reason_clause);
-			add_conflict_free_per_attacker(solver, argument, attackers[i]);
 			add_defense_per_attacker(solver, framework.num_args, argument, attackers[i]);
 			add_completeness_clause_per_attacker(solver, framework.num_args, argument, attackers[i], completeness_clause);
 		}
