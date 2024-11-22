@@ -38,8 +38,7 @@ static ArrayBitSet calculate_cone_influence(AF &framework, uint32_t query) {
 /*===========================================================================================================================================================*/
 
 
-pre_proc_result PreProc_GR::reduce_by_grounded(AF &framework, ArrayBitSet &active_args, uint32_t query, bool break_accepted, bool break_rejected,
-	ArrayBitSet &out_reduct, list<uint32_t> &out_gr_extension)
+static pre_proc_result reduce_by_grounded(AF &framework, ArrayBitSet &active_args, uint32_t query, bool break_accepted, bool break_rejected, ArrayBitSet &out_reduct, list<uint32_t> &out_gr_extension)
 {
 	pre_proc_result result = pre_proc_result::unknown;
 	// fill list with unattacked arguments
