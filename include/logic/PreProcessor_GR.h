@@ -26,6 +26,22 @@ extern "C" {
 /// </summary>
 class PreProc_GR {
 public:
+
+	/// <summary>
+	/// This method reduces a specified framework by its grounded extension.
+	/// </summary>
+	/// <param name="framework">The original abstract argumentation framework of the situation.</param>
+	/// <param name="active_args">The active arguments in the current state of the framework.</param>
+	/// <param name="query">The query argument, whose acceptance is to check.</param>
+	/// <param name="break_accepted"> If TRUE, the preprocessing will abort the process, in case the grounded extension contains the query argument.
+	/// <param name="break_rejected"> If TRUE, the preprocessing will abort the process, in case the grounded extension attacks the query argument.
+	/// <param name="out_reduct">[Output-Parameter]The set of active arguments, which remain of the original framework after the preprocessor if finished.
+	/// Keep in mind, that the value of this parameter will be overwritten during this method, as it's an output-parameter.</param>
+	/// <param name"out_gr_extension">[Output-Parameter] The calculated grounded extension of the framework.</param>
+	/// <returns>Returns an Enum indicating if the method has solved the problem, and if so to which conclusion it came.</returns>
+	static pre_proc_result reduce_by_grounded(AF &framework, ArrayBitSet &active_args, uint32_t query, bool break_accepted, bool break_rejected,
+		ArrayBitSet &out_reduct, list<uint32_t> &out_gr_extension);
+
 	/// <summary>
 	/// This method prepares the data before it being processed by the solver and checks if a solution can be easily drawn
 	/// by the help of some properties.
