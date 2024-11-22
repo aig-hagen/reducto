@@ -82,15 +82,21 @@ static ArrayBitSet calculate_cone_influence(AF &framework, uint32_t query) {
 					active_args_bitset_private[attacker] = true;
 
 					if (i == 0) {
-						omp_set_lock(lock_resources);
+							omp_set_lock(lock_resources);
 #pragma omp flush
-						ls_args_unprocessed_shared.push_back(attacker);
-						distance_args_shared[attacker] = distance_args_private[attacker];
-						active_args_vector_shared.push_back(attacker);
-						active_args_bitset_shared[attacker] = true;
+							if (distance_args_shared[attacker] == 0 && attacker != query) {
+								ls_args_unprocessed_shared.push_back(attacker);
+								distance_args_shared[attacker] = distance_args_private[attacker];
+								active_args_vector_shared.push_back(attacker);
+								active_args_bitset_shared[attacker] = true;
 #pragma omp flush
-						omp_unset_lock(lock_resources);
-						omp_unset_lock(lock_has_entry);
+								omp_unset_lock(lock_has_entry);
+							}
+							else {
+								ls_args_unprocessed_private.push_back(attacker);
+							}
+
+							omp_unset_lock(lock_resources);
 					}
 					else {
 						ls_args_unprocessed_private.push_back(attacker);
@@ -105,7 +111,7 @@ static ArrayBitSet calculate_cone_influence(AF &framework, uint32_t query) {
 #pragma omp flush
 		for (int i = 0; i < active_args_vector_private.size(); i++) {
 			uint32_t argument = active_args_vector_private[i];
-			if (distance_args_shared[argument] == 0) {
+			if (distance_args_shared[argument] == 0 && argument != query) {
 				//argument is new
 				active_args_vector_shared.push_back(argument);
 				active_args_bitset_shared[argument] = true;
