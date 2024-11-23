@@ -34,7 +34,7 @@ public:
 	/// <param name="framework">The abstract argumentation framework, specifying the underlying attack relations between the arguments.</param>
 	/// <param name="proof_extension"> Calculated preferred extension.</param>
 	/// <returns>TRUE iff the argument is credulously accepted. FALSE otherwise.</returns>
-	static bool solve(AF &framework, list<uint32_t> &proof_extension);
+	static bool solve(AF &framework, list<uint32_t> &proof_extension, uint16_t numCores);
 };
 
 #endif

@@ -33,10 +33,9 @@ public:
 	/// </summary>
 	/// <param name="framework">The abstract argumentation framework, specifying the underlying attack relations between the arguments.</param>
 	/// <param name="proof_extension"> Calculated stable extension.</param>
+	/// <param name="numCores"> Number of cores requested to be used to solve the problem. Actual number can be lower depending on the OS scheduler.</param>
 	/// <returns>TRUE iff the argument is credulously accepted. FALSE otherwise.</returns>
-	static bool solve(AF &framework, list<uint32_t> &proof_extension);
+	static bool solve(AF &framework, list<uint32_t> &proof_extension, uint16_t numCores);
 };
 
 #endif
-
-static void UpdateProof(SatSolver *solver, ArrayBitSet &active_args, std::__cxx11::list<uint32_t> &proof_extension);
