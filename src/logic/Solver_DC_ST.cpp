@@ -31,7 +31,6 @@ bool Solver_DC_ST::solve(uint32_t query_argument, AF &framework, list<uint32_t> 
 	else {
 		result_preProcessor = PreProc_GR_parallel::process_only_grounded(framework, query_argument, false, true, initial_reduct, proof_extension);
 	}
-	
 
 	switch (result_preProcessor) {
 
@@ -39,6 +38,11 @@ bool Solver_DC_ST::solve(uint32_t query_argument, AF &framework, list<uint32_t> 
 		return false;
 
 	default:
+		if (initial_reduct._array.size() == 0) {
+			//calculated grounded extension is the stable extension
+			return true;
+		}
+
 		return start_checking(query_argument, framework, initial_reduct, proof_extension);
 	}
 }
