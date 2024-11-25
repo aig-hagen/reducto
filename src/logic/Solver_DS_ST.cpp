@@ -39,6 +39,14 @@ bool Solver_DS_ST::solve(uint32_t query_argument, AF &framework, list<uint32_t> 
 	case accepted:
 		return true;
 
+	case rejected:
+		if (initial_reduct._array.size() == 0) {
+			//calculated grounded extension is the stable extension
+			return false;
+		}
+
+		return !Tools_Solver::check_existance_stable_extension(framework, initial_reduct, proof_extension);
+
 	default:
 		return start_checking(query_argument, framework, initial_reduct, proof_extension);
 	}

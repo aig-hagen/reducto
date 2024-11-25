@@ -7,7 +7,9 @@
 #include "omp.h"
 
 #include "../util/ArrayBitSet.h"
+#include "AF.h"
 #include "Decoding.h"
+#include "Encoding.h"
 #include "SatSolver.h"
 #include "SatSolver_cadical.h"
 
@@ -31,6 +33,15 @@ public:
 	static void UpdateCertificate(SatSolver *solver, ArrayBitSet &active_args, std::__cxx11::list<uint32_t> &certificate_extension);
 
 	static void UpdateCertificate(std::__cxx11::list<uint32_t> &certificate_extension, std::__cxx11::list<uint32_t> &set_to_extend_with);
+
+	/// <summary>
+	/// Checks if there exists a stable extension in the specified framework in the specified state.
+	/// </summary>
+	/// <param name="framework">The abstract argumentation framework, specifying the underlying attack relations between the arguments.</param>
+	/// <param name="active_args">The arguments that are active in the current state of the framework.</param>
+	/// <param name="proof_extension"> Extension proving, that the argument cannot be sceptically accepted.</param>
+	/// <returns>TRUE iff a stable extension exists. FALSE otherwise.</returns>
+	static bool check_existance_stable_extension(AF &framework, ArrayBitSet &active_args, list<uint32_t> &proof_extension);
 };
 
 #endif
