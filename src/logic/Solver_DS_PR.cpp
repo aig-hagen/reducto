@@ -29,9 +29,9 @@ static void check_rejection(uint32_t query_argument, AF &framework, ArrayBitSet 
 	bool continue_calculation = false;
 	list<uint32_t> calculated_set = Proc_DS_PR::calculate_rejecting_set(query_argument, framework, reduct, is_rejected, is_terminated,
 		*solver, continue_calculation, true);
-	if (is_rejected) Tools_Solver::UpdateCertificate(certificate_extension, calculated_set);
+	list<uint32_t> new_extension = tools::ToolList::extend_list(extension_build, calculated_set);
+	if (is_rejected) Tools_Solver::UpdateCertificate(certificate_extension, new_extension);
 	if (!tools::ToolsOMP::check_termination(is_terminated, continue_calculation)) {
-		list<uint32_t> new_extension = tools::ToolList::extend_list(extension_build, calculated_set);
 		prio_queue.try_insert_extension(query_argument, framework, &heuristic, new_extension, calculated_set);
 		new_extension.clear();
 
@@ -40,11 +40,12 @@ static void check_rejection(uint32_t query_argument, AF &framework, ArrayBitSet 
 			Encoding::add_complement_clause(*solver, reduct);
 			calculated_set = Proc_DS_PR::calculate_rejecting_set(query_argument, framework, reduct, is_rejected, is_terminated,
 				*solver, continue_calculation, false);
-			if (is_rejected) Tools_Solver::UpdateCertificate(certificate_extension, calculated_set);
+			list<uint32_t> new_extension_2 = tools::ToolList::extend_list(extension_build, calculated_set);
+			if (is_rejected) Tools_Solver::UpdateCertificate(certificate_extension, new_extension_2);
 			if (tools::ToolsOMP::check_termination(is_terminated, continue_calculation)) break;
-			list<uint32_t> new_extension = tools::ToolList::extend_list(extension_build, calculated_set);
-			prio_queue.try_insert_extension(query_argument, framework, &heuristic, new_extension, calculated_set);
-			new_extension.clear();
+			
+			prio_queue.try_insert_extension(query_argument, framework, &heuristic, new_extension_2, calculated_set);
+			new_extension_2.clear();
 			
 		} while (!tools::ToolsOMP::check_termination(is_terminated, continue_calculation));
 	}
