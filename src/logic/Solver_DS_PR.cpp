@@ -153,12 +153,8 @@ bool Solver_DS_PR::solve(uint32_t query_argument, AF &framework, list<uint32_t> 
 {
 	ArrayBitSet initial_reduct = ArrayBitSet();
 	pre_proc_result result_preProcessor;
-	if (numCores == 1) {
-		result_preProcessor = PreProc_GR::process(framework, query_argument, true, true, initial_reduct, certificate_extension);
-	}
-	else {
-		result_preProcessor = PreProc_GR_parallel::process(framework, query_argument, true, true, initial_reduct, certificate_extension);
-	}
+	result_preProcessor = PreProc_GR::process(framework, query_argument, true, true, initial_reduct, certificate_extension);
+	
 	
 
 	switch (result_preProcessor){
