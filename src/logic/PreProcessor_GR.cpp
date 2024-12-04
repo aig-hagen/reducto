@@ -78,7 +78,8 @@ static ArrayBitSet calculate_cone_influence(AF &framework, ArrayBitSet reduct, u
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static pre_proc_result reduce_by_grounded(AF &framework, ArrayBitSet &active_args, uint32_t query, bool break_accepted, bool break_rejected, ArrayBitSet &out_reduct, list<uint32_t> &out_gr_extension)
+pre_proc_result PreProc_GR::reduce_by_grounded(AF &framework, ArrayBitSet &active_args, uint32_t query, bool break_accepted, bool break_rejected, 
+	ArrayBitSet &out_reduct, list<uint32_t> &out_gr_extension)
 {
 	pre_proc_result result = pre_proc_result::unknown;
 	// fill list with unattacked arguments
@@ -218,14 +219,4 @@ pre_proc_result PreProc_GR::process_only_grounded(AF &framework, uint32_t query,
 
 	//reduce by grounded extension
 	return reduce_by_grounded(framework, active_args, query, break_acception, break_rejection, out_reduct, out_gr_extension);
-}
-
-/*===========================================================================================================================================================*/
-/*===========================================================================================================================================================*/
-
-pre_proc_result PreProc_DS_PR::process_reduct(AF &framework, ArrayBitSet &reduct, uint32_t query, ArrayBitSet &out_reduct)
-{
-	ArrayBitSet active_args = calculate_cone_influence(framework, reduct, query);
-
-	return reduce_by_grounded(framework, active_args, query, out_reduct);
 }

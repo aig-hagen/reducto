@@ -75,7 +75,8 @@ static void check_rejection(uint32_t query_argument, AF &framework, ArrayBitSet 
 
 		//Preprocess created reduct
 		ArrayBitSet preprocessed_reduct = ArrayBitSet();
-		pre_proc_result result_preProcessor = PreProc_GR::process_reduct(framework, reduct, query_argument, preprocessed_reduct);
+		pre_proc_result result_preProcessor = PreProc_GR::reduce_by_grounded(framework, reduct, query_argument, true, false, 
+			preprocessed_reduct, extension_build);
 		switch (result_preProcessor) {
 		case accepted:
 			break;
@@ -157,10 +158,8 @@ bool Solver_DS_PR::solve(uint32_t query_argument, AF &framework, list<uint32_t> 
 {
 	ArrayBitSet initial_reduct = ArrayBitSet();
 	pre_proc_result result_preProcessor;
-	result_preProcessor = PreProc_GR::process(framework, query_argument, true, true, initial_reduct, certificate_extension);
+	result_preProcessor = PreProc_GR::process(framework, query_argument, true, false, initial_reduct, certificate_extension);
 	
-	
-
 	switch (result_preProcessor){
 
 		case accepted:
