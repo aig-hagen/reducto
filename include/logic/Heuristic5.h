@@ -11,13 +11,14 @@
 using namespace std;
 
 /// <summary>
-/// This class is responsible for prioritizing extensions, based on the minimal distance of one of its members to the query argument.
+/// This class is responsible for prioritizing extensions, based on the number of arguments which are attacked by the extension 
+/// and the existance of defenders of the query argument in the extension.
 /// </summary>
 class Heuristic5 : public IPrioHeuristic
 {
 public:
 	/// <summary>
-	/// This method calculates the priority of a specified extension, based on the minimal distance of one of its members to the query argument.
+	/// This method calculates the priority of a specified extension, based on the number of arguments which are attacked by the extension.
 	/// This heuristics punishes arguments with a an even distance to the query, since potential attackers need to have an odd distance to the query.
 	/// </summary>
 	/// <param name="framework">The original abstract argumentation framework.</param>
