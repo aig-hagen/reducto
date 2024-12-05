@@ -65,12 +65,11 @@ static void search_adm_set_per_coi(AF &framework, ArrayBitSet &active_args, uint
 	//create list of all active arguments
 	std::list<uint32_t> list_args_to_start_coi;
 	tools::ToolList::copy_in_list(list_args_to_start_coi, active_args._array);
+	list_args_to_start_coi.remove(query_argument);
 	
 	while (!list_args_to_start_coi.empty() && !tools::ToolsOMP::check_termination(is_terminated)) {
 		//pop first argument in list and calculate COI of argument
-		uint32_t argument;
-		std::list<uint32_t>::iterator it = list_args_to_start_coi.begin();
-		argument = *it == query_argument ? *(std::next(it)) : *it;
+		uint32_t argument = list_args_to_start_coi.front();
 		//calculate COI of argument and remove all arguments in COI from list
 		ArrayBitSet reduct = PreProc_GR::calculate_cone_influence(framework, active_args, argument, list_args_to_start_coi);
 

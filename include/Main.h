@@ -60,7 +60,7 @@ constexpr auto VERSIONNUMBER = "1.51";
 /// is free to choose the /// number of cores automatically without any 
 /// restrictions.
 /// </summary>
-constexpr auto NUM_CORES = 0;
+constexpr auto NUM_CORES = 1;
 
 /// <summary>
 /// Flags used for internal processing.
@@ -93,9 +93,5 @@ const struct option longopts[] =
 /// <param name="argv">Array of strings, containing the different starting arguments of this progam.</param>
 /// <returns>0 iff the program exited without error. 1 otherwise.</returns>
 int main(int argc, char **argv);
-
-int CheckQuery(std::string &query, char **argv, bool &retFlag);
-
-void print_proof(std::__cxx11::list<uint32_t> &proof_extension);
 
 #endif

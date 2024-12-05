@@ -45,7 +45,7 @@ void static print_problems()
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-void print_proof(std::__cxx11::list<uint32_t> &proof_extension)
+void static print_proof(std::__cxx11::list<uint32_t> &proof_extension)
 {
 	cout << "w ";
 
@@ -61,7 +61,7 @@ void print_proof(std::__cxx11::list<uint32_t> &proof_extension)
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-bool CheckQuery(std::string &query, char **argv)
+bool static check_query(std::string &query, char **argv)
 {
 	if (query.empty()) {
 		cerr << argv[0] << ": Query argument must be specified via -a flag\n";
@@ -73,7 +73,7 @@ bool CheckQuery(std::string &query, char **argv)
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-int execute(int argc, char **argv)
+int static execute(int argc, char **argv)
 {
 	if (argc == 1) {
 		print_version();
@@ -154,7 +154,7 @@ int execute(int argc, char **argv)
 	switch (Enums::string_to_task(task)) {
 		case DS:
 		{
-			if (!CheckQuery(query, argv)) {
+			if (!check_query(query, argv)) {
 				return 1;
 			}			
 
@@ -187,7 +187,7 @@ int execute(int argc, char **argv)
 
 		case DC:
 		{
-			if (!CheckQuery(query, argv)) {
+			if (!check_query(query, argv)) {
 				return 1;
 			}
 
