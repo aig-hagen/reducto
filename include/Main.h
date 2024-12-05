@@ -60,7 +60,7 @@ constexpr auto VERSIONNUMBER = "1.51";
 /// is free to choose the /// number of cores automatically without any 
 /// restrictions.
 /// </summary>
-constexpr auto NUM_CORES = 1;
+constexpr auto NUM_CORES = 0;
 
 /// <summary>
 /// Flags used for internal processing.
