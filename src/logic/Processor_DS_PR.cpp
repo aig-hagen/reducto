@@ -37,9 +37,9 @@ list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &
 
 list<uint32_t> Proc_DS_PR::calculate_rejecting_set_in_random_coi(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, 
 	bool &is_rejected, bool &is_terminated,
-	SatSolver &solver, bool &has_found_solution_without_query) {
-	has_found_solution_without_query = solver.solve(Encoding::get_literal_accepted(query_argument, true));
-	if (!has_found_solution_without_query) {
+	SatSolver &solver, bool &has_found_adm_set) {
+	has_found_adm_set = solver.solve();
+	if (!has_found_adm_set) {
 		return list<uint32_t>();
 	}
 

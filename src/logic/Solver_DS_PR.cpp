@@ -188,12 +188,11 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 		{
 			generate_starting_points(query_argument, framework, active_args, is_rejected, is_terminated, certificate_extension,
 				*heuristic, prio_stack);
-			tools::ToolsOMP::update_is_finished(is_terminated, is_finished, prio_stack);
 			if (!tools::ToolsOMP::check_finished(is_finished, prio_stack)) {
 				search_for_rejecting_sets_in_origin_state(framework, active_args, query_argument, is_rejected, is_terminated, certificate_extension, 
 					prio_stack, heuristic, is_finished);
-				tools::ToolsOMP::update_is_finished(is_terminated, is_finished, prio_stack);
 			}
+			tools::ToolsOMP::update_is_finished(is_terminated, is_finished, prio_stack);
 		}
 
 		while (true) {
