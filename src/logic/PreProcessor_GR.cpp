@@ -3,7 +3,7 @@
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static ArrayBitSet calculate_cone_influence(AF &framework, uint32_t query) {
+ArrayBitSet PreProc_GR::calculate_cone_influence(AF &framework, uint32_t query) {
 	vector<uint32_t> active_args_vector;
 	vector<uint8_t> active_args_bitset(framework.num_args + 1, 0);
 
@@ -40,7 +40,7 @@ static ArrayBitSet calculate_cone_influence(AF &framework, uint32_t query) {
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static ArrayBitSet calculate_cone_influence(AF &framework, ArrayBitSet reduct, uint32_t query) {
+ArrayBitSet PreProc_GR::calculate_cone_influence(AF &framework, ArrayBitSet reduct, uint32_t query, std::list<uint32_t> &list_remaining_args) {
 	vector<uint32_t> active_args_vector;
 	vector<uint8_t> active_args_bitset(framework.num_args + 1, 0);
 
@@ -49,6 +49,7 @@ static ArrayBitSet calculate_cone_influence(AF &framework, ArrayBitSet reduct, u
 	framework.distance_to_query[query] = 0;
 	active_args_vector.push_back(query);
 	active_args_bitset[query] = true;
+	list_remaining_args.remove(query);
 
 	for (list<uint32_t>::iterator mIter = ls_args_unprocessed.begin(); mIter != ls_args_unprocessed.end(); ++mIter) {
 		const auto &argument = *mIter;
@@ -66,6 +67,7 @@ static ArrayBitSet calculate_cone_influence(AF &framework, ArrayBitSet reduct, u
 
 			active_args_vector.push_back(attacker);
 			active_args_bitset[attacker] = true;
+			list_remaining_args.remove(attacker);
 
 			ls_args_unprocessed.push_back(attacker);
 		}

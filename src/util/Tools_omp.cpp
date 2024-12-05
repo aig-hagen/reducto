@@ -16,13 +16,13 @@ bool tools::ToolsOMP::check_finished(bool &is_finished, PriorityStackManager &pr
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-bool tools::ToolsOMP::check_termination(bool &is_terminated, bool continue_calculation)
+bool tools::ToolsOMP::check_termination(bool &is_terminated)
 {
 	bool is_terminated_tmp;
 #pragma omp flush(is_terminated)
 #pragma omp atomic read
 	is_terminated_tmp = is_terminated;
-	return is_terminated_tmp || !continue_calculation;
+	return is_terminated_tmp ;
 }
 
 /*===========================================================================================================================================================*/
@@ -30,7 +30,7 @@ bool tools::ToolsOMP::check_termination(bool &is_terminated, bool continue_calcu
 
 void tools::ToolsOMP::update_is_finished(bool &is_terminated, bool &is_finished, PriorityStackManager &prio_stack)
 {
-	bool is_finished_tmp = prio_stack.check_number_unprocessed_elements() == 0 || check_termination(is_terminated, true);
+	bool is_finished_tmp = prio_stack.check_number_unprocessed_elements() == 0 || check_termination(is_terminated);
 #pragma omp atomic write
 	is_finished = is_finished_tmp;
 #pragma omp flush(is_finished)

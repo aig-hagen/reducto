@@ -26,6 +26,10 @@ extern "C" {
 /// </summary>
 class PreProc_GR {
 public:
+
+	static ArrayBitSet calculate_cone_influence(AF &framework, uint32_t query);
+	static ArrayBitSet calculate_cone_influence(AF &framework, ArrayBitSet reduct, uint32_t query, std::list<uint32_t> &list_remaining_args);
+
 	/// <summary>
 	/// This method prepares the data before it being processed by the solver and checks if a solution can be easily drawn
 	/// by the help of some properties.

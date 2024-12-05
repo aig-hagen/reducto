@@ -61,4 +61,10 @@ public:
 
 #endif
 
-static void UpdateCertificate(std::__cxx11::list<uint32_t> &output_extension, std::__cxx11::list<uint32_t> &new_extension);
+static void process_sat_solution(bool has_found_set, std::__cxx11::list<uint32_t> &extension_build, std::__cxx11::list<uint32_t> &calculated_set, bool &is_rejected, std::__cxx11::list<uint32_t> &certificate_extension, PriorityStackManager &prio_queue, uint32_t query_argument, AF &framework, IPrioHeuristic &heuristic);
+
+static void process_state(pre_proc_result result_preProcessor, bool &is_rejected, bool &is_terminated, std::__cxx11::list<uint32_t> &certificate_extension, std::__cxx11::list<uint32_t> &extension_build, AF &framework, ArrayBitSet &reduct, uint32_t query_argument, PriorityStackManager &prio_queue, IPrioHeuristic &heuristic);
+
+static void search_for_rejecting_sets_in_reduct(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &is_rejected, bool &is_terminated, std::__cxx11::list<uint32_t> &extension, std::__cxx11::list<uint32_t> &certificate_extension, IPrioHeuristic *heuristic, PriorityStackManager &prio_stack);
+
+static void search_for_rejecting_sets_in_origin_state(AF &framework, ArrayBitSet &active_args, uint32_t query_argument, bool &is_rejected, bool &is_terminated, std::__cxx11::list<uint32_t> &certificate_extension, PriorityStackManager &prio_stack, IPrioHeuristic *heuristic, bool &is_finished);

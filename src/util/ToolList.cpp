@@ -8,3 +8,11 @@ std::list<uint32_t> tools::ToolList::extend_list(std::list<uint32_t> &listA, std
 	tmpCopy_1.merge(tmpCopy_2);
 	return tmpCopy_1;
 }
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
+void tools::ToolList::copy_in_list(std::list<uint32_t> &list_dest, std::vector<uint32_t> vector_source) {
+	std::list<uint32_t>::iterator it = list_dest.begin();
+	list_dest.insert(it, vector_source.begin(), vector_source.end());
+}

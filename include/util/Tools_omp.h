@@ -15,7 +15,7 @@ namespace tools {
 	public:
 		static bool check_finished(bool &is_finished, PriorityStackManager &prio_stack);
 
-		static bool check_termination(bool &is_terminated, bool continue_calculation);
+		static bool check_termination(bool &is_terminated);
 
 		static void update_is_finished(bool &is_terminated, bool &is_finished, PriorityStackManager &prio_stack);
 
