@@ -91,6 +91,12 @@ list<uint32_t> PriorityStackManager::pop_prio_extension() {
 
 bool PriorityStackManager::try_insert_extension(uint32_t query_argument, AF &framework, IPrioHeuristic *heuristic,
 	list<uint32_t> &extension, list<uint32_t> &initial_set) {
+	if (extension.empty()) {
+		/*cout << " ERROR tried to put empty extension on stack" << endl;
+		throw new exception;*/
+		return false;
+	}
+
 	ExtensionPrioritised newEntryQueue_dummy = ExtensionPrioritised(framework, query_argument, extension, initial_set, *heuristic, 0);
 	if (prio_stack.find(newEntryQueue_dummy) == prio_stack.end()) {
 		omp_set_lock(lock_stack);

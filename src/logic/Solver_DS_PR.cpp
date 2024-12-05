@@ -20,7 +20,8 @@ void process_sat_solution(bool has_found_set, std::__cxx11::list<uint32_t> &exte
 		else {
 			prio_queue.try_insert_extension(query_argument, framework, &heuristic, new_extension, calculated_set);
 		}
-		new_extension.clear();
+
+		//do not clear extension, since it is used as attribute of the object of class prio_stack_entry
 	}
 }
 
@@ -157,6 +158,7 @@ void search_for_rejecting_sets_in_reduct(uint32_t query_argument, AF &framework,
 	std::__cxx11::list<uint32_t> &extension, std::__cxx11::list<uint32_t> &certificate_extension, IPrioHeuristic *heuristic, PriorityStackManager &prio_stack)
 {
 	if (tools::ToolsOMP::check_termination(is_terminated)) return;
+	if (extension.empty()) return;
 	ArrayBitSet preprocessed_reduct;
 	pre_proc_result res_preproc_reduct = preprocess_state(query_argument, framework, active_args, is_rejected, is_terminated, extension,
 		certificate_extension, *heuristic, prio_stack, preprocessed_reduct);
