@@ -18,11 +18,11 @@ public:
 	/// <summary>
 	/// List for all arguments (in the cone of influence of the query argument) and their distance to the argument of the query.
 	/// </summary>
-	vector<uint32_t> distance_to_query;
+	vector<uint32_t> Distance_to_query;
 	/// <summary>
 	/// The maximum distance of an argument within the cone of influence of the query argument, to the query argument
 	/// </summary>
-	uint32_t max_distance;
+	uint32_t Max_distance;
 
 
 	ConeOfInfluence(AF &framework);
@@ -35,11 +35,11 @@ class ArgumentDistancePair {
 public:
 	bool operator == (ArgumentDistancePair const &other)
 	{
-		return (other.argument == argument);
+		return (other.Argument == Argument);
 	};
 
-	uint32_t argument;
-	uint32_t distance_to_query;
+	uint32_t Argument;
+	uint32_t Distance_to_query;
 
 	ArgumentDistancePair(uint32_t argument, ConeOfInfluence coi);
 
@@ -48,6 +48,6 @@ public:
 
 inline bool operator == (ArgumentDistancePair const &lhs, ArgumentDistancePair const &rhs)
 {
-	return (lhs.argument == rhs.argument);
+	return (lhs.Argument == rhs.Argument);
 };
 #endif

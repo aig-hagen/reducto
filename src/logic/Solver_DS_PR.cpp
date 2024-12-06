@@ -61,11 +61,11 @@ static void search_complete_sets_in_state(AF &framework, ArrayBitSet &reduct, ui
 
 static list<ArgumentDistancePair> create_candidates_coi(ArrayBitSet &active_args, uint32_t query_argument, ConeOfInfluence &coi) {
 	list<ArgumentDistancePair> output_list_candidates;
-	uint32_t limit_distance = coi.max_distance / 2;
+	uint32_t limit_distance = coi.Max_distance / 2;
 
 	for (int i = 0; i < active_args._array.size(); i++) {
 		uint32_t argument = active_args._array[i];
-		if (argument == query_argument || coi.distance_to_query[argument] > limit_distance) continue;
+		if (argument == query_argument || coi.Distance_to_query[argument] > limit_distance) continue;
 
 		output_list_candidates.push_back(ArgumentDistancePair(argument, coi));
 	}
@@ -86,7 +86,7 @@ static void search_adm_set_per_coi(AF &framework, ArrayBitSet &active_args, uint
 
 	while (!list_candidates_to_start_coi.empty() && !tools::ToolsOMP::check_termination(is_terminated)) {
 		//pop first argument in list and calculate COI of argument
-		uint32_t argument = list_candidates_to_start_coi.front().argument;
+		uint32_t argument = list_candidates_to_start_coi.front().Argument;
 		//calculate COI of argument and remove all arguments in COI from list
 		ArrayBitSet reduct = PreProc_GR::calculate_cone_influence_reduct(framework, active_args, argument, list_candidates_to_start_coi, coi);
 

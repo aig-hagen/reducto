@@ -9,25 +9,25 @@ ArrayBitSet PreProc_GR::calculate_cone_influence(AF &framework, uint32_t query, 
 
 	list<uint32_t> ls_args_unprocessed;
 	ls_args_unprocessed.push_back(query);
-	out_coi.distance_to_query[query] = 0;
-	out_coi.max_distance = 0;
+	out_coi.Distance_to_query[query] = 0;
+	out_coi.Max_distance = 0;
 	active_args_vector.push_back(query);
 	active_args_bitset[query] = true;
 
 	for (list<uint32_t>::iterator mIter = ls_args_unprocessed.begin(); mIter != ls_args_unprocessed.end(); ++mIter) {
 		const auto &argument = *mIter;
-		uint32_t distance = out_coi.distance_to_query[argument];
+		uint32_t distance = out_coi.Distance_to_query[argument];
 		for (int i = 0; i < framework.attackers[argument].size(); i++) {
 			uint32_t attacker = framework.attackers[argument][i];
-			if (out_coi.distance_to_query[attacker] > 0 || attacker == query) {
+			if (out_coi.Distance_to_query[attacker] > 0 || attacker == query) {
 				//attacker was already visited
 				continue;
 			}
 
 			//increase distance to query for attacker
 			uint32_t distance_attacker = distance + 1;
-			out_coi.distance_to_query[attacker] = distance_attacker;
-			if (distance_attacker > out_coi.max_distance) out_coi.max_distance = distance_attacker;
+			out_coi.Distance_to_query[attacker] = distance_attacker;
+			if (distance_attacker > out_coi.Max_distance) out_coi.Max_distance = distance_attacker;
 
 			active_args_vector.push_back(attacker);
 			active_args_bitset[attacker] = true;

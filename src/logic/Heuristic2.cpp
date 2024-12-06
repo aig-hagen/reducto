@@ -7,10 +7,10 @@ uint32_t Heuristic2::calculate_priority(AF &framework, list<uint32_t> &extension
 		cout << "calculate_priority:: initial set must not be empty" << endl;
 		throw new invalid_argument("initial set must not be empty");
 	}
-	uint32_t prio = coi.distance_to_query[*initialSet.begin()];
+	uint32_t prio = coi.Distance_to_query[*initialSet.begin()];
 
 	for (list<uint32_t>::iterator mIter = std::next(initialSet.begin()); mIter != initialSet.end(); ++mIter) {
-		uint32_t newPrio = coi.distance_to_query[*mIter];
+		uint32_t newPrio = coi.Distance_to_query[*mIter];
 
 		if (newPrio < prio) {
 			prio = newPrio;

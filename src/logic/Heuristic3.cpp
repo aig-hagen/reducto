@@ -14,11 +14,11 @@ uint32_t Heuristic3::calculate_priority(AF &framework, list<uint32_t> &extension
 		cout << "calculate_priority:: initial set must not be empty" << endl;
 		throw new invalid_argument("initial set must not be empty");
 	}
-	uint32_t dist = coi.distance_to_query[*initialSet.begin()];
+	uint32_t dist = coi.Distance_to_query[*initialSet.begin()];
 	uint32_t prio = calculate_punished_priority(dist, punishment_factor);
 
 	for (list<uint32_t>::iterator mIter = std::next(initialSet.begin()); mIter != initialSet.end(); ++mIter) {
-		dist = coi.distance_to_query[*mIter];
+		dist = coi.Distance_to_query[*mIter];
 		uint32_t newPrio = calculate_punished_priority(dist, punishment_factor);
 
 		if (newPrio < prio) {

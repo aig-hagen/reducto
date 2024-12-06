@@ -4,7 +4,7 @@
 
 static bool check_contains_potential_defender(AF &framework, list<uint32_t> &initialSet, ConeOfInfluence &coi) {
 	for (list<uint32_t>::iterator mIter = initialSet.begin(); mIter != initialSet.end(); ++mIter) {
-		uint32_t dist = coi.distance_to_query[*mIter];
+		uint32_t dist = coi.Distance_to_query[*mIter];
 		
 		if (dist % 2 == 0) {
 			return true;
