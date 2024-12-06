@@ -30,6 +30,17 @@ void process_sat_solution(bool has_found_set, std::__cxx11::list<uint32_t> &exte
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
+void process_sat_solution(bool has_found_solution, bool &is_rejected, std::__cxx11::list<uint32_t> &extension_build, std::__cxx11::list<uint32_t> &calculated_set, std::__cxx11::list<uint32_t> &certificate_extension)
+{
+	if (has_found_solution && is_rejected) {
+		list<uint32_t> new_extension = tools::ToolList::extend_list(extension_build, calculated_set);
+		Tools_Solver::UpdateCertificate(certificate_extension, new_extension);
+	}
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
 static void search_complete_sets_in_state(AF &framework, ArrayBitSet &reduct, uint32_t query_argument, bool &is_rejected, bool &is_terminated,
 	std::__cxx11::list<uint32_t> &extension_build, std::__cxx11::list<uint32_t> &certificate_extension, PriorityStackManager &prio_queue,
 	IPrioHeuristic &heuristic, ConeOfInfluence &coi)
@@ -52,6 +63,32 @@ static void search_complete_sets_in_state(AF &framework, ArrayBitSet &reduct, ui
 			*solver, continue_calculation, false);
 		process_sat_solution(continue_calculation, extension_build, calculated_set, is_rejected, certificate_extension,
 			prio_queue, query_argument, framework, heuristic, coi);
+	}
+	delete solver;
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
+static void search_adm_sets_in_state(AF &framework, ArrayBitSet &reduct, uint32_t query_argument, bool &is_rejected, bool &is_terminated,
+	std::__cxx11::list<uint32_t> &extension_build, std::__cxx11::list<uint32_t> &certificate_extension)
+{
+	//calculate set in state
+	uint64_t numVars = reduct._array.size();
+	SatSolver *solver = NULL;
+	solver = new SatSolver_cadical(numVars);
+	Encoding::add_clauses_nonempty_admissible_set(*solver, framework, reduct);
+	bool has_found_solution = false;
+	list<uint32_t> calculated_set = Proc_DS_PR::calculate_rejecting_set(query_argument, framework, reduct, is_rejected, is_terminated,
+		*solver, has_found_solution, true);
+	process_sat_solution(has_found_solution, is_rejected, extension_build, calculated_set, certificate_extension);
+
+	while (!check_termination_condition(is_terminated, has_found_solution)) {
+		//iterate through additional sets in state
+		Encoding::add_complement_clause(*solver, reduct);
+		calculated_set = Proc_DS_PR::calculate_rejecting_set(query_argument, framework, reduct, is_rejected, is_terminated,
+			*solver, has_found_solution, false);
+		process_sat_solution(has_found_solution, is_rejected, extension_build, calculated_set, certificate_extension);
 	}
 	delete solver;
 }
@@ -171,6 +208,17 @@ void search_for_rejecting_sets_in_origin_state(AF &framework, ArrayBitSet &activ
 	search_complete_sets_in_state(framework, active_args, query_argument, is_rejected, is_terminated, extension,
 		certificate_extension, prio_stack, *heuristic, coi);
 }
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
+void search_for_rejecting_adm_sets_in_origin_state(AF &framework, ArrayBitSet &active_args, uint32_t query_argument, bool &is_rejected,
+	bool &is_terminated, std::__cxx11::list<uint32_t> &certificate_extension, PriorityStackManager &prio_stack,
+	IPrioHeuristic *heuristic, bool &is_finished, ConeOfInfluence &coi)
+{
+	list<uint32_t> extension;
+	search_adm_sets_in_state(framework, active_args, query_argument, is_rejected, is_terminated, extension, certificate_extension);
+}
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
@@ -215,6 +263,13 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 				search_for_rejecting_sets_in_origin_state(framework, active_args, query_argument, is_rejected, is_terminated, certificate_extension,
 					prio_stack, heuristic, is_finished, coi);
 			}
+			tools::ToolsOMP::update_is_finished(is_terminated, is_finished, prio_stack);
+		}
+
+#pragma omp single nowait
+		{
+			search_for_rejecting_adm_sets_in_origin_state(framework, active_args, query_argument, is_rejected, is_terminated, certificate_extension,
+				prio_stack, heuristic, is_finished, coi);
 			tools::ToolsOMP::update_is_finished(is_terminated, is_finished, prio_stack);
 		}
 
