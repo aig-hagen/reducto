@@ -24,6 +24,7 @@ set(SRC_UTIL "${SRC}util/")
 set(HEADERS
 	${INCLD}/Main.h
 	${INCLD_LOGIC}/AF.h 
+	${INCLD_LOGIC}/ConeOfInfluence.h 
 	${INCLD_LOGIC}/Decoding.h 
 	${INCLD_LOGIC}/Encoding.h 
 	${INCLD_LOGIC}/Enums.h 
@@ -62,6 +63,7 @@ set(HEADERS
 set(SRCFILES
     ${SRC}Main.cpp
 	${SRC_LOGIC}AF.cpp 
+	${SRC_LOGIC}ConeOfInfluence.cpp 
 	${SRC_LOGIC}Decoding.cpp 
 	${SRC_LOGIC}Encoding.cpp 
 	${SRC_LOGIC}Enums.cpp

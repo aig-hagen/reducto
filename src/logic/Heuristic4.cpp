@@ -1,7 +1,7 @@
 #include "../../include/logic/Heuristic4.h"
 
 
-uint32_t Heuristic4::calculate_priority(AF &framework, list<uint32_t> &extension, list<uint32_t> &initialSet, uint32_t query) {
+uint32_t Heuristic4::calculate_priority(AF &framework, list<uint32_t> &extension, list<uint32_t> &initialSet, uint32_t query, ConeOfInfluence &coi) {
 
 	if (initialSet.empty()) {
 		cout << "calculate_priority:: initial set must not be empty" << endl;

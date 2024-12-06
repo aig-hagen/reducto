@@ -1,6 +1,6 @@
 #include "../../include/logic/PreProcessor_GR_parallel.h"
 
-static ArrayBitSet calculate_cone_influence(AF &framework, uint32_t query) {
+static ArrayBitSet calculate_cone_influence(AF &framework, uint32_t query, ConeOfInfluence &coi) {
 	//init shared variables
 	omp_lock_t *lock_has_entry = (omp_lock_t *)malloc(sizeof * lock_has_entry);
 	if (lock_has_entry == NULL) {
@@ -23,14 +23,14 @@ static ArrayBitSet calculate_cone_influence(AF &framework, uint32_t query) {
 
 	//process query argument
 	ls_args_unprocessed_shared.push_back(query);
-	framework.distance_to_query[query] = 0;
+	coi.distance_to_query[query] = 0;
 	distance_args_shared[query] = 0;
 	active_args_vector_shared.push_back(query);
 	active_args_bitset_shared[query] = true;
 	omp_unset_lock(lock_has_entry);
 
 #pragma omp parallel shared(active_args_vector_shared, active_args_bitset_shared, ls_args_unprocessed_shared, distance_args_shared) \
-	firstprivate(framework, query)
+	firstprivate(framework, query, coi)
 	{
 		vector<uint32_t> active_args_vector_private;
 		vector<uint8_t> active_args_bitset_private(framework.num_args + 1, 0);
@@ -131,7 +131,7 @@ static ArrayBitSet calculate_cone_influence(AF &framework, uint32_t query) {
 
 	//update framework (is private data in parallel section)
 	for (int i = 1; i < distance_args_shared.size(); i++) {
-		framework.distance_to_query[i] = distance_args_shared[i];
+		coi.distance_to_query[i] = distance_args_shared[i];
 	}
 
 	ArrayBitSet active_args = ArrayBitSet(active_args_vector_shared, active_args_bitset_shared);
@@ -242,7 +242,8 @@ static pre_proc_result reduce_by_grounded(AF &framework, ArrayBitSet &active_arg
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-pre_proc_result PreProc_GR_parallel::process(AF &framework, uint32_t query, bool break_accepted, bool break_rejected, ArrayBitSet &out_reduct, list<uint32_t> &out_gr_extension)
+pre_proc_result PreProc_GR_parallel::process(AF &framework, uint32_t query, bool break_accepted, bool break_rejected, ArrayBitSet &out_reduct, 
+	list<uint32_t> &out_gr_extension, ConeOfInfluence &coi)
 {
 	if (framework.self_attack[query])
 	{
@@ -254,7 +255,7 @@ pre_proc_result PreProc_GR_parallel::process(AF &framework, uint32_t query, bool
 		return pre_proc_result::accepted;
 	}
 
-	ArrayBitSet active_args = calculate_cone_influence(framework, query);
+	ArrayBitSet active_args = calculate_cone_influence(framework, query, coi);
 
 	return reduce_by_grounded(framework, active_args, query, break_accepted, break_rejected, out_reduct, out_gr_extension);
 }

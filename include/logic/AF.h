@@ -57,10 +57,6 @@ public:
     /// Set in which the buckets contain pairs of arguments, indicating that the first argument is attacking the second.
     /// </summary>
     std::unordered_set<std::pair<uint32_t, uint32_t>> attacks;
-	/// <summary>
-	/// List for all arguments their distance to the argument of the query.
-	/// </summary>
-	std::vector<uint32_t> distance_to_query;
 
     /// <summary>
     /// Adds an attack to the instance.

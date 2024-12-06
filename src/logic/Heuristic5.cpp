@@ -2,9 +2,9 @@
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static bool check_contains_potential_defender(AF &framework, list<uint32_t> &initialSet) {
+static bool check_contains_potential_defender(AF &framework, list<uint32_t> &initialSet, ConeOfInfluence &coi) {
 	for (list<uint32_t>::iterator mIter = initialSet.begin(); mIter != initialSet.end(); ++mIter) {
-		uint32_t dist = framework.distance_to_query[*mIter];
+		uint32_t dist = coi.distance_to_query[*mIter];
 		
 		if (dist % 2 == 0) {
 			return true;
@@ -17,7 +17,7 @@ static bool check_contains_potential_defender(AF &framework, list<uint32_t> &ini
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-uint32_t Heuristic5::calculate_priority(AF &framework, list<uint32_t> &extension, list<uint32_t> &initialSet, uint32_t query) {
+uint32_t Heuristic5::calculate_priority(AF &framework, list<uint32_t> &extension, list<uint32_t> &initialSet, uint32_t query, ConeOfInfluence &coi) {
 	const uint8_t punishment_factor = 4;
 
 	if (initialSet.empty()) {
@@ -42,7 +42,7 @@ uint32_t Heuristic5::calculate_priority(AF &framework, list<uint32_t> &extension
 
 	uint32_t prio_int = static_cast<uint32_t>(prio);
 
-	if (check_contains_potential_defender(framework, initialSet)) {
+	if (check_contains_potential_defender(framework, initialSet, coi)) {
 		return prio_int + punishment_factor;
 	}
 	else{

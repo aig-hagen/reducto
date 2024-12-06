@@ -7,6 +7,7 @@
 
 #include "AF.h"
 #include "Reduct.h"
+#include "ConeOfInfluence.h"
 
 #include "omp.h"
 
@@ -39,7 +40,7 @@ public:
 	/// <param name"out_gr_extension">[Output-Parameter] The calculated grounded extension of the framework.</param>
 	/// <returns>Returns an Enum indicating if the method has solved the problem, and if so to which conclusion it came.</returns>
 	static pre_proc_result process(AF &framework, uint32_t query, bool break_acception, bool break_rejection,
-		ArrayBitSet &out_reduct, list<uint32_t> &out_gr_extension);
+		ArrayBitSet &out_reduct, list<uint32_t> &out_gr_extension, ConeOfInfluence &coi);
 
 	/// <summary>
 	/// This method prepares the data before it being processed by the solver and checks if a solution can be easily drawn

@@ -19,8 +19,6 @@ void AF::initialize(uint32_t number_args) {
 	victims.resize(static_cast<uint64_t>(num_args) + 1);
 	self_attack.resize(static_cast<uint64_t>(num_args) + 1);
 	std::fill(self_attack.begin(), self_attack.end(), 0);
-	distance_to_query.resize(static_cast<uint64_t>(num_args) + 1);
-	std::fill(distance_to_query.begin(), distance_to_query.end(), 0);
 }
 
 void AF::finish_initilization()

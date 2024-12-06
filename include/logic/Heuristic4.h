@@ -23,8 +23,9 @@ public:
 	/// <param name="extension">The set of arguments, which define the reduct state of the framework.</param>
 	/// <param name="initialSet">The set of arguments, calculated in the former state to extend the extension.</param>
 	/// <param name="query">The argument to check for sceptical acceptance.</param>
+	/// <param name="coi">The cone of influence over the query in the specified framework.</param>
 	/// <returns>Returns a positive integer (not 0), indicating the priority of the specified set. 
 	/// The higher the integer, the higher the calculated priority.</returns>
-	virtual uint32_t calculate_priority(AF &framework, list<uint32_t> &extension, list<uint32_t> &initialSet, uint32_t query);
+	virtual uint32_t calculate_priority(AF &framework, list<uint32_t> &extension, list<uint32_t> &initialSet, uint32_t query, ConeOfInfluence &coi);
 };
 #endif
