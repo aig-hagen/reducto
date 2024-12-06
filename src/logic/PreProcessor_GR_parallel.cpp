@@ -24,6 +24,7 @@ static ArrayBitSet calculate_cone_influence(AF &framework, uint32_t query, ConeO
 	//process query argument
 	ls_args_unprocessed_shared.push_back(query);
 	coi.distance_to_query[query] = 0;
+	coi.max_distance = 0;
 	distance_args_shared[query] = 0;
 	active_args_vector_shared.push_back(query);
 	active_args_bitset_shared[query] = true;
@@ -132,6 +133,7 @@ static ArrayBitSet calculate_cone_influence(AF &framework, uint32_t query, ConeO
 	//update framework (is private data in parallel section)
 	for (int i = 1; i < distance_args_shared.size(); i++) {
 		coi.distance_to_query[i] = distance_args_shared[i];
+		if (distance_args_shared[i] > coi.max_distance) coi.max_distance = distance_args_shared[i];
 	}
 
 	ArrayBitSet active_args = ArrayBitSet(active_args_vector_shared, active_args_bitset_shared);
@@ -242,7 +244,7 @@ static pre_proc_result reduce_by_grounded(AF &framework, ArrayBitSet &active_arg
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-pre_proc_result PreProc_GR_parallel::process(AF &framework, uint32_t query, bool break_accepted, bool break_rejected, ArrayBitSet &out_reduct, 
+pre_proc_result PreProc_GR_parallel::process(AF &framework, uint32_t query, bool break_accepted, bool break_rejected, ArrayBitSet &out_reduct,
 	list<uint32_t> &out_gr_extension, ConeOfInfluence &coi)
 {
 	if (framework.self_attack[query])

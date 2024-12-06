@@ -10,6 +10,7 @@ ArrayBitSet PreProc_GR::calculate_cone_influence(AF &framework, uint32_t query, 
 	list<uint32_t> ls_args_unprocessed;
 	ls_args_unprocessed.push_back(query);
 	out_coi.distance_to_query[query] = 0;
+	out_coi.max_distance = 0;
 	active_args_vector.push_back(query);
 	active_args_bitset[query] = true;
 
@@ -24,7 +25,9 @@ ArrayBitSet PreProc_GR::calculate_cone_influence(AF &framework, uint32_t query, 
 			}
 
 			//increase distance to query for attacker
-			out_coi.distance_to_query[attacker] = distance + 1;
+			uint32_t distance_attacker = distance + 1;
+			out_coi.distance_to_query[attacker] = distance_attacker;
+			if (distance_attacker > out_coi.max_distance) out_coi.max_distance = distance_attacker;
 
 			active_args_vector.push_back(attacker);
 			active_args_bitset[attacker] = true;
@@ -40,8 +43,8 @@ ArrayBitSet PreProc_GR::calculate_cone_influence(AF &framework, uint32_t query, 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-ArrayBitSet PreProc_GR::calculate_cone_influence_reduct(AF &framework, ArrayBitSet reduct, uint32_t query, 
-	std::list<uint32_t> &list_remaining_args) {
+ArrayBitSet PreProc_GR::calculate_cone_influence_reduct(AF &framework, ArrayBitSet reduct, uint32_t query,
+	list<ArgumentDistancePair> &list_remaining_candidates, ConeOfInfluence &coi) {
 	vector<uint32_t> active_args_vector;
 	vector<uint8_t> active_args_bitset(framework.num_args + 1, 0);
 
@@ -49,7 +52,7 @@ ArrayBitSet PreProc_GR::calculate_cone_influence_reduct(AF &framework, ArrayBitS
 	ls_args_unprocessed.push_back(query);
 	active_args_vector.push_back(query);
 	active_args_bitset[query] = true;
-	list_remaining_args.remove(query);
+	list_remaining_candidates.remove(ArgumentDistancePair(query, coi));
 
 	for (list<uint32_t>::iterator mIter = ls_args_unprocessed.begin(); mIter != ls_args_unprocessed.end(); ++mIter) {
 		const auto &argument = *mIter;
@@ -67,7 +70,7 @@ ArrayBitSet PreProc_GR::calculate_cone_influence_reduct(AF &framework, ArrayBitS
 
 			active_args_vector.push_back(attacker);
 			active_args_bitset[attacker] = true;
-			list_remaining_args.remove(attacker);
+			list_remaining_candidates.remove(ArgumentDistancePair(attacker, coi));
 
 			ls_args_unprocessed.push_back(attacker);
 		}
@@ -80,7 +83,7 @@ ArrayBitSet PreProc_GR::calculate_cone_influence_reduct(AF &framework, ArrayBitS
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-pre_proc_result PreProc_GR::reduce_by_grounded(AF &framework, ArrayBitSet &active_args, uint32_t query, bool break_accepted, bool break_rejected, 
+pre_proc_result PreProc_GR::reduce_by_grounded(AF &framework, ArrayBitSet &active_args, uint32_t query, bool break_accepted, bool break_rejected,
 	ArrayBitSet &out_reduct, list<uint32_t> &out_gr_extension)
 {
 	pre_proc_result result = pre_proc_result::unknown;
@@ -107,20 +110,20 @@ pre_proc_result PreProc_GR::reduce_by_grounded(AF &framework, ArrayBitSet &activ
 		const auto &ua = *mIter;
 
 		//accept query if query is part of grounded extension
-		if(ua == query) {
+		if (ua == query) {
 			if (break_accepted) {
 				return pre_proc_result::accepted;
 			}
 
 			result = pre_proc_result::accepted;
 		}
-		
+
 		//reject query if it gets attacked by argument of grounded extension
-		if (framework.exists_attack(ua, query)){
+		if (framework.exists_attack(ua, query)) {
 			if (break_rejected) {
 				return pre_proc_result::rejected;
 			}
-			
+
 			result = pre_proc_result::rejected;
 		}
 
@@ -162,7 +165,7 @@ pre_proc_result PreProc_GR::reduce_by_grounded(AF &framework, ArrayBitSet &activ
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-pre_proc_result PreProc_GR::process(AF &framework, uint32_t query, bool break_accepted, bool break_rejected, ArrayBitSet &out_reduct, 
+pre_proc_result PreProc_GR::process(AF &framework, uint32_t query, bool break_accepted, bool break_rejected, ArrayBitSet &out_reduct,
 	list<uint32_t> &out_gr_extension, ConeOfInfluence &out_coi)
 {
 	if (framework.self_attack[query])
@@ -176,7 +179,7 @@ pre_proc_result PreProc_GR::process(AF &framework, uint32_t query, bool break_ac
 	}
 
 	ArrayBitSet active_args = calculate_cone_influence(framework, query, out_coi);
-	
+
 	return reduce_by_grounded(framework, active_args, query, break_accepted, break_rejected, out_reduct, out_gr_extension);
 }
 

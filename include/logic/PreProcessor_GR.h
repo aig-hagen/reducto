@@ -15,7 +15,7 @@
 #include "../logic/Enums.h"
 
 extern "C" {
-	#include "../util/MemoryWatchDog.h"
+#include "../util/MemoryWatchDog.h"
 }
 
 
@@ -29,8 +29,8 @@ class PreProc_GR {
 public:
 
 	static ArrayBitSet calculate_cone_influence(AF &framework, uint32_t query, ConeOfInfluence &out_coi);
-	static ArrayBitSet calculate_cone_influence_reduct(AF &framework, ArrayBitSet reduct, uint32_t query, 
-		std::list<uint32_t> &list_remaining_args);
+	static ArrayBitSet calculate_cone_influence_reduct(AF &framework, ArrayBitSet reduct, uint32_t query,
+		list<ArgumentDistancePair> &list_remaining_candidates, ConeOfInfluence &coi);
 
 	/// <summary>
 	/// This method prepares the data before it being processed by the solver and checks if a solution can be easily drawn
@@ -44,7 +44,7 @@ public:
 	/// Keep in mind, that the value of this parameter will be overwritten during this method, as it's an output-parameter.</param>
 	/// <param name"out_gr_extension">[Output-Parameter] The calculated grounded extension of the framework.</param>
 	/// <returns>Returns an Enum indicating if the method has solved the problem, and if so to which conclusion it came.</returns>
-	static pre_proc_result process(AF &framework, uint32_t query, bool break_acception, bool break_rejection, 
+	static pre_proc_result process(AF &framework, uint32_t query, bool break_acception, bool break_rejection,
 		ArrayBitSet &out_reduct, list<uint32_t> &out_gr_extension, ConeOfInfluence &out_coi);
 
 	/// <summary>
@@ -68,7 +68,7 @@ public:
 	/// Keep in mind, that the value of this parameter will be overwritten during this method, as it's an output-parameter.</param>
 	/// <param name"out_gr_extension">[Output-Parameter] The calculated grounded extension of the framework.</param>
 	/// <returns>Returns an Enum indicating if the method has solved the problem, and if so to which conclusion it came.</returns>
-	static pre_proc_result process_only_grounded(AF &framework, uint32_t query, bool break_acception, bool break_rejection, 
+	static pre_proc_result process_only_grounded(AF &framework, uint32_t query, bool break_acception, bool break_rejection,
 		ArrayBitSet &out_reduct, list<uint32_t> &out_gr_extension);
 
 	/// <summary>
@@ -83,7 +83,7 @@ public:
 	/// Keep in mind, that the value of this parameter will be overwritten during this method, as it's an output-parameter.</param>
 	/// <param name"out_gr_extension">[Output-Parameter] The calculated grounded extension of the framework.</param>
 	/// <returns>Returns an Enum indicating if the method has solved the problem, and if so to which conclusion it came.</returns>
-	static pre_proc_result reduce_by_grounded(AF &framework, ArrayBitSet &active_args, uint32_t query,bool break_acception, bool break_rejection,
+	static pre_proc_result reduce_by_grounded(AF &framework, ArrayBitSet &active_args, uint32_t query, bool break_acception, bool break_rejection,
 		ArrayBitSet &out_reduct, list<uint32_t> &out_gr_extension);
 };
 #endif

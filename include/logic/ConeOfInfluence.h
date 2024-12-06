@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <cstdint>
+#include <list>
 
 #include "AF.h"
 
@@ -32,11 +33,21 @@ public:
 /// </summary>
 class ArgumentDistancePair {
 public:
+	bool operator == (ArgumentDistancePair const &other)
+	{
+		return (other.argument == argument);
+	};
+
 	uint32_t argument;
 	uint32_t distance_to_query;
 
 	ArgumentDistancePair(uint32_t argument, ConeOfInfluence coi);
 
 	static bool compare_by_distance(ArgumentDistancePair firstElem, ArgumentDistancePair secondElem);
+};
+
+inline bool operator == (ArgumentDistancePair const &lhs, ArgumentDistancePair const &rhs)
+{
+	return (lhs.argument == rhs.argument);
 };
 #endif

@@ -10,8 +10,8 @@ static bool check_termination_condition(bool &is_terminated, bool continue_calcu
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-void process_sat_solution(bool has_found_set, std::__cxx11::list<uint32_t> &extension_build, std::__cxx11::list<uint32_t> &calculated_set, 
-	bool &is_rejected, std::__cxx11::list<uint32_t> &certificate_extension, PriorityStackManager &prio_queue, 
+void process_sat_solution(bool has_found_set, std::__cxx11::list<uint32_t> &extension_build, std::__cxx11::list<uint32_t> &calculated_set,
+	bool &is_rejected, std::__cxx11::list<uint32_t> &certificate_extension, PriorityStackManager &prio_queue,
 	uint32_t query_argument, AF &framework, IPrioHeuristic &heuristic, ConeOfInfluence &coi)
 {
 	if (has_found_set) {
@@ -30,8 +30,8 @@ void process_sat_solution(bool has_found_set, std::__cxx11::list<uint32_t> &exte
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static void search_complete_sets_in_state(AF &framework, ArrayBitSet &reduct, uint32_t query_argument, bool &is_rejected, bool &is_terminated, 
-	std::__cxx11::list<uint32_t> &extension_build, std::__cxx11::list<uint32_t> &certificate_extension, PriorityStackManager &prio_queue, 
+static void search_complete_sets_in_state(AF &framework, ArrayBitSet &reduct, uint32_t query_argument, bool &is_rejected, bool &is_terminated,
+	std::__cxx11::list<uint32_t> &extension_build, std::__cxx11::list<uint32_t> &certificate_extension, PriorityStackManager &prio_queue,
 	IPrioHeuristic &heuristic, ConeOfInfluence &coi)
 {
 	//calculate set in state
@@ -56,7 +56,22 @@ static void search_complete_sets_in_state(AF &framework, ArrayBitSet &reduct, ui
 	delete solver;
 }
 
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
 
+static list<ArgumentDistancePair> create_candidates_coi(ArrayBitSet &active_args, uint32_t query_argument, ConeOfInfluence &coi) {
+	list<ArgumentDistancePair> output_list_candidates;
+	uint32_t limit_distance = coi.max_distance / 2;
+
+	for (int i = 0; i < active_args._array.size(); i++) {
+		uint32_t argument = active_args._array[i];
+		if (argument == query_argument || coi.distance_to_query[argument] > limit_distance) continue;
+
+		output_list_candidates.push_back(ArgumentDistancePair(argument, coi));
+	}
+
+	return output_list_candidates;
+}
 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
@@ -66,15 +81,14 @@ static void search_adm_set_per_coi(AF &framework, ArrayBitSet &active_args, uint
 	std::list<uint32_t> &certificate_extension, PriorityStackManager &prio_queue, IPrioHeuristic &heuristic, ConeOfInfluence &coi)
 {
 	//create list of all active arguments
-	std::list<uint32_t> list_args_to_start_coi;
-	tools::ToolList::copy_in_list(list_args_to_start_coi, active_args._array);
-	list_args_to_start_coi.remove(query_argument);
-	
-	while (!list_args_to_start_coi.empty() && !tools::ToolsOMP::check_termination(is_terminated)) {
+	std::list<ArgumentDistancePair> list_candidates_to_start_coi = create_candidates_coi(active_args, query_argument, coi);
+	list_candidates_to_start_coi.sort(ArgumentDistancePair::compare_by_distance);
+
+	while (!list_candidates_to_start_coi.empty() && !tools::ToolsOMP::check_termination(is_terminated)) {
 		//pop first argument in list and calculate COI of argument
-		uint32_t argument = list_args_to_start_coi.front();
+		uint32_t argument = list_candidates_to_start_coi.front().argument;
 		//calculate COI of argument and remove all arguments in COI from list
-		ArrayBitSet reduct = PreProc_GR::calculate_cone_influence_reduct(framework, active_args, argument, list_args_to_start_coi);
+		ArrayBitSet reduct = PreProc_GR::calculate_cone_influence_reduct(framework, active_args, argument, list_candidates_to_start_coi, coi);
 
 		//search for set in COI
 		uint64_t numVars = reduct._array.size();
@@ -84,7 +98,7 @@ static void search_adm_set_per_coi(AF &framework, ArrayBitSet &active_args, uint
 		Encoding::add_clauses_nonempty_admissible_set(*solver, framework, reduct);
 		list<uint32_t> calculated_set = Proc_DS_PR::calculate_rejecting_set_in_random_coi(query_argument, framework, reduct, is_rejected, is_terminated,
 			*solver, has_found_set);
-		process_sat_solution(has_found_set, extension_build, calculated_set, is_rejected, certificate_extension, 
+		process_sat_solution(has_found_set, extension_build, calculated_set, is_rejected, certificate_extension,
 			prio_queue, query_argument, framework, heuristic, coi);
 		delete solver;
 	}
@@ -114,8 +128,8 @@ static pre_proc_result preprocess_state(uint32_t query_argument, AF &framework, 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-void process_state(pre_proc_result result_preProcessor, bool &is_rejected, bool &is_terminated, 
-	std::__cxx11::list<uint32_t> &certificate_extension, std::__cxx11::list<uint32_t> &extension_build, AF &framework, 
+void process_state(pre_proc_result result_preProcessor, bool &is_rejected, bool &is_terminated,
+	std::__cxx11::list<uint32_t> &certificate_extension, std::__cxx11::list<uint32_t> &extension_build, AF &framework,
 	ArrayBitSet &reduct, uint32_t query_argument, PriorityStackManager &prio_queue, IPrioHeuristic &heuristic, ConeOfInfluence &coi)
 {
 	switch (result_preProcessor) {
@@ -149,8 +163,8 @@ static void generate_starting_points(uint32_t query_argument, AF &framework, Arr
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-void search_for_rejecting_sets_in_origin_state(AF &framework, ArrayBitSet &active_args, uint32_t query_argument, bool &is_rejected, 
-	bool &is_terminated, std::__cxx11::list<uint32_t> &certificate_extension, PriorityStackManager &prio_stack, 
+void search_for_rejecting_sets_in_origin_state(AF &framework, ArrayBitSet &active_args, uint32_t query_argument, bool &is_rejected,
+	bool &is_terminated, std::__cxx11::list<uint32_t> &certificate_extension, PriorityStackManager &prio_stack,
 	IPrioHeuristic *heuristic, bool &is_finished, ConeOfInfluence &coi)
 {
 	list<uint32_t> extension;
@@ -160,8 +174,8 @@ void search_for_rejecting_sets_in_origin_state(AF &framework, ArrayBitSet &activ
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-void search_for_rejecting_sets_in_reduct(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &is_rejected, bool &is_terminated, 
-	std::__cxx11::list<uint32_t> &extension, std::__cxx11::list<uint32_t> &certificate_extension, IPrioHeuristic *heuristic, 
+void search_for_rejecting_sets_in_reduct(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &is_rejected, bool &is_terminated,
+	std::__cxx11::list<uint32_t> &extension, std::__cxx11::list<uint32_t> &certificate_extension, IPrioHeuristic *heuristic,
 	PriorityStackManager &prio_stack, ConeOfInfluence &coi)
 {
 	if (tools::ToolsOMP::check_termination(is_terminated)) return;
@@ -176,7 +190,7 @@ void search_for_rejecting_sets_in_reduct(uint32_t query_argument, AF &framework,
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static bool start_checking_rejection(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, list<uint32_t> &certificate_extension, 
+static bool start_checking_rejection(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, list<uint32_t> &certificate_extension,
 	uint16_t numCores, ConeOfInfluence &coi)
 {
 	if (numCores > 0)
@@ -198,7 +212,7 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 			generate_starting_points(query_argument, framework, active_args, is_rejected, is_terminated, certificate_extension,
 				*heuristic, prio_stack, coi);
 			if (!tools::ToolsOMP::check_finished(is_finished, prio_stack)) {
-				search_for_rejecting_sets_in_origin_state(framework, active_args, query_argument, is_rejected, is_terminated, certificate_extension, 
+				search_for_rejecting_sets_in_origin_state(framework, active_args, query_argument, is_rejected, is_terminated, certificate_extension,
 					prio_stack, heuristic, is_finished, coi);
 			}
 			tools::ToolsOMP::update_is_finished(is_terminated, is_finished, prio_stack);
@@ -209,8 +223,8 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 			if (tools::ToolsOMP::check_finished(is_finished, prio_stack)) {
 				omp_unset_lock(prio_stack.lock_has_entry);
 				break;
-			} 
-			
+			}
+
 			if (prio_stack.check_number_unprocessed_elements() > 0) {
 				list<uint32_t> extension = prio_stack.pop_prio_extension();
 
@@ -218,7 +232,7 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 					omp_unset_lock(prio_stack.lock_has_entry);
 				}
 
-				search_for_rejecting_sets_in_reduct(query_argument, framework, active_args, is_rejected, is_terminated, extension, certificate_extension, 
+				search_for_rejecting_sets_in_reduct(query_argument, framework, active_args, is_rejected, is_terminated, extension, certificate_extension,
 					heuristic, prio_stack, coi);
 				tools::ToolsOMP::update_is_finished(is_terminated, is_finished, prio_stack);
 			}
@@ -228,7 +242,7 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 			}
 		}
 	}
-	
+
 	delete heuristic;
 	return is_rejected;
 }
@@ -242,16 +256,16 @@ bool Solver_DS_PR::solve(uint32_t query_argument, AF &framework, list<uint32_t> 
 	pre_proc_result result_preProcessor;
 	ConeOfInfluence coi(framework);
 	result_preProcessor = PreProc_GR::process(framework, query_argument, true, false, initial_reduct, certificate_extension, coi);
-	
-	switch (result_preProcessor){
 
-		case accepted:
-			return true;
+	switch (result_preProcessor) {
 
-		case rejected:
-			return false;
+	case accepted:
+		return true;
 
-		default:
-			return !start_checking_rejection(query_argument, framework, initial_reduct, certificate_extension, numCores, coi);
+	case rejected:
+		return false;
+
+	default:
+		return !start_checking_rejection(query_argument, framework, initial_reduct, certificate_extension, numCores, coi);
 	}
 }
