@@ -6,7 +6,6 @@ void Tools_Solver::UpdateCertificate(SatSolver *solver, ArrayBitSet &active_args
 {
 	list<uint32_t> calculated_extension = Decoding::get_set_from_solver(*solver, active_args);
 	Tools_Solver::UpdateCertificate(certificate_extension, calculated_extension);
-	calculated_extension.clear();
 }
 
 /*===========================================================================================================================================================*/
