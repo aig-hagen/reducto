@@ -66,6 +66,14 @@ public:
 	/// <returns> <c>TRUE</c> iff a solution was found. Otherwise <c>FALSE</c></returns>
 	bool solve(int64_t assumption);
 
+	/// <summary>
+	/// This method calculates a solution for the SAT-Problem of the solver.
+	/// </summary>
+	/// <param name="assumption1">Variable the SAT-solver has to assume to be true if positive and false if negative.</param>
+	/// /// <param name="assumption2">Variable the SAT-solver has to assume to be true if positive and false if negative.</param>
+	/// <returns> <c>TRUE</c> iff a solution was found. Otherwise <c>FALSE</c></returns>
+	bool solve(int64_t assumption1, int64_t assumption2);
+
 private:
 	/// <summary>
 	/// The SAT-solver used to solve the SAT-problem.

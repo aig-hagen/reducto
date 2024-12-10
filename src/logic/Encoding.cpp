@@ -130,13 +130,33 @@ static void add_complete_encoding(SatSolver &solver, AF &framework, ArrayBitSet 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-void Encoding::add_clauses_nonempty_admissible_set(SatSolver &solver, AF &framework, ArrayBitSet &activeArgs)
+void Encoding::add_clauses_nonempty_complete_set(SatSolver &solver, AF &framework, ArrayBitSet &activeArgs)
 {
 	vector<int64_t> non_empty_clause;
 
 	for (int i = 0; i < activeArgs._array.size(); i++) {
-		non_empty_clause.push_back(get_literal_accepted(activeArgs._array[i], false));
+		non_empty_clause.push_back(Encoding::get_literal_accepted(activeArgs._array[i], false));
 		add_complete_encoding(solver, framework, activeArgs, activeArgs._array[i]);
+	}
+
+	solver.add_clause(non_empty_clause);
+	non_empty_clause.clear();
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
+void Encoding::add_clauses_nonempty_stable_set(SatSolver &solver, AF &framework, ArrayBitSet &activeArgs)
+{
+	vector<int64_t> non_empty_clause;
+
+	for (int i = 0; i < activeArgs._array.size(); i++) {
+		non_empty_clause.push_back(Encoding::get_literal_accepted(activeArgs._array[i], false));
+		add_complete_encoding(solver, framework, activeArgs, activeArgs._array[i]);
+
+		solver.add_clause_short(
+			Encoding::get_literal_accepted(activeArgs._array[i], false),
+			Encoding::get_literal_rejected(framework.num_args, activeArgs._array[i], false));
 	}
 
 	solver.add_clause(non_empty_clause);
