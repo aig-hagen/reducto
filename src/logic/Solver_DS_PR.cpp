@@ -30,17 +30,6 @@ void process_sat_solution(bool has_found_set, std::__cxx11::list<uint32_t> &exte
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-void process_sat_solution(bool has_found_solution, bool &is_rejected, std::__cxx11::list<uint32_t> &extension_build, std::__cxx11::list<uint32_t> &calculated_set, std::__cxx11::list<uint32_t> &certificate_extension)
-{
-	if (has_found_solution && is_rejected) {
-		list<uint32_t> new_extension = tools::ToolList::extend_list(extension_build, calculated_set);
-		Tools_Solver::UpdateCertificate(certificate_extension, new_extension);
-	}
-}
-
-/*===========================================================================================================================================================*/
-/*===========================================================================================================================================================*/
-
 static void search_complete_sets_in_state(AF &framework, ArrayBitSet &reduct, uint32_t query_argument, bool &is_rejected, bool &is_terminated,
 	std::__cxx11::list<uint32_t> &extension_build, std::__cxx11::list<uint32_t> &certificate_extension, PriorityStackManager &prio_queue,
 	IPrioHeuristic &heuristic, ConeOfInfluence &coi)
@@ -65,80 +54,6 @@ static void search_complete_sets_in_state(AF &framework, ArrayBitSet &reduct, ui
 			prio_queue, query_argument, framework, heuristic, coi);
 	}
 	delete solver;
-}
-
-/*===========================================================================================================================================================*/
-/*===========================================================================================================================================================*/
-
-static void search_adm_sets_in_state(AF &framework, ArrayBitSet &reduct, uint32_t query_argument, bool &is_rejected, bool &is_terminated,
-	std::__cxx11::list<uint32_t> &extension_build, std::__cxx11::list<uint32_t> &certificate_extension)
-{
-	//calculate set in state
-	uint64_t numVars = reduct._array.size();
-	SatSolver *solver = NULL;
-	solver = new SatSolver_cadical(numVars);
-	Encoding::add_clauses_nonempty_admissible_set(*solver, framework, reduct);
-	bool has_found_solution = false;
-	list<uint32_t> calculated_set = Proc_DS_PR::calculate_rejecting_set(query_argument, framework, reduct, is_rejected, is_terminated,
-		*solver, has_found_solution, true);
-	process_sat_solution(has_found_solution, is_rejected, extension_build, calculated_set, certificate_extension);
-
-	while (!check_termination_condition(is_terminated, has_found_solution)) {
-		//iterate through additional sets in state
-		Encoding::add_complement_clause(*solver, reduct);
-		calculated_set = Proc_DS_PR::calculate_rejecting_set(query_argument, framework, reduct, is_rejected, is_terminated,
-			*solver, has_found_solution, false);
-		process_sat_solution(has_found_solution, is_rejected, extension_build, calculated_set, certificate_extension);
-	}
-	delete solver;
-}
-
-/*===========================================================================================================================================================*/
-/*===========================================================================================================================================================*/
-
-static list<ArgumentDistancePair> create_candidates_coi(ArrayBitSet &active_args, uint32_t query_argument, ConeOfInfluence &coi) {
-	list<ArgumentDistancePair> output_list_candidates;
-	uint32_t limit_distance = coi.Max_distance / 2;
-
-	for (int i = 0; i < active_args._array.size(); i++) {
-		uint32_t argument = active_args._array[i];
-		if (argument == query_argument || coi.Distance_to_query[argument] > limit_distance) continue;
-
-		output_list_candidates.push_back(ArgumentDistancePair(argument, coi));
-	}
-
-	return output_list_candidates;
-}
-
-/*===========================================================================================================================================================*/
-/*===========================================================================================================================================================*/
-
-static void search_adm_set_per_coi(AF &framework, ArrayBitSet &active_args, uint32_t query_argument, bool &is_rejected, bool &is_terminated,
-	std::list<uint32_t> &extension_build,
-	std::list<uint32_t> &certificate_extension, PriorityStackManager &prio_queue, IPrioHeuristic &heuristic, ConeOfInfluence &coi)
-{
-	//create list of all active arguments
-	std::list<ArgumentDistancePair> list_candidates_to_start_coi = create_candidates_coi(active_args, query_argument, coi);
-	list_candidates_to_start_coi.sort(ArgumentDistancePair::compare_by_distance);
-
-	while (!list_candidates_to_start_coi.empty() && !tools::ToolsOMP::check_termination(is_terminated)) {
-		//pop first argument in list and calculate COI of argument
-		uint32_t argument = list_candidates_to_start_coi.front().Argument;
-		//calculate COI of argument and remove all arguments in COI from list
-		ArrayBitSet reduct = PreProc_GR::calculate_cone_influence_reduct(framework, active_args, argument, list_candidates_to_start_coi, coi);
-
-		//search for set in COI
-		uint64_t numVars = reduct._array.size();
-		SatSolver *solver = NULL;
-		solver = new SatSolver_cadical(numVars);
-		bool has_found_set = false;
-		Encoding::add_clauses_nonempty_admissible_set(*solver, framework, reduct);
-		list<uint32_t> calculated_set = Proc_DS_PR::calculate_rejecting_set_in_random_coi(query_argument, framework, reduct, is_rejected, is_terminated,
-			*solver, has_found_set);
-		process_sat_solution(has_found_set, extension_build, calculated_set, is_rejected, certificate_extension,
-			prio_queue, query_argument, framework, heuristic, coi);
-		delete solver;
-	}
 }
 
 /*===========================================================================================================================================================*/
@@ -188,18 +103,6 @@ void process_state(pre_proc_result result_preProcessor, bool &is_rejected, bool 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static void generate_starting_points(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &is_rejected, bool &is_terminated,
-	list<uint32_t> &certificate_extension, IPrioHeuristic &heuristic,
-	PriorityStackManager &prio_queue, ConeOfInfluence &coi) {
-	list<uint32_t> extension_build;
-	//search for one adm set per each COI
-	search_adm_set_per_coi(framework, active_args, query_argument, is_rejected, is_terminated, extension_build,
-		certificate_extension, prio_queue, heuristic, coi);
-}
-
-/*===========================================================================================================================================================*/
-/*===========================================================================================================================================================*/
-
 void search_for_rejecting_sets_in_origin_state(AF &framework, ArrayBitSet &active_args, uint32_t query_argument, bool &is_rejected,
 	bool &is_terminated, std::__cxx11::list<uint32_t> &certificate_extension, PriorityStackManager &prio_stack,
 	IPrioHeuristic *heuristic, bool &is_finished, ConeOfInfluence &coi)
@@ -209,16 +112,6 @@ void search_for_rejecting_sets_in_origin_state(AF &framework, ArrayBitSet &activ
 		certificate_extension, prio_stack, *heuristic, coi);
 }
 
-/*===========================================================================================================================================================*/
-/*===========================================================================================================================================================*/
-
-void search_for_rejecting_adm_sets_in_origin_state(AF &framework, ArrayBitSet &active_args, uint32_t query_argument, bool &is_rejected,
-	bool &is_terminated, std::__cxx11::list<uint32_t> &certificate_extension, PriorityStackManager &prio_stack,
-	IPrioHeuristic *heuristic, bool &is_finished, ConeOfInfluence &coi)
-{
-	list<uint32_t> extension;
-	search_adm_sets_in_state(framework, active_args, query_argument, is_rejected, is_terminated, extension, certificate_extension);
-}
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
@@ -257,19 +150,8 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 	{
 #pragma omp single nowait
 		{
-			generate_starting_points(query_argument, framework, active_args, is_rejected, is_terminated, certificate_extension,
-				*heuristic, prio_stack, coi);
-			if (!tools::ToolsOMP::check_finished(is_finished, prio_stack)) {
-				search_for_rejecting_sets_in_origin_state(framework, active_args, query_argument, is_rejected, is_terminated, certificate_extension,
+			search_for_rejecting_sets_in_origin_state(framework, active_args, query_argument, is_rejected, is_terminated, certificate_extension,
 					prio_stack, heuristic, is_finished, coi);
-			}
-			tools::ToolsOMP::update_is_finished(is_terminated, is_finished, prio_stack);
-		}
-
-#pragma omp single nowait
-		{
-			search_for_rejecting_adm_sets_in_origin_state(framework, active_args, query_argument, is_rejected, is_terminated, certificate_extension,
-				prio_stack, heuristic, is_finished, coi);
 			tools::ToolsOMP::update_is_finished(is_terminated, is_finished, prio_stack);
 		}
 
