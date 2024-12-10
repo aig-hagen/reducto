@@ -1,4 +1,4 @@
-#include "../../include/logic/PreProcessor_GR.h"
+#include "../../include/logic/PreProcessor_DS_PR.h"
 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
@@ -78,9 +78,8 @@ static ArrayBitSet calculate_cone_influence(AF &framework, ArrayBitSet reduct, u
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static pre_proc_result reduce_by_grounded(AF &framework, ArrayBitSet &active_args, uint32_t query, bool break_accepted, bool break_rejected, ArrayBitSet &out_reduct, list<uint32_t> &out_gr_extension)
+static pre_proc_result reduce_by_grounded(AF &framework, ArrayBitSet &active_args, uint32_t query, ArrayBitSet &out_reduct)
 {
-	pre_proc_result result = pre_proc_result::unknown;
 	// fill list with unattacked arguments
 	list<uint32_t> ls_unattacked_unprocessed;
 	vector<uint32_t> num_attacker;
@@ -90,7 +89,6 @@ static pre_proc_result reduce_by_grounded(AF &framework, ArrayBitSet &active_arg
 		//check if argument is unattacked
 		if (framework.attackers[active_args._array[i]].empty()) {
 			ls_unattacked_unprocessed.push_back(active_args._array[i]);
-			out_gr_extension.push_back(active_args._array[i]);
 		}
 
 		num_attacker[active_args._array[i]] = framework.attackers[active_args._array[i]].size();
@@ -103,22 +101,15 @@ static pre_proc_result reduce_by_grounded(AF &framework, ArrayBitSet &active_arg
 	for (list<uint32_t>::iterator mIter = ls_unattacked_unprocessed.begin(); mIter != ls_unattacked_unprocessed.end(); ++mIter) {
 		const auto &ua = *mIter;
 
-		//accept query if query is part of grounded extension
-		if(ua == query) {
-			if (break_accepted) {
-				return pre_proc_result::accepted;
-			}
-
-			result = pre_proc_result::accepted;
+		//reject query if it gets attacked by argument of grounded extension
+		if( ua == query) {
+			return pre_proc_result::accepted;
 		}
-		
+
+
 		//reject query if it gets attacked by argument of grounded extension
 		if (framework.exists_attack(ua, query)){
-			if (break_rejected) {
-				return pre_proc_result::rejected;
-			}
-			
-			result = pre_proc_result::rejected;
+			return pre_proc_result::rejected;
 		}
 
 		//iterate through victims of the victims of ua
@@ -144,7 +135,6 @@ static pre_proc_result reduce_by_grounded(AF &framework, ArrayBitSet &active_arg
 				//check if victim of victim is unattacked
 				if (num_attacker[vvua] == 0) {
 					ls_unattacked_unprocessed.push_back(vvua);
-					out_gr_extension.push_back(vvua);
 				}
 			}
 		}
@@ -153,13 +143,13 @@ static pre_proc_result reduce_by_grounded(AF &framework, ArrayBitSet &active_arg
 		out_reduct = Reduct::get_reduct(out_reduct, framework, ua);
 	}
 
-	return result;
+	return pre_proc_result::unknown;
 }
 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-pre_proc_result PreProc_GR::process(AF &framework, uint32_t query, bool break_accepted, bool break_rejected, ArrayBitSet &out_reduct, list<uint32_t> &out_gr_extension)
+pre_proc_result PreProc_DS_PR::process(AF &framework, uint32_t query, ArrayBitSet &out_reduct) 
 {
 	if (framework.self_attack[query])
 	{
@@ -173,51 +163,7 @@ pre_proc_result PreProc_GR::process(AF &framework, uint32_t query, bool break_ac
 
 	ArrayBitSet active_args = calculate_cone_influence(framework, query);
 	
-	return reduce_by_grounded(framework, active_args, query, break_accepted, break_rejected, out_reduct, out_gr_extension);
-}
-
-/*===========================================================================================================================================================*/
-/*===========================================================================================================================================================*/
-
-ArrayBitSet PreProc_GR::process_only_grounded(AF &framework, list<uint32_t> &out_gr_extension) {
-	//build basic active arguments
-	vector<uint32_t> active_args_vector;
-	vector<uint8_t> active_args_bitset(framework.num_args + 1, 1);
-	for (int i = 0; i < framework.num_args; i++) {
-		active_args_vector.push_back(i + 1);
-	}
-	ArrayBitSet active_args = ArrayBitSet(active_args_vector, active_args_bitset);
-	//reduce by grounded extension
-	ArrayBitSet initial_reduct = ArrayBitSet();
-	reduce_by_grounded(framework, active_args, 0, false, false, initial_reduct, out_gr_extension);
-	return initial_reduct;
-}
-
-/*===========================================================================================================================================================*/
-/*===========================================================================================================================================================*/
-
-pre_proc_result PreProc_GR::process_only_grounded(AF &framework, uint32_t query, bool break_acception, bool break_rejection, ArrayBitSet &out_reduct, list<uint32_t> &out_gr_extension)
-{
-	if (framework.self_attack[query])
-	{
-		return pre_proc_result::rejected;
-	}
-
-	if (framework.attackers[query].empty())
-	{
-		return pre_proc_result::accepted;
-	}
-
-	//build basic active arguments
-	vector<uint32_t> active_args_vector;
-	vector<uint8_t> active_args_bitset(framework.num_args + 1, 1);
-	for (int i = 0; i < framework.num_args; i++) {
-		active_args_vector.push_back(i + 1);
-	}
-	ArrayBitSet active_args = ArrayBitSet(active_args_vector, active_args_bitset);
-
-	//reduce by grounded extension
-	return reduce_by_grounded(framework, active_args, query, break_acception, break_rejection, out_reduct, out_gr_extension);
+	return reduce_by_grounded(framework, active_args, query, out_reduct);
 }
 
 /*===========================================================================================================================================================*/

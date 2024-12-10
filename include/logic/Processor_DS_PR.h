@@ -11,7 +11,6 @@
 #include "ScepticalCheck.h"
 
 #include "../util/ArrayBitSet.h"
-#include "../util/Tools_omp.h"
 
 using namespace std;
 
@@ -22,7 +21,7 @@ class Proc_DS_PR {
 
 public:
 	/// <summary>
-	/// This method calculates a nonemtpy set, if such a set can be calculated in the specified reduct, using the specified solver.
+	/// This method calculates a nonemtpy admissible set, if such a set can be calculated in the specified reduct, using the specified solver.
 	/// </summary>
 	/// <param name="query_argument">The query argument of the DS-PR problem</param>
 	/// <param name="framework">The abstract argumentation framework of the problem.</param>
@@ -31,10 +30,10 @@ public:
 	/// <param name="is_terminated">Flag used to signal that the computation to solve the problem shall be terminated.</param>
 	/// <param name="solver">The solver used to calculate sets for this state of the framework.</param>
 	/// <param name="continue_calculation">Flag used to signal if the calculation of sets in state should be continued.</param>
-	/// <param name="found_counter_evidence">Flag that indicates that the processor has found an nonempty adm. set that is a counter evidence</param>
 	/// <param name="is_first_iteration">Flag indicating if this iteration to calculate a set is the first in the specified state or not.</param>
-	/// <returns>An non emtpy set, if such a set can be computed. Empty list otherwise.</returns>
-	static list<uint32_t> calculate_rejecting_set(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &is_rejected, bool &is_terminated,
-		SatSolver &solver, bool &continue_calculation, bool is_first_iteration);
+	/// <param name="found_counter_evidence">Flag that indicates that the processor has found an nonempty adm. set that is a counter evidence</param>
+	/// <returns>An non emtpy admissible set, if such a set can be computed. Empty list otherwise.</returns>
+	static list<uint32_t> calculate_nonempty_adm_set(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &is_rejected, bool &is_terminated,
+		SatSolver &solver, bool &continue_calculation, bool &found_counter_evidence, bool is_first_iteration);
 };
 #endif

@@ -10,16 +10,11 @@
 /// <summary>
 /// Abbreviations of the different type of tasks, which the solver can solve
 /// </summary>
-enum task { DC, DS, SE, UNKNOWN_TASK };
+enum task { DC, DS, SE, EE, CE, UNKNOWN_TASK };
 /// <summary>
 /// Abbreviations of the different semantics of the solutions to calculate.
 /// </summary>
-enum semantics { PR, CO, ST, UNKNOWN_SEM };
-
-/// <summary>
-/// Return values of the preprocessor, indicating if the preprocessor solved the problem, and if so to what conclusion
-/// </summary>
-enum pre_proc_result { accepted, rejected, unknown };
+enum semantics { IT, UC, PR, GR, UNKNOWN_SEM };
 
 using namespace std;
 

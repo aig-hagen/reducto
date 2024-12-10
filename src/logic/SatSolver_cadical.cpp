@@ -67,12 +67,3 @@ bool SatSolver_cadical::solve(int64_t assumption) {
     cadical_solver.assume(assumption);
     return solve();
 }
-
-/*===========================================================================================================================================================*/
-/*===========================================================================================================================================================*/
-
-bool SatSolver_cadical::solve(int64_t assumption1, int64_t assumption2) {
-    cadical_solver.assume(assumption1);
-    cadical_solver.assume(assumption2);
-    return solve();
-}

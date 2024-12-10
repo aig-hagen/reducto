@@ -39,35 +39,25 @@ void static print_formats()
 
 void static print_problems()
 {
-	cout << "[DC-CO,DC-ST,DS-PR,DS-ST,SE-PR,SE-ST]" << endl;
-}
-
-/*===========================================================================================================================================================*/
-/*===========================================================================================================================================================*/
-
-void print_proof(std::__cxx11::list<uint32_t> &proof_extension)
-{
-	cout << "w ";
-
-	if (!proof_extension.empty()) {
-		for (list<uint32_t>::iterator mIter = proof_extension.begin(); mIter != proof_extension.end(); ++mIter) {
-			cout << *mIter << " ";
+	/*vector<string> tasks = { "DC", "DS", "SE", "EE", "CE" };
+	vector<string> sems = { "IT", "PR", "UC" };*/
+	vector<string> tasks = { "DS"};
+	vector<string> sems = { "PR"};
+	cout << "[";
+	for (uint32_t i = 0; i < tasks.size(); i++) {
+		for (uint32_t j = 0; j < sems.size(); j++) {
+			string problem = tasks[i] + "-" + sems[j];
+			if (j != sems.size() - 1)
+			{
+				cout << problem << ",";
+			}
+			else
+			{
+				cout << problem;
+			}
 		}
-		proof_extension;
-		cout << endl;
 	}
-}
-
-/*===========================================================================================================================================================*/
-/*===========================================================================================================================================================*/
-
-bool CheckQuery(std::string &query, char **argv)
-{
-	if (query.empty()) {
-		cerr << argv[0] << ": Query argument must be specified via -a flag\n";
-		return false;
-	}
-	return true;
+	cout << "]\n";
 }
 
 /*===========================================================================================================================================================*/
@@ -154,9 +144,10 @@ int execute(int argc, char **argv)
 	switch (Enums::string_to_task(task)) {
 		case DS:
 		{
-			if (!CheckQuery(query, argv)) {
+			if (query.empty()) {
+				cerr << argv[0] << ": Query argument must be specified via -a flag\n";
 				return 1;
-			}			
+			}
 
 			uint32_t argument = std::stoi(query);
 			list<uint32_t> proof_extension;
@@ -166,9 +157,6 @@ int execute(int argc, char **argv)
 				case PR:
 					skept_accepted = Solver_DS_PR::solve(argument, framework, proof_extension, NUM_CORES);
 					break;
-				case ST:
-					skept_accepted = Solver_DS_ST::solve(argument, framework, proof_extension);
-					break;
 				default:
 					cerr << argv[0] << ": Unsupported semantics\n";
 					return 1;
@@ -177,76 +165,21 @@ int execute(int argc, char **argv)
 			cout << (skept_accepted ? "YES" : "NO") << endl;
 			if (!skept_accepted)
 			{
-				print_proof(proof_extension);
-			}
+				cout << "w " << endl;
 
-			//free allocated memory
-			proof_extension.clear();			
-		}
-		break;
-
-		case DC:
-		{
-			if (!CheckQuery(query, argv)) {
-				return 1;
-			}
-
-			uint32_t argument = std::stoi(query);
-			list<uint32_t> proof_extension;
-			bool cred_accepted = false;
-
-			switch (Enums::string_to_sem(sem)) {
-			case CO:
-				cred_accepted = Solver_DC_CO::solve(argument, framework, proof_extension);
-				break;
-			case ST:
-				cred_accepted = Solver_DC_ST::solve(argument, framework, proof_extension);
-				break;
-			default:
-				cerr << argv[0] << ": Unsupported semantics\n";
-				return 1;
-			}
-
-			cout << (cred_accepted ? "YES" : "NO") << endl;
-			if (cred_accepted)
-			{
-				print_proof(proof_extension);
+				if (!proof_extension.empty()) {
+					for (list<uint32_t>::iterator mIter = proof_extension.begin(); mIter != proof_extension.end(); ++mIter) {
+						cout << *mIter << " ";
+					}
+					proof_extension;
+					cout << endl;
+				}
 			}
 
 			//free allocated memory
 			proof_extension.clear();
+			break;
 		}
-		break;
-
-		case SE:
-		{
-			list<uint32_t> proof_extension;
-			bool has_extension = false;
-			switch (Enums::string_to_sem(sem)) {
-			case PR:
-				has_extension = Solver_SE_PR::solve(framework, proof_extension);
-				break;
-			case ST:
-				has_extension = Solver_SE_ST::solve(framework, proof_extension);
-				break;
-			default:
-				cerr << argv[0] << ": Unsupported semantics\n";
-				return 1;
-			}
-
-			if (has_extension)
-			{
-				print_proof(proof_extension);
-			}
-			else {
-				cout << "NO" << endl;
-			}
-
-			//free allocated memory
-			proof_extension.clear();
-		}
-		break;
-			
 		default:
 			cerr << argv[0] << ": Problem not supported!\n";
 			return 1;
