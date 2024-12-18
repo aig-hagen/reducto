@@ -73,6 +73,8 @@ static pre_proc_result preprocess_state(uint32_t query_argument, AF &framework, 
 	}
 
 	//preprocess created reduct
+	reduct = PreProc_GR::calculate_cone_influence_reduct(framework, reduct, query_argument);
+
 	return PreProc_GR::reduce_by_grounded(framework, reduct, query_argument, true, false,
 		out_preprocessed_reduct, extension_build);
 }

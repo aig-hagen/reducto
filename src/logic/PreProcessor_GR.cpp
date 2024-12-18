@@ -43,8 +43,7 @@ ArrayBitSet PreProc_GR::calculate_cone_influence(AF &framework, uint32_t query, 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-ArrayBitSet PreProc_GR::calculate_cone_influence_reduct(AF &framework, ArrayBitSet reduct, uint32_t query,
-	list<ArgumentDistancePair> &list_remaining_candidates, ConeOfInfluence &coi) {
+ArrayBitSet PreProc_GR::calculate_cone_influence_reduct(AF &framework, ArrayBitSet reduct, uint32_t query) {
 	vector<uint32_t> active_args_vector;
 	vector<uint8_t> active_args_bitset(framework.num_args + 1, 0);
 
@@ -52,7 +51,6 @@ ArrayBitSet PreProc_GR::calculate_cone_influence_reduct(AF &framework, ArrayBitS
 	ls_args_unprocessed.push_back(query);
 	active_args_vector.push_back(query);
 	active_args_bitset[query] = true;
-	list_remaining_candidates.remove(ArgumentDistancePair(query, coi));
 
 	for (list<uint32_t>::iterator mIter = ls_args_unprocessed.begin(); mIter != ls_args_unprocessed.end(); ++mIter) {
 		const auto &argument = *mIter;
@@ -70,8 +68,6 @@ ArrayBitSet PreProc_GR::calculate_cone_influence_reduct(AF &framework, ArrayBitS
 
 			active_args_vector.push_back(attacker);
 			active_args_bitset[attacker] = true;
-			list_remaining_candidates.remove(ArgumentDistancePair(attacker, coi));
-
 			ls_args_unprocessed.push_back(attacker);
 		}
 	}

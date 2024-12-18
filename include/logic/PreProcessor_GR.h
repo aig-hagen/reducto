@@ -29,8 +29,7 @@ class PreProc_GR {
 public:
 
 	static ArrayBitSet calculate_cone_influence(AF &framework, uint32_t query, ConeOfInfluence &out_coi);
-	static ArrayBitSet calculate_cone_influence_reduct(AF &framework, ArrayBitSet reduct, uint32_t query,
-		list<ArgumentDistancePair> &list_remaining_candidates, ConeOfInfluence &coi);
+	static ArrayBitSet calculate_cone_influence_reduct(AF &framework, ArrayBitSet reduct, uint32_t query);
 
 	/// <summary>
 	/// This method prepares the data before it being processed by the solver and checks if a solution can be easily drawn
