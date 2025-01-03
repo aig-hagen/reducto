@@ -13,7 +13,6 @@
 #include "PreProcessor_GR_parallel.h"
 #include "Reduct.h"
 #include "SatSolver.h"
-#include "SatSolver_cadical.h"
 #include "ScepticalCheck.h"
 #include "ToolsSolver.h"
 #include "omp.h"

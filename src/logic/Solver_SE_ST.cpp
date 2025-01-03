@@ -6,7 +6,7 @@ static bool start_checking(AF &framework, ArrayBitSet &active_args, list<uint32_
 {
 	uint64_t numVars = active_args._array.size();
 	SatSolver *solver = NULL;
-	solver = new SatSolver_cadical(numVars);
+	solver = new SatSolver(numVars);
 	Encoding::add_clauses_nonempty_stable_set(*solver, framework, active_args);
 	bool has_solution = (*solver).solve();
 	if (has_solution) {

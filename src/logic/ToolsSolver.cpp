@@ -23,7 +23,7 @@ void Tools_Solver::UpdateCertificate(std::__cxx11::list<uint32_t> &certificate_e
 bool Tools_Solver::check_existance_stable_extension(AF &framework, ArrayBitSet &active_args, list<uint32_t> &proof_extension) {
 	uint64_t numVars = active_args._array.size();
 	SatSolver *solver = NULL;
-	solver = new SatSolver_cadical(numVars);
+	solver = new SatSolver(numVars);
 	Encoding::add_clauses_nonempty_stable_set(*solver, framework, active_args);
 	bool has_solution = (*solver).solve();
 	if (has_solution) {

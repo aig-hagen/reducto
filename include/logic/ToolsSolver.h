@@ -11,7 +11,6 @@
 #include "Decoding.h"
 #include "Encoding.h"
 #include "SatSolver.h"
-#include "SatSolver_cadical.h"
 
 #include "../util/Printer.h"
 #include "../util/ToolList.h"

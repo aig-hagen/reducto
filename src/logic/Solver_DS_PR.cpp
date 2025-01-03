@@ -37,7 +37,7 @@ static void search_complete_sets_in_state(AF &framework, ArrayBitSet &reduct, ui
 	//calculate set in state
 	uint64_t numVars = reduct._array.size();
 	SatSolver *solver = NULL;
-	solver = new SatSolver_cadical(numVars);
+	solver = new SatSolver(numVars);
 	Encoding::add_clauses_nonempty_complete_set(*solver, framework, reduct);
 	bool continue_calculation = false;
 	list<uint32_t> calculated_set = Proc_DS_PR::calculate_rejecting_set(query_argument, framework, reduct, is_rejected, is_terminated,

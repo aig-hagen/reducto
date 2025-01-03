@@ -9,7 +9,6 @@
 #include "Decoding.h"
 #include "PreProcessor_GR.h"
 #include "SatSolver.h"
-#include "SatSolver_cadical.h"
 #include "ScepticalCheck.h"
 
 #include "../util/ArrayBitSet.h"

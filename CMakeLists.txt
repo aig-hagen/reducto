@@ -35,6 +35,7 @@ set(HEADERS
 	${INCLD_LOGIC}/Heuristic3.h
 	${INCLD_LOGIC}/Heuristic4.h
 	${INCLD_LOGIC}/Heuristic5.h
+	${INCLD_LOGIC}/ipasir.h
 	${INCLD_LOGIC}/Parser_iccma.h
 	${INCLD_LOGIC}/PreProcessor_GR.h
 	${INCLD_LOGIC}/PreProcessor_GR_parallel.h
@@ -43,7 +44,6 @@ set(HEADERS
 	${INCLD_LOGIC}/IPrioHeuristic.h
 	${INCLD_LOGIC}/Reduct.h 
 	${INCLD_LOGIC}/SatSolver.h
-	${INCLD_LOGIC}/SatSolver_cadical.h
 	${INCLD_LOGIC}/ScepticalCheck.h 
 	${INCLD_LOGIC}/Solver_DC_CO.h
 	${INCLD_LOGIC}/Solver_DC_ST.h
@@ -80,7 +80,7 @@ set(SRCFILES
 	${SRC_LOGIC}PriorityStackManager.cpp
 	${SRC_LOGIC}Processor_DS_PR.cpp
 	${SRC_LOGIC}Reduct.cpp 
-	${SRC_LOGIC}SatSolver_cadical.cpp
+	${SRC_LOGIC}SatSolver.cpp
 	${SRC_LOGIC}ScepticalCheck.cpp
 	${SRC_LOGIC}Solver_DC_CO.cpp
 	${SRC_LOGIC}Solver_DC_ST.cpp

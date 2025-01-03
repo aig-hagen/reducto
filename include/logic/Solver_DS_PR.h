@@ -30,7 +30,6 @@ extern "C" {
 #include "Processor_DS_PR.h"
 #include "Reduct.h"
 #include "SatSolver.h"
-#include "SatSolver_cadical.h"
 #include "ScepticalCheck.h"
 #include "ToolsSolver.h"
 #include "omp.h"

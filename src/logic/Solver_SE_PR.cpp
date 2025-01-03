@@ -5,7 +5,7 @@
 static bool start_checking(AF &framework, ArrayBitSet &active_args, list<uint32_t> &proof_extension)
 {
 	SatSolver *solver = NULL;
-	solver = new SatSolver_cadical(active_args._array.size());
+	solver = new SatSolver(active_args._array.size());
 	Encoding::add_clauses_nonempty_complete_set(*solver, framework, active_args);
 	bool has_solution = (*solver).solve();
 	bool calculated_extension = has_solution ? true : !proof_extension.empty();
@@ -20,7 +20,7 @@ static bool start_checking(AF &framework, ArrayBitSet &active_args, list<uint32_
 			break;
 		}
 		// calculate complete extension in new reduct
-		solver = new SatSolver_cadical(active_args._array.size());
+		solver = new SatSolver(active_args._array.size());
 		Encoding::add_clauses_nonempty_complete_set(*solver, framework, active_args);
 		has_solution = (*solver).solve();
 		//if has_solution == false, then no more complete set can be calculated, therefor extension found so far cannot be extended, and is therefor preferred

@@ -6,7 +6,7 @@
 bool start_checking(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, list<uint32_t> &proof_extension) {
 	uint64_t numVars = active_args._array.size();
 	SatSolver *solver = NULL;
-	solver = new SatSolver_cadical(numVars);
+	solver = new SatSolver(numVars);
 	Encoding::add_clauses_nonempty_complete_set(*solver, framework, active_args);
 	bool has_solution_with_query = (*solver).solve(Encoding::get_literal_accepted(query_argument, false),
 		Encoding::get_literal_rejected(framework.num_args, query_argument, true));
