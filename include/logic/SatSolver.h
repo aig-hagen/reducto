@@ -6,7 +6,7 @@
 #include <vector>
 
 extern "C" {
-	#include "ipasir.h"
+	#include "../../lib/ipasir.h"
 }
 
 /// <summary>
