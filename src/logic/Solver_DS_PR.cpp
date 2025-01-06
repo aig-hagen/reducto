@@ -2,9 +2,6 @@
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-/*===========================================================================================================================================================*/
-/*===========================================================================================================================================================*/
-
 void process_sat_solution(bool has_found_set, std::__cxx11::list<uint32_t> &extension_build, std::__cxx11::list<uint32_t> &calculated_set,
 	bool &is_rejected, std::__cxx11::list<uint32_t> &certificate_extension,
 	uint32_t query_argument, AF &framework, ConeOfInfluence &coi)
@@ -36,7 +33,7 @@ static bool search_complete_sets_in_state(AF &framework, ArrayBitSet &reduct, ui
 	process_sat_solution(continue_calculation, extension_build, calculated_set, is_rejected, certificate_extension, 
 		query_argument, framework, coi);
 
-	while (continue_calculation) {
+	while (continue_calculation && !is_rejected) {
 		//iterate through additional sets in state
 		Encoding::add_complement_clause(*solver, reduct);
 		calculated_set = Proc_DS_PR::calculate_rejecting_set(query_argument, framework, reduct, is_rejected, 
