@@ -13,7 +13,6 @@
 #include "ScepticalCheck.h"
 
 #include "../util/ArrayBitSet.h"
-#include "../util/Tools_omp.h"
 
 using namespace std;
 

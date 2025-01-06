@@ -16,17 +16,7 @@ extern "C" {
 #include "Decoding.h"
 #include "Encoding.h"
 #include "Enums.h"
-#include "ExtensionPrioritised.h"
-#include "HeuristicDummy.h"
-#include "Heuristic1.h"
-#include "Heuristic2.h"
-#include "Heuristic3.h"
-#include "Heuristic4.h"
-#include "Heuristic5.h"
-#include "IPrioHeuristic.h"
 #include "PreProcessor_GR.h"
-#include "PreProcessor_GR_parallel.h"
-#include "PriorityStackManager.h"
 #include "Processor_DS_PR.h"
 #include "Reduct.h"
 #include "SatSolver.h"
@@ -36,7 +26,6 @@ extern "C" {
 
 #include "../util/Printer.h"
 #include "../util/ToolList.h"
-#include "../util/Tools_omp.h"
 
 using namespace std;
 

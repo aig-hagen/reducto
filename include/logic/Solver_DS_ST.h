@@ -10,7 +10,6 @@
 #include "Encoding.h"
 #include "Enums.h"
 #include "PreProcessor_GR.h"
-#include "PreProcessor_GR_parallel.h"
 #include "Reduct.h"
 #include "SatSolver.h"
 #include "SatSolver_cadical.h"
@@ -19,7 +18,6 @@
 
 #include "../util/Printer.h"
 #include "../util/ToolList.h"
-#include "../util/Tools_omp.h"
 
 using namespace std;
 

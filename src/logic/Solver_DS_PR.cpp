@@ -7,7 +7,7 @@
 
 void process_sat_solution(bool has_found_set, std::__cxx11::list<uint32_t> &extension_build, std::__cxx11::list<uint32_t> &calculated_set,
 	bool &is_rejected, std::__cxx11::list<uint32_t> &certificate_extension,
-	uint32_t query_argument, AF &framework, IPrioHeuristic &heuristic, ConeOfInfluence &coi)
+	uint32_t query_argument, AF &framework, ConeOfInfluence &coi)
 {
 	if (has_found_set && is_rejected) {
 		list<uint32_t> new_extension = tools::ToolList::extend_list(extension_build, calculated_set);
@@ -22,7 +22,7 @@ void process_sat_solution(bool has_found_set, std::__cxx11::list<uint32_t> &exte
 
 static bool search_complete_sets_in_state(AF &framework, ArrayBitSet &reduct, uint32_t query_argument,	
 	std::__cxx11::list<uint32_t> &extension_build, 
-	std::__cxx11::list<uint32_t> &certificate_extension, IPrioHeuristic &heuristic, ConeOfInfluence &coi)
+	std::__cxx11::list<uint32_t> &certificate_extension, ConeOfInfluence &coi)
 {
 	//calculate set in state
 	uint64_t numVars = reduct._array.size();
@@ -34,7 +34,7 @@ static bool search_complete_sets_in_state(AF &framework, ArrayBitSet &reduct, ui
 	list<uint32_t> calculated_set = Proc_DS_PR::calculate_rejecting_set(query_argument, framework, reduct, is_rejected,
 		*solver, continue_calculation, true);
 	process_sat_solution(continue_calculation, extension_build, calculated_set, is_rejected, certificate_extension, 
-		query_argument, framework, heuristic, coi);
+		query_argument, framework, coi);
 
 	while (continue_calculation) {
 		//iterate through additional sets in state
@@ -42,7 +42,7 @@ static bool search_complete_sets_in_state(AF &framework, ArrayBitSet &reduct, ui
 		calculated_set = Proc_DS_PR::calculate_rejecting_set(query_argument, framework, reduct, is_rejected, 
 			*solver, continue_calculation, false);
 		process_sat_solution(continue_calculation, extension_build, calculated_set, is_rejected, certificate_extension, 
-			query_argument, framework, heuristic, coi);
+			query_argument, framework, coi);
 	}
 	delete solver;
 	return is_rejected;
@@ -54,13 +54,10 @@ static bool search_complete_sets_in_state(AF &framework, ArrayBitSet &reduct, ui
 static bool start_checking_rejection(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, list<uint32_t> &certificate_extension,
 	ConeOfInfluence &coi)
 {
-	IPrioHeuristic *heuristic = NULL;
-	heuristic = new Heuristic5();
 	list<uint32_t> extension;
 	bool is_rejected = search_complete_sets_in_state(framework, active_args, query_argument, extension,
-		certificate_extension, *heuristic, coi);
+		certificate_extension, coi);
 
-	delete heuristic;
 	return is_rejected;
 }
 
