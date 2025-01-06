@@ -30,6 +30,20 @@ list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &
 		}
 		return list<uint32_t>();
 	}
-
-	return get_set_from_solver(solver, active_args, query_argument, framework, is_rejected);
+	else {
+		//check if set is PR, by checking if reduct has CO set
+		list<uint32_t> calculated_set = get_set_from_solver(solver, active_args, query_argument, framework, is_rejected);
+		ArrayBitSet reduct = Reduct::get_reduct_set(active_args, framework, calculated_set);
+		SatSolver *solver_reduct = NULL;
+		solver_reduct = new SatSolver_cadical(reduct._array.size());
+		Encoding::add_clauses_nonempty_complete_set(*solver_reduct, framework, reduct);
+		if (!(*solver_reduct).solve())
+		{
+			// can calculate CO set in reduct, hence set used for reduction has to be a PR set
+			// since the PR set does not contain the query, it's a counter-example
+			is_rejected = true;
+		}
+		delete solver_reduct;
+		return calculated_set;
+	}
 }
