@@ -164,10 +164,10 @@ int static execute(int argc, char **argv)
 
 			switch (Enums::string_to_sem(sem)) {
 				case PR:
-					skept_accepted = Solver_DS_PR::solve(argument, framework, proof_extension, NUM_CORES);
+					skept_accepted = Solver_DS_PR::solve(argument, framework, proof_extension);
 					break;
 				case ST:
-					skept_accepted = Solver_DS_ST::solve(argument, framework, proof_extension, NUM_CORES);
+					skept_accepted = Solver_DS_ST::solve(argument, framework, proof_extension);
 					break;
 				default:
 					cerr << argv[0] << ": Unsupported semantics\n";
@@ -197,10 +197,10 @@ int static execute(int argc, char **argv)
 
 			switch (Enums::string_to_sem(sem)) {
 			case CO:
-				cred_accepted = Solver_DC_CO::solve(argument, framework, proof_extension, NUM_CORES);
+				cred_accepted = Solver_DC_CO::solve(argument, framework, proof_extension);
 				break;
 			case ST:
-				cred_accepted = Solver_DC_ST::solve(argument, framework, proof_extension, NUM_CORES);
+				cred_accepted = Solver_DC_ST::solve(argument, framework, proof_extension);
 				break;
 			default:
 				cerr << argv[0] << ": Unsupported semantics\n";
@@ -224,10 +224,10 @@ int static execute(int argc, char **argv)
 			bool has_extension = false;
 			switch (Enums::string_to_sem(sem)) {
 			case PR:
-				has_extension = Solver_SE_PR::solve(framework, proof_extension, NUM_CORES);
+				has_extension = Solver_SE_PR::solve(framework, proof_extension);
 				break;
 			case ST:
-				has_extension = Solver_SE_ST::solve(framework, proof_extension, NUM_CORES);
+				has_extension = Solver_SE_ST::solve(framework, proof_extension);
 				break;
 			default:
 				cerr << argv[0] << ": Unsupported semantics\n";

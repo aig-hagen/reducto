@@ -30,17 +30,12 @@ public:
 	/// <param name="framework">The abstract argumentation framework of the problem.</param>
 	/// <param name="active_args">The arguments that are active in the current state of the framework.</param>
 	/// <param name="is_rejected">Flag used to signal that the argument is rejected or not.</param>
-	/// <param name="is_terminated">Flag used to signal that the computation to solve the problem shall be terminated.</param>
 	/// <param name="solver">The solver used to calculate sets for this state of the framework.</param>
 	/// <param name="has_found_solution">Flag used to signal if the calculation of sets in state should be continued.</param>
 	/// <param name="found_counter_evidence">Flag that indicates that the processor has found an nonempty adm. set that is a counter evidence</param>
 	/// <param name="is_first_iteration">Flag indicating if this iteration to calculate a set is the first in the specified state or not.</param>
 	/// <returns>An non emtpy set, if such a set can be computed. Empty list otherwise.</returns>
-	static list<uint32_t> calculate_rejecting_set(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &is_rejected, bool &is_terminated,
+	static list<uint32_t> calculate_rejecting_set(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &is_rejected,
 		SatSolver &solver, bool &has_found_solution, bool is_first_iteration);
-
-	static list<uint32_t> calculate_rejecting_set_in_random_coi(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, 
-		bool &is_rejected, bool &is_terminated,
-		SatSolver &solver, bool &has_found_solution);
 };
 #endif
