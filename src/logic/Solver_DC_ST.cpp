@@ -21,17 +21,12 @@ static bool start_checking(uint32_t query_argument, AF &framework, ArrayBitSet &
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-bool Solver_DC_ST::solve(uint32_t query_argument, AF &framework, list<uint32_t> &proof_extension, uint16_t numCores)
+bool Solver_DC_ST::solve(uint32_t query_argument, AF &framework, list<uint32_t> &proof_extension)
 {
 	ArrayBitSet initial_reduct = ArrayBitSet();
 	pre_proc_result result_preProcessor;
-	if (numCores == 1) {
-		result_preProcessor = PreProc_GR::process_only_grounded(framework, query_argument, false, true, initial_reduct, proof_extension);
-	}
-	else {
-		result_preProcessor = PreProc_GR_parallel::process_only_grounded(framework, query_argument, false, true, initial_reduct, proof_extension);
-	}
-
+	result_preProcessor = PreProc_GR::process_only_grounded(framework, query_argument, false, true, initial_reduct, proof_extension);
+	
 	switch (result_preProcessor) {
 
 	case rejected:

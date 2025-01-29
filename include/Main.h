@@ -33,7 +33,6 @@
 #include <iostream>
 #include <stdio.h>
 #include <stdint.h>
-#include <omp.h>
 #include <getopt.h>
 
 extern "C" {
@@ -52,15 +51,7 @@ extern "C" {
 #include "../include/logic/Enums.h"
 
 constexpr auto PROGRAM_NAME = "ParallelSolver";
-constexpr auto VERSIONNUMBER = "1.55";
-/// <summary>
-/// Number of cores requested to use during the computation of a solution.
-/// Keep in mind that the actual number of cores used depends on the 
-/// OS scheduler and might be lower. If value == 0, then the system 
-/// is free to choose the /// number of cores automatically without any 
-/// restrictions.
-/// </summary>
-constexpr auto NUM_CORES = 0;
+constexpr auto VERSIONNUMBER = "1.57";
 
 /// <summary>
 /// Flags used for internal processing.

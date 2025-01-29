@@ -2,12 +2,13 @@
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static std::__cxx11::list<uint32_t> get_set_from_solver(SatSolver &solver, ArrayBitSet &active_args, uint32_t query_argument, AF &framework, bool &is_rejected, bool &is_terminated)
+static std::__cxx11::list<uint32_t> get_set_from_solver(SatSolver &solver, ArrayBitSet &active_args, uint32_t query_argument, AF &framework, 
+	bool &is_rejected)
 {
 	list<uint32_t> initial_set = Decoding::get_set_from_solver(solver, active_args);
 
 	if (ScepticalCheck::check_rejection(query_argument, initial_set, framework)) {
-		tools::ToolsOMP::set_is_rejected(is_rejected, is_terminated);
+		is_rejected = true;
 	}
 
 	return initial_set;
@@ -16,7 +17,7 @@ static std::__cxx11::list<uint32_t> get_set_from_solver(SatSolver &solver, Array
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &is_rejected, bool &is_terminated,
+list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &is_rejected,
 	SatSolver &solver, bool &has_solution_without_query, bool is_first_iteration) {
 	has_solution_without_query = solver.solve(Encoding::get_literal_accepted(query_argument, true));
 	if (!has_solution_without_query) {
@@ -25,23 +26,24 @@ list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &
 			// this is the first iteration, so there have been no solution excluded by a complement clause
 			// there is no nonempty adm. set, with or without the query argument, that's why there is only the empty set as adm. set
 			// which means we found a complete extension, which is not containing the query argument, hence we found a counter evidence
-			tools::ToolsOMP::set_is_rejected(is_rejected, is_terminated);
+			is_rejected = true;
 		}
 		return list<uint32_t>();
 	}
-
-	return get_set_from_solver(solver, active_args, query_argument, framework, is_rejected, is_terminated);
-}
-/*===========================================================================================================================================================*/
-/*===========================================================================================================================================================*/
-
-list<uint32_t> Proc_DS_PR::calculate_rejecting_set_in_random_coi(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, 
-	bool &is_rejected, bool &is_terminated,
-	SatSolver &solver, bool &has_found_adm_set) {
-	has_found_adm_set = solver.solve();
-	if (!has_found_adm_set) {
-		return list<uint32_t>();
+	else {
+		//check if set is PR, by checking if reduct has CO set
+		list<uint32_t> calculated_set = get_set_from_solver(solver, active_args, query_argument, framework, is_rejected);
+		ArrayBitSet reduct = Reduct::get_reduct_set(active_args, framework, calculated_set);
+		SatSolver *solver_reduct = NULL;
+		solver_reduct = new SatSolver_cadical(reduct._array.size());
+		Encoding::add_clauses_nonempty_complete_set(*solver_reduct, framework, reduct);
+		if (!(*solver_reduct).solve())
+		{
+			// can calculate CO set in reduct, hence set used for reduction has to be a PR set
+			// since the PR set does not contain the query, it's a counter-example
+			is_rejected = true;
+		}
+		delete solver_reduct;
+		return calculated_set;
 	}
-
-	return get_set_from_solver(solver, active_args, query_argument, framework, is_rejected, is_terminated);
 }

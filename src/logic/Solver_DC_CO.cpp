@@ -21,20 +21,14 @@ bool start_checking(uint32_t query_argument, AF &framework, ArrayBitSet &active_
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-bool Solver_DC_CO::solve(uint32_t query_argument, AF &framework, list<uint32_t> &proof_extension, uint16_t numCores) {
+bool Solver_DC_CO::solve(uint32_t query_argument, AF &framework, list<uint32_t> &proof_extension) {
 
 	ArrayBitSet initial_reduct = ArrayBitSet();
 	pre_proc_result result_preProcessor;
 	ConeOfInfluence coi(framework);
 
-	if (numCores == 1) {
-		result_preProcessor = PreProc_GR::process(framework, query_argument, false, true, initial_reduct, proof_extension, coi);
-	}
-	else {
-		result_preProcessor = PreProc_GR_parallel::process(framework, query_argument, false, true, initial_reduct, proof_extension, coi);
-	}
+	result_preProcessor = PreProc_GR::process(framework, query_argument, false, true, initial_reduct, proof_extension, coi);
 	
-
 	switch (result_preProcessor) {
 
 	case accepted:
