@@ -51,7 +51,7 @@ extern "C" {
 #include "../include/logic/Enums.h"
 
 constexpr auto PROGRAM_NAME = "ParallelSolver";
-constexpr auto VERSIONNUMBER = "1.57";
+constexpr auto VERSIONNUMBER = "2.1";
 
 /// <summary>
 /// Flags used for internal processing.
