@@ -44,7 +44,7 @@ public:
         std::vector<uint8_t> copy_bitset;
         copy_bitset.resize(bitset_size);
 
-        for (int i = 0; i < bitset_size; i++) {
+        for (uint64_t i = 0; i < bitset_size; i++) {
             if (i < vector_size) {
                 copy_vector.push_back(_array[i]);
             }
