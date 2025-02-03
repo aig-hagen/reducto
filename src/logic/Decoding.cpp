@@ -7,7 +7,7 @@ list<uint32_t> Decoding::get_set_from_solver(SatSolver &solver, ArrayBitSet &act
 {
 	list<uint32_t> output;
 
-	for (int i = 0; i < activeArgs._array.size(); i++) {
+	for (std::vector<unsigned int>::size_type i = 0; i < activeArgs._array.size(); i++) {
 		if (solver.check_var_model(activeArgs._array[i]))
 		{
 			output.push_back(activeArgs._array[i]);
