@@ -49,7 +49,7 @@ void Printer::print_vector(vector<uint32_t> &vector) {
 	}
 
 	cout << vector[0];
-	for (int i = 1; i < vector.size(); i++) {
+	for (std::vector<unsigned int>::size_type i = 1; i < vector.size(); i++) {
 		cout << " " << vector[i];
 	}
 }
@@ -63,7 +63,7 @@ void Printer::print_vector(vector<int64_t> &vector) {
 	}
 
 	cout << vector[0];
-	for (int i = 1; i < vector.size(); i++) {
+	for (std::vector<unsigned int>::size_type i = 1; i < vector.size(); i++) {
 		cout << " " << vector[i];
 	}
 }
