@@ -53,7 +53,6 @@ void static print_proof(std::__cxx11::list<uint32_t> &proof_extension)
 		for (list<uint32_t>::iterator mIter = proof_extension.begin(); mIter != proof_extension.end(); ++mIter) {
 			cout << *mIter << " ";
 		}
-		proof_extension;
 		cout << endl;
 	}
 }

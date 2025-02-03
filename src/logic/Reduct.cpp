@@ -6,7 +6,7 @@ ArrayBitSet Reduct::get_reduct(ArrayBitSet &activeArguments, AF &framework, uint
 	vector<uint8_t> reduct_bitset;
 	reduct_bitset.resize(static_cast<uint64_t>(framework.num_args) + 1);
 
-	for (int i = 0; i < activeArguments._array.size(); i++) {
+	for (std::vector<unsigned int>::size_type i = 0; i < activeArguments._array.size(); i++) {
 
 		if (activeArguments._array[i] == argument || framework.exists_attack(argument, activeArguments._array[i])){
 			continue;

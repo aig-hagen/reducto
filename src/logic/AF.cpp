@@ -23,8 +23,6 @@ void AF::initialize(uint32_t number_args) {
 
 void AF::finish_initilization()
 {
-	const uint64_t tmp_num_args = static_cast<uint64_t>(num_args) + 1;
-
 	for (const pair<uint32_t, uint32_t> &attack : attacks) {
 		int32_t source = attack.first;
 		int32_t target = attack.second;
