@@ -38,7 +38,7 @@ void SatSolver_cadical::add_clause_short(int64_t lit1, int64_t lit2){
 std::vector<bool> SatSolver_cadical::get_model() {
     std::vector<bool> model;
     // Get the model from the CMS solver
-    for (int i = 1; i < _num_arguments + 1; ++i) {
+    for (uint32_t i = 1; i < _num_arguments + 1; ++i) {
         model.push_back(cadical_solver.val(i) > 0);
     }
     return model;

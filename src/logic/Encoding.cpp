@@ -109,7 +109,7 @@ static void add_admissible_encoding(SatSolver &solver, AF &framework, ArrayBitSe
 
 	vector<uint32_t> attackers = framework.attackers[argument];
 
-	for (int i = 0; i < attackers.size(); i++)
+	for (std::vector<unsigned int>::size_type i = 0; i < attackers.size(); i++)
 	{
 		if (activeArgs._bitset[attackers[i]])
 		{
@@ -133,7 +133,7 @@ static void add_complete_encoding(SatSolver &solver, AF &framework, ArrayBitSet 
 	
 	vector<uint32_t> attackers = framework.attackers[argument];
 
-	for (int i = 0; i < attackers.size(); i++)
+	for (std::vector<unsigned int>::size_type i = 0; i < attackers.size(); i++)
 	{
 		if (activeArgs._bitset[attackers[i]])
 		{
@@ -157,7 +157,7 @@ void Encoding::add_clauses_nonempty_admissible_set(SatSolver &solver, AF &framew
 {
 	vector<int64_t> non_empty_clause;
 
-	for (int i = 0; i < activeArgs._array.size(); i++) {
+	for (std::vector<unsigned int>::size_type i = 0; i < activeArgs._array.size(); i++) {
 		non_empty_clause.push_back(Encoding::get_literal_accepted(activeArgs._array[i], false));
 		add_admissible_encoding(solver, framework, activeArgs, activeArgs._array[i]);
 	}
@@ -173,7 +173,7 @@ void Encoding::add_clauses_nonempty_complete_set(SatSolver &solver, AF &framewor
 {
 	vector<int64_t> non_empty_clause;
 
-	for (int i = 0; i < activeArgs._array.size(); i++) {
+	for (std::vector<unsigned int>::size_type i = 0; i < activeArgs._array.size(); i++) {
 		non_empty_clause.push_back(Encoding::get_literal_accepted(activeArgs._array[i], false));
 		add_complete_encoding(solver, framework, activeArgs, activeArgs._array[i]);
 	}
@@ -189,7 +189,7 @@ void Encoding::add_clauses_nonempty_stable_set(SatSolver &solver, AF &framework,
 {
 	vector<int64_t> non_empty_clause;
 
-	for (int i = 0; i < activeArgs._array.size(); i++) {
+	for (std::vector<unsigned int>::size_type i = 0; i < activeArgs._array.size(); i++) {
 		non_empty_clause.push_back(Encoding::get_literal_accepted(activeArgs._array[i], false));
 		add_complete_encoding(solver, framework, activeArgs, activeArgs._array[i]);
 
@@ -209,7 +209,7 @@ void Encoding::add_complement_clause(SatSolver &solver, ArrayBitSet &activeArgs)
 {
 	vector<int64_t> clause;
 
-	for (int i = 0; i < activeArgs._array.size(); i++) {
+	for (std::vector<unsigned int>::size_type i = 0; i < activeArgs._array.size(); i++) {
 		int64_t in_variable = get_literal_accepted(activeArgs._array[i], false);
 		if (!solver.check_var_model(in_variable)) {
 			// new solutions have to contain at least one input variable, that is not contained in the current solution
