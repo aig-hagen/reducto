@@ -79,7 +79,7 @@ set(SOURCES ${SRCFILES} ${HEADERS})
 # --- cadical part I ---
 
 # Set path to the directory containing libcadical.a
-set(CADICAL_DIR "${CMAKE_CURRENT_LIST_DIR}/lib/cadical")
+set(CADICAL_DIR "${CMAKE_CURRENT_LIST_DIR}/sat/cadical")
 
 # Add the directory containing libcadical.a to the list of paths to search for libraries
 link_directories("${CADICAL_DIR}/build")
