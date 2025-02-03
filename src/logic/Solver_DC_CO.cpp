@@ -41,6 +41,6 @@ bool Solver_DC_CO::solve(uint32_t query_argument, AF &framework, list<uint32_t> 
 		return start_checking(query_argument, framework, initial_reduct, proof_extension);
 
 	default:
-		return unknown;
+		return start_checking(query_argument, framework, initial_reduct, proof_extension);
 	}
 }

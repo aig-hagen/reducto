@@ -17,7 +17,7 @@ ArrayBitSet PreProc_GR::calculate_cone_influence(AF &framework, uint32_t query, 
 	for (list<uint32_t>::iterator mIter = ls_args_unprocessed.begin(); mIter != ls_args_unprocessed.end(); ++mIter) {
 		const auto &argument = *mIter;
 		uint32_t distance = out_coi.Distance_to_query[argument];
-		for (int i = 0; i < framework.attackers[argument].size(); i++) {
+		for (std::vector<unsigned int>::size_type i = 0; i < framework.attackers[argument].size(); i++) {
 			uint32_t attacker = framework.attackers[argument][i];
 			if (out_coi.Distance_to_query[attacker] > 0 || attacker == query) {
 				//attacker was already visited
@@ -54,7 +54,7 @@ ArrayBitSet PreProc_GR::calculate_cone_influence_reduct(AF &framework, ArrayBitS
 
 	for (list<uint32_t>::iterator mIter = ls_args_unprocessed.begin(); mIter != ls_args_unprocessed.end(); ++mIter) {
 		const auto &argument = *mIter;
-		for (int i = 0; i < framework.attackers[argument].size(); i++) {
+		for (std::vector<unsigned int>::size_type i = 0; i < framework.attackers[argument].size(); i++) {
 			uint32_t attacker = framework.attackers[argument][i];
 			if (active_args_bitset[attacker] == true) {
 				//attacker was already visited
@@ -88,7 +88,7 @@ pre_proc_result PreProc_GR::reduce_by_grounded(AF &framework, ArrayBitSet &activ
 	vector<uint32_t> num_attacker;
 	num_attacker.resize(framework.num_args + 1);
 	//iterate through active arguments
-	for (int i = 0; i < active_args._array.size(); i++) {
+	for (std::vector<unsigned int>::size_type i = 0; i < active_args._array.size(); i++) {
 		//check if argument is unattacked
 		if (framework.attackers[active_args._array[i]].empty()) {
 			ls_unattacked_unprocessed.push_back(active_args._array[i]);
@@ -124,7 +124,7 @@ pre_proc_result PreProc_GR::reduce_by_grounded(AF &framework, ArrayBitSet &activ
 		}
 
 		//iterate through victims of the victims of ua
-		for (int i = 0; i < framework.victims[ua].size(); i++) {
+		for (std::vector<unsigned int>::size_type i = 0; i < framework.victims[ua].size(); i++) {
 			uint32_t vua = framework.victims[ua][i];
 
 			if (!out_reduct._bitset[vua]) {
@@ -132,7 +132,7 @@ pre_proc_result PreProc_GR::reduce_by_grounded(AF &framework, ArrayBitSet &activ
 				continue;
 			}
 
-			for (int j = 0; j < framework.victims[vua].size(); j++) {
+			for (std::vector<unsigned int>::size_type j = 0; j < framework.victims[vua].size(); j++) {
 				uint32_t vvua = framework.victims[vua][j];
 
 				if (!out_reduct._bitset[vvua]) {
@@ -186,7 +186,7 @@ ArrayBitSet PreProc_GR::process_only_grounded(AF &framework, list<uint32_t> &out
 	//build basic active arguments
 	vector<uint32_t> active_args_vector;
 	vector<uint8_t> active_args_bitset(framework.num_args + 1, 1);
-	for (int i = 0; i < framework.num_args; i++) {
+	for (uint32_t i = 0; i < framework.num_args; i++) {
 		active_args_vector.push_back(i + 1);
 	}
 	ArrayBitSet active_args = ArrayBitSet(active_args_vector, active_args_bitset);
@@ -214,7 +214,7 @@ pre_proc_result PreProc_GR::process_only_grounded(AF &framework, uint32_t query,
 	//build basic active arguments
 	vector<uint32_t> active_args_vector;
 	vector<uint8_t> active_args_bitset(framework.num_args + 1, 1);
-	for (int i = 0; i < framework.num_args; i++) {
+	for (uint32_t i = 0; i < framework.num_args; i++) {
 		active_args_vector.push_back(i + 1);
 	}
 	ArrayBitSet active_args = ArrayBitSet(active_args_vector, active_args_bitset);
