@@ -8,7 +8,6 @@ static bool start_checking(AF &framework, ArrayBitSet &active_args, list<uint32_
 	solver = new SatSolver_cadical(active_args._array.size());
 	Encoding::add_clauses_nonempty_complete_set(*solver, framework, active_args);
 	bool has_solution = (*solver).solve();
-	bool calculated_extension = has_solution ? true : !proof_extension.empty();
 	//extend complete extension to get preferred extension
 	while (has_solution) {
 		list<uint32_t> calculated_extension = Decoding::get_set_from_solver(*solver, active_args);
