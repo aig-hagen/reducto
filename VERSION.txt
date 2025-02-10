@@ -27,7 +27,6 @@ Description:
 - added lean method to add short clauses with up to 2 arguments
 - improved parsing using stringstream
 - uses a c++ data model
-- only supports CaDiCal as Sat solver
 - only active arguments implemented as 2 vectors, one for iterating and the other for O(1) queries of existance
 - attackers / victims only implemented as simple Vector, existance queries are answered using the unordered_set of attacks
 - uses new class structure, which better structures the code
@@ -35,6 +34,7 @@ Description:
 - only calculate adm. set which do not include the query argument
 - no limitation of iterations per reduct
 - no parallel code (no OMP)
+- implements IPASIR interface
 
 - preprocessing:
 	- check self attack of query -> if true rejects query
