@@ -28,8 +28,10 @@ public:
 	/// at the specified path.
 	/// </summary>
 	/// <param name="framework"> Object of the framework to create.</param>
+	/// <param name="query"> String that describes the query argument.</param>
 	/// <param name="file">String that describes the location of the file to open.</param>
-	static void parse_af_i23(AF &framework, string file);
+	/// <returns> The query argument of this task <\returns>
+	static uint32_t parse_af_i23(AF &framework, string query, string file);
 
 	/// <summary>
 	/// This method parses an abstract argumentation framework from a file, which complies to the tgf format, located 
@@ -37,7 +39,8 @@ public:
 	/// </summary>
 	/// <param name="framework"> Object of the framework to create.</param>
 	/// <param name="file">String that describes the location of the file to open.</param>
-	static void parse_af_tgf(AF &framework, string file);
+	/// <returns> The query argument of this task <\returns>
+	static uint32_t parse_af_tgf(AF &framework, string query, string file);
 };
 
 #endif

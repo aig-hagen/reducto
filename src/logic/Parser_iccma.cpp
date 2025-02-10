@@ -2,7 +2,7 @@
 
 using namespace std;
 
-void ParserICCMA::parse_af_i23(AF &framework, string file)
+uint32_t ParserICCMA::parse_af_i23(AF &framework, string query, string file)
 {
 	ifstream input;
 	input.open(file);
@@ -39,10 +39,17 @@ void ParserICCMA::parse_af_i23(AF &framework, string file)
 
 	input.close();
 	framework.finish_initilization();
+
+	if (!query.empty()) {
+		return std::stoi(query);
+	}
+	else {
+		return 0;
+	}
 }
 
 
-void ParserICCMA::parse_af_tgf(AF &framework, string file) {
+uint32_t ParserICCMA::parse_af_tgf(AF &framework, string query, string file) {
 	ifstream input;
 	input.open(file);
 
@@ -76,4 +83,11 @@ void ParserICCMA::parse_af_tgf(AF &framework, string file) {
 
 	input.close();
 	framework.finish_initilization();
+
+	if (!query.empty()) {
+		return  arg_str_to_int[query];
+	}
+	else {
+		return 0;
+	}
 }
