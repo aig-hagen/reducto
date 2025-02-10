@@ -21,6 +21,8 @@ enum semantics { PR, CO, ST, UNKNOWN_SEM };
 /// </summary>
 enum pre_proc_result { accepted, rejected, unknown };
 
+enum format {I23, TGF, UNKNOWN_FORMAT};
+
 using namespace std;
 
 /// <summary>
@@ -42,6 +44,13 @@ public:
 	/// <param name="semantics_abbreviation">String containing the abbreviation of the semantics as used in the enum.</param>
 	/// <returns>Semantics corresponding to the specified string.</returns>
 	static semantics string_to_sem(string semantics_abbreviation);
+
+	/// <summary>
+	/// This method converts the specified string into a format.
+	/// </summary>
+	/// <param name="format_abbreviation">String containing the abbreviation of the format as used in the enum.</param>
+	/// <returns>Format corresponding to the specified string.</returns>
+	static format string_to_format(string format_abbreviation);
 };
 
 #endif

@@ -31,7 +31,7 @@ void static print_version()
 
 void static print_formats()
 {
-	cout << "[i23]\n";
+	cout << "[i23, tgf]\n";
 }
 
 /*===========================================================================================================================================================*/
@@ -60,9 +60,9 @@ void static print_proof(std::__cxx11::list<uint32_t> &proof_extension)
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-bool static check_query(std::string &query, char **argv)
+bool static check_query(uint32_t query, char **argv)
 {
-	if (query.empty()) {
+	if (query == 0) {
 		cerr << argv[0] << ": Query argument must be specified via -a flag\n";
 		return false;
 	}
@@ -139,12 +139,17 @@ int static execute(int argc, char **argv)
 	}
 
 	AF framework;
-	if (fileformat == "i23") {
-		ParserICCMA::parse_af(framework, file);
-	}
-	else {
-		cerr << argv[0] << ": Unsupported file format\n";
-		return 1;
+	uint32_t query_argument = 0;
+	switch (Enums::string_to_format(fileformat)) {
+		case I23:
+			query_argument = ParserICCMA::parse_af_i23(framework, query, file);
+			break;
+		case TGF:
+			query_argument = ParserICCMA::parse_af_tgf(framework, query, file);
+			break;
+		default:
+			cerr << argv[0] << ": Unsupported file format\n";
+			return 1;
 	}
 
 	string task = problem.substr(0, problem.find("-"));
@@ -153,20 +158,19 @@ int static execute(int argc, char **argv)
 	switch (Enums::string_to_task(task)) {
 		case DS:
 		{
-			if (!check_query(query, argv)) {
+			if (!check_query(query_argument, argv)) {
 				return 1;
 			}			
 
-			uint32_t argument = std::stoi(query);
 			list<uint32_t> proof_extension;
 			bool skept_accepted = false;
 
 			switch (Enums::string_to_sem(sem)) {
 				case PR:
-					skept_accepted = Solver_DS_PR::solve(argument, framework, proof_extension);
+					skept_accepted = Solver_DS_PR::solve(query_argument, framework, proof_extension);
 					break;
 				case ST:
-					skept_accepted = Solver_DS_ST::solve(argument, framework, proof_extension);
+					skept_accepted = Solver_DS_ST::solve(query_argument, framework, proof_extension);
 					break;
 				default:
 					cerr << argv[0] << ": Unsupported semantics\n";
@@ -186,20 +190,19 @@ int static execute(int argc, char **argv)
 
 		case DC:
 		{
-			if (!check_query(query, argv)) {
+			if (!check_query(query_argument, argv)) {
 				return 1;
 			}
 
-			uint32_t argument = std::stoi(query);
 			list<uint32_t> proof_extension;
 			bool cred_accepted = false;
 
 			switch (Enums::string_to_sem(sem)) {
 			case CO:
-				cred_accepted = Solver_DC_CO::solve(argument, framework, proof_extension);
+				cred_accepted = Solver_DC_CO::solve(query_argument, framework, proof_extension);
 				break;
 			case ST:
-				cred_accepted = Solver_DC_ST::solve(argument, framework, proof_extension);
+				cred_accepted = Solver_DC_ST::solve(query_argument, framework, proof_extension);
 				break;
 			default:
 				cerr << argv[0] << ": Unsupported semantics\n";
