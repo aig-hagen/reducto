@@ -6,6 +6,7 @@
 #include <fstream>			
 #include <algorithm>
 #include <sstream>
+#include <unordered_map>
 
 #include <omp.h>
 
