@@ -31,7 +31,7 @@ void static print_version()
 
 void static print_formats()
 {
-	cout << "[i23]\n";
+	cout << "[i23, tgf]\n";
 }
 
 /*===========================================================================================================================================================*/
@@ -139,12 +139,16 @@ int static execute(int argc, char **argv)
 	}
 
 	AF framework;
-	if (fileformat == "i23") {
-		ParserICCMA::parse_af(framework, file);
-	}
-	else {
-		cerr << argv[0] << ": Unsupported file format\n";
-		return 1;
+	switch (Enums::string_to_format(fileformat)) {
+		case I23:
+			ParserICCMA::parse_af_i23(framework, file);
+			break;
+		case TGF:
+			ParserICCMA::parse_af_tgf(framework, file);
+			break;
+		default:
+			cerr << argv[0] << ": Unsupported file format\n";
+			return 1;
 	}
 
 	string task = problem.substr(0, problem.find("-"));
