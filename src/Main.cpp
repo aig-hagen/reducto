@@ -23,7 +23,8 @@ void static print_version()
 {
 	cout << PROGRAM_NAME << " (version "<< VERSIONNUMBER <<")\n"
 		<< "Lars Bengel, University of Hagen <lars.bengel@fernuni-hagen.de>\n" 
-		<< "Julian Sander, University of Hagen <julian.sander@fernuni-hagen.de>\n";
+		<< "Julian Sander, University of Hagen <julian.sander@fernuni-hagen.de>\n"
+		<< "Matthias Thimm, University of Hagen <matthias.thimm@fernuni-hagen.de>\n";
 }
 
 /*===========================================================================================================================================================*/
