@@ -39,7 +39,7 @@ list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &
 		Encoding::add_clauses_nonempty_complete_set(*solver_reduct, framework, reduct);
 		if (!(*solver_reduct).solve())
 		{
-			// can calculate CO set in reduct, hence set used for reduction has to be a PR set
+			// cannot calculate CO set in reduct, hence set used for reduction has to be a PR set
 			// since the PR set does not contain the query, it's a counter-example
 			is_rejected = true;
 		}
