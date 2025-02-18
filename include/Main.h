@@ -50,7 +50,7 @@ extern "C" {
 
 #include "../include/logic/Enums.h"
 
-constexpr auto PROGRAM_NAME = "Reductor";
+constexpr auto PROGRAM_NAME = "Reducto";
 constexpr auto VERSIONNUMBER = "2.2";
 
 /// <summary>
