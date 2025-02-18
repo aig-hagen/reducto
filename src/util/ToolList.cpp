@@ -16,3 +16,15 @@ void tools::ToolList::copy_in_list(std::list<uint32_t> &list_dest, std::vector<u
 	std::list<uint32_t>::iterator it = list_dest.begin();
 	list_dest.insert(it, vector_source.begin(), vector_source.end());
 }
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+bool tools::ToolList::contains(std::list<uint32_t> list_input, uint32_t query) {
+	for (std::list<uint32_t>::iterator mIter = std::next(list_input.begin()); mIter != list_input.end(); ++mIter) {
+		if (*mIter == query) {
+			return true;
+		}
+	}
+
+	return false;
+}

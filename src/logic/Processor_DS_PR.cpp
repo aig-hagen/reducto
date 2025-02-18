@@ -42,7 +42,13 @@ list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &
 			// cannot calculate CO set in reduct, hence set used for reduction has to be a PR set
 			// since the PR set does not contain the query, it's a counter-example
 			is_rejected = true;
+			list<uint32_t> calculated_set_2 = get_set_from_solver(solver, active_args, query_argument, framework, is_rejected);
+			if (tools::ToolList::contains(calculated_set_2, query_argument)) {
+				list<uint32_t> calculated_set_tmp = tools::ToolList::extend_list(calculated_set, calculated_set_2);
+				calculated_set = calculated_set_tmp;
+			}
 		}
+
 		delete solver_reduct;
 		return calculated_set;
 	}

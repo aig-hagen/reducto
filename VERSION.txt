@@ -35,6 +35,9 @@ Description:
 - no limitation of iterations per reduct
 - no parallel code (no OMP)
 - implements IPASIR interface
+- after checking of found CO extension is PR:
+	- if CO extension in reduct contains query: then add both extensions as one complement clause
+	- if CO extension in reduct attacks query: then counter example found, reject skeptical acceptance of query
 
 - preprocessing:
 	- check self attack of query -> if true rejects query
@@ -43,7 +46,3 @@ Description:
 	- check if query gets attacked by argument of grounded extension, if yes reject
 	- reduce active arguments by grounded extension before calculation  (optimized check for unattacked arguments)
 	- set only cone of influence of query as active arguments
-
--heuristics:
-	- prioritize extension according to the percentage of arguments of the original framework which they attack, the higher the percentage, the lower the priority
-	- punish existance of defenders of query in calculated set

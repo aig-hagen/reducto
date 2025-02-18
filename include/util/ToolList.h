@@ -27,6 +27,14 @@ namespace tools {
 		/// <param name="list_dest">List of element, in which the elements of the vector get inserted in.</param>
 		/// <param name="vector_source">Vector, which elements get copied in the list.</param>
 		static void copy_in_list(std::list<uint32_t> &list_dest, std::vector<uint32_t> vector_source);
+
+		/// <summary>
+		/// Checks if a specified element is contained in the specified list.
+		/// </summary>
+		/// <param name="list">The to search through.</param>
+		/// <param name="query">The element, which inclusion is to be checked.</param>
+		/// <returns>TRUE iff the element is contained. FALSE otherwise.</returns>
+		static bool contains(std::list<uint32_t> list_input, uint32_t query);
 	};
 };
 #endif
