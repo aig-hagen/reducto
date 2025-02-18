@@ -9,26 +9,26 @@ int64_t Encoding::get_literal_accepted(uint32_t argument, bool isPositive)
 	return isPositive ? variable : -1 * variable;
 }
 
-int64_t Encoding::get_literal_rejected(uint32_t argsSize, uint32_t argument, bool isPositive)
+int64_t Encoding::get_literal_rejected(AF framework, uint32_t argument, bool isPositive)
 {
-	int64_t variable = static_cast<int64_t>(argument) + argsSize;
+	int64_t variable = static_cast<int64_t>(argument) + framework.num_args;
 	return isPositive ? variable : -1 * variable;
 }
 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static vector<int64_t> add_rejected_clauses(SatSolver &solver, uint32_t argsSize, uint32_t argument)
+static vector<int64_t> add_rejected_clauses(SatSolver &solver, AF framework, uint32_t argument)
 {
 	// basic acceptance and rejection clause
 	// Part I:  models that an argument cannot be accepted and rejected at the same time
 	solver.add_clause_short(
-		Encoding::get_literal_rejected(argsSize, argument, false),
+		Encoding::get_literal_rejected(framework, argument, false),
 		Encoding::get_literal_accepted(argument, false));
 
 	// Part III: constitutes that if an argument 'a' is rejected, one of its attackers must be accepted
 	vector<int64_t> rejection_reason_clause;
-	rejection_reason_clause.push_back(Encoding::get_literal_rejected(argsSize, argument, false));
+	rejection_reason_clause.push_back(Encoding::get_literal_rejected(framework, argument, false));
 	return rejection_reason_clause;
 }
 
@@ -46,11 +46,11 @@ static vector<int64_t> add_completeness_clause(SatSolver& solver, uint32_t argum
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static void add_rejected_clauses_per_attacker(SatSolver &solver, uint32_t argsSize, uint32_t argument, uint32_t attacker, vector<int64_t> &rejection_reason_clause)
+static void add_rejected_clauses_per_attacker(SatSolver &solver, AF framework, uint32_t argument, uint32_t attacker, vector<int64_t> &rejection_reason_clause)
 {
 	// Part II: ensures that if an attacker 'b' of an argument 'a' is accepted, then 'a' must be rejected
 	solver.add_clause_short(
-		Encoding::get_literal_rejected(argsSize, argument, true),
+		Encoding::get_literal_rejected(framework, argument, true),
 		Encoding::get_literal_accepted(attacker, false));
 
 	// Part III: constitutes that if an argument 'a' is rejected, one of its attackers must be accepted
@@ -77,7 +77,7 @@ static void add_conflict_free_per_attacker(SatSolver &solver, uint32_t argument,
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static void add_defense_per_attacker(SatSolver &solver, uint32_t argsSize, uint32_t argument, uint32_t attacker)
+static void add_defense_per_attacker(SatSolver &solver, AF framework, uint32_t argument, uint32_t attacker)
 {
 	if (argument == attacker)
 	{
@@ -89,15 +89,15 @@ static void add_defense_per_attacker(SatSolver &solver, uint32_t argsSize, uint3
 	// if an argument is accepted to be in the admissible set, all its attackers must be rejected
 	solver.add_clause_short(
 		Encoding::get_literal_accepted(argument, false),
-		Encoding::get_literal_rejected(argsSize, attacker, true));
+		Encoding::get_literal_rejected(framework, attacker, true));
 }
 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static void add_completeness_clause_per_attacker(SatSolver& solver, uint32_t argsSize, uint32_t argument, uint32_t attacker, vector<int64_t>& completeness_clause) {
+static void add_completeness_clause_per_attacker(SatSolver& solver, AF framework, uint32_t argument, uint32_t attacker, vector<int64_t>& completeness_clause) {
 	//constitutes that if an argument is not labelled IN, at least one of it's attacker has to be NOT_OUT
-	completeness_clause.push_back(Encoding::get_literal_rejected(argsSize, attacker, false));
+	completeness_clause.push_back(Encoding::get_literal_rejected(framework, attacker, false));
 }
 
 /*===========================================================================================================================================================*/
@@ -105,7 +105,7 @@ static void add_completeness_clause_per_attacker(SatSolver& solver, uint32_t arg
 
 static void add_admissible_encoding(SatSolver &solver, AF &framework, ArrayBitSet &activeArgs, uint32_t argument)
 {
-	vector<int64_t> rejection_reason_clause = add_rejected_clauses(solver, framework.num_args, argument);
+	vector<int64_t> rejection_reason_clause = add_rejected_clauses(solver, framework, argument);
 
 	vector<uint32_t> attackers = framework.attackers[argument];
 
@@ -113,9 +113,9 @@ static void add_admissible_encoding(SatSolver &solver, AF &framework, ArrayBitSe
 	{
 		if (activeArgs._bitset[attackers[i]])
 		{
-			add_rejected_clauses_per_attacker(solver, framework.num_args, argument, attackers[i], rejection_reason_clause);
+			add_rejected_clauses_per_attacker(solver, framework, argument, attackers[i], rejection_reason_clause);
 			add_conflict_free_per_attacker(solver, argument, attackers[i]);
-			add_defense_per_attacker(solver, framework.num_args, argument, attackers[i]);
+			add_defense_per_attacker(solver, framework, argument, attackers[i]);
 		}
 	}
 
@@ -128,7 +128,7 @@ static void add_admissible_encoding(SatSolver &solver, AF &framework, ArrayBitSe
 
 static void add_complete_encoding(SatSolver &solver, AF &framework, ArrayBitSet &activeArgs, uint32_t argument)
 {
-	vector<int64_t> rejection_reason_clause = add_rejected_clauses(solver, framework.num_args, argument);
+	vector<int64_t> rejection_reason_clause = add_rejected_clauses(solver, framework, argument);
 	vector<int64_t> completeness_clause = add_completeness_clause(solver, argument);
 	
 	vector<uint32_t> attackers = framework.attackers[argument];
@@ -137,10 +137,10 @@ static void add_complete_encoding(SatSolver &solver, AF &framework, ArrayBitSet 
 	{
 		if (activeArgs._bitset[attackers[i]])
 		{
-			add_rejected_clauses_per_attacker(solver, framework.num_args, argument, attackers[i], rejection_reason_clause);
+			add_rejected_clauses_per_attacker(solver, framework, argument, attackers[i], rejection_reason_clause);
 			add_conflict_free_per_attacker(solver, argument, attackers[i]);
-			add_defense_per_attacker(solver, framework.num_args, argument, attackers[i]);
-			add_completeness_clause_per_attacker(solver, framework.num_args, argument, attackers[i], completeness_clause);
+			add_defense_per_attacker(solver, framework, argument, attackers[i]);
+			add_completeness_clause_per_attacker(solver, framework, argument, attackers[i], completeness_clause);
 		}
 	}
 
@@ -195,7 +195,7 @@ void Encoding::add_clauses_nonempty_stable_set(SatSolver &solver, AF &framework,
 
 		solver.add_clause_short(
 			Encoding::get_literal_accepted(activeArgs._array[i], true),
-			Encoding::get_literal_rejected(framework.num_args, activeArgs._array[i], true));
+			Encoding::get_literal_rejected(framework, activeArgs._array[i], true));
 	}
 
 	solver.add_clause(non_empty_clause);
