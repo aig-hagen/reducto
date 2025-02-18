@@ -19,10 +19,12 @@ static std::__cxx11::list<uint32_t> get_set_from_solver(SatSolver &solver, Array
 
 list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &is_rejected,
 	SatSolver &solver, bool &has_solution_without_query, bool is_first_iteration) {
-	has_solution_without_query = solver.solve(Encoding::get_literal_accepted(query_argument, false));
+	has_solution_without_query = solver.solve(Encoding::get_literal_accepted(query_argument, false), 
+		Encoding::get_literal_rejected(framework.num_args, query_argument, false));
 	if (!has_solution_without_query) {
 		//there is no nonempty adm. set, which is not containing the query, there might be solutions containing the query
-		if (is_first_iteration && !solver.solve(Encoding::get_literal_accepted(query_argument, true))) {
+		if (is_first_iteration && !solver.solve(Encoding::get_literal_accepted(query_argument, true), 
+			Encoding::get_literal_rejected(framework.num_args, query_argument, false))) {
 			// this is the first iteration, so there have been no solution excluded by a complement clause
 			// there is no nonempty adm. set, with or without the query argument, that's why there is only the empty set as adm. set
 			// which means we found a complete extension, which is not containing the query argument, hence we found a counter evidence
@@ -37,7 +39,7 @@ list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &
 		SatSolver *solver_reduct = NULL;
 		solver_reduct = new SatSolver(reduct._array.size());
 		Encoding::add_clauses_nonempty_complete_set(*solver_reduct, framework, reduct);
-		if (!(*solver_reduct).solve())
+		if (!(*solver_reduct).solve(Encoding::get_literal_rejected(framework.num_args, query_argument, false)))
 		{
 			// cannot calculate CO set in reduct, hence set used for reduction has to be a PR set
 			// since the PR set does not contain the query, it's a counter-example
@@ -52,4 +54,21 @@ list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &
 		delete solver_reduct;
 		return calculated_set;
 	}
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
+list<uint32_t> Proc_DS_PR::calculate_complete_set_query_out(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &has_found_solution) {
+	SatSolver *solver = NULL;
+	solver = new SatSolver(active_args._array.size());
+	Encoding::add_clauses_nonempty_complete_set(*solver, framework, active_args);
+	has_found_solution = (*solver).solve(Encoding::get_literal_rejected(framework.num_args, query_argument, true));
+	list<uint32_t> calculated_set;
+	if (has_found_solution) {
+		calculated_set = Decoding::get_set_from_solver(*solver, active_args);
+	}
+
+	delete solver;
+	return calculated_set
 }

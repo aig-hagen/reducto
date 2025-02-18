@@ -29,11 +29,11 @@ public:
     /// <summary>
     /// Calculates the rejecting literal of the SAT-problem for the specified argument.
     /// </summary>
-    /// <param name="argsSize">Number of arguments in the framework.</param>
+    /// <param name="framework">The framework of the problem.</param>
     /// <param name="argument">Argument to be converted in a literal of the SAT-problem.</param>
     /// <param name="isInverted">Bool indicating wheter the literal is positive or not (which means inverted).</param>
     /// <returns>Returns an accepting literal.</returns>
-    static int64_t get_literal_rejected(uint32_t argsSize, uint32_t argument, bool isPositive);
+    static int64_t get_literal_rejected(AF framework, uint32_t argument, bool isPositive);
     /// <summary>
     /// Adds all clauses necessary to encode the calculation of nonempty admissible sets.
     /// </summary>

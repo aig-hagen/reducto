@@ -51,9 +51,15 @@ static bool search_complete_sets_in_state(AF &framework, ArrayBitSet &reduct, ui
 static bool start_checking_rejection(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, list<uint32_t> &certificate_extension,
 	ConeOfInfluence &coi)
 {
-	list<uint32_t> extension;
-	bool is_rejected = search_complete_sets_in_state(framework, active_args, query_argument, extension,
-		certificate_extension, coi);
+	bool is_rejected = false;
+
+	list<uint32_t> extension = Proc_DS_PR::calculate_complete_set_query_out(query_argument, framework, active_args, is_rejected);
+	if (is_rejected) {
+		Tools_Solver::UpdateCertificate(certificate_extension, extension);
+	}else{
+		is_rejected = search_complete_sets_in_state(framework, active_args, query_argument, extension,
+			certificate_extension, coi);
+	}
 
 	return is_rejected;
 }

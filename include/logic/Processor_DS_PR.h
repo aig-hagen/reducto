@@ -36,5 +36,15 @@ public:
 	/// <returns>An non emtpy set, if such a set can be computed. Empty list otherwise.</returns>
 	static list<uint32_t> calculate_rejecting_set(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &is_rejected,
 		SatSolver &solver, bool &has_found_solution, bool is_first_iteration);
+
+	/// <summary>
+	/// This method calculates a nonempty complete set of arguments, which attacks the query argument or returns an empty list if such a set does not exist.
+	/// </summary>
+	/// <param name="query_argument">The query argument of the DS-PR problem</param>
+	/// <param name="framework">The abstract argumentation framework of the problem.</param>
+	/// <param name="active_args">The arguments that are active in the current state of the framework.</param>
+	/// <param name="has_found_solution">TRUE iff the solver has found such a set. FALSE otherwise.</param>
+	/// <returns>The calculated set or EMPTY if no such set was found.</returns>
+	static list<uint32_t> calculate_complete_set_query_out(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &has_found_solution);
 };
 #endif
