@@ -1,7 +1,7 @@
  ________________________________________________________________________________________________________________________________________________________________
 ||										Reducto											||
 ||______________________________________________________________________________________________________________________________________________________________||
-||									   Version: 2.02									||
+||									   Version: 2.04									||
 ||______________________________________________________________________________________________________________________________________________________________||
 ||									   created by										||
 ||					Lars Bengel	 	University of Hagen 		<lars.bengel@fernuni-hagen.de>					||
@@ -38,6 +38,7 @@ Description:
 - after checking of found CO extension is PR:
 	- if CO extension in reduct contains query: then add both extensions as one complement clause
 	- if CO extension in reduct attacks query: then counter example found, reject skeptical acceptance of query
+- complete PR extension if query is skeptical rejected and not attacked by certificate in COI
 
 - preprocessing:
 	- check self attack of query -> if true rejects query
