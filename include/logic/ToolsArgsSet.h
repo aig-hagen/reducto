@@ -6,8 +6,7 @@
 #include <list>
 
 #include "AF.h"
-
-
+#include "../util/ArrayBitSet.h"
 
 extern "C" {
 	#include "../util/MemoryWatchDog.h"

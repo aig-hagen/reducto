@@ -9,12 +9,12 @@ ConeOfInfluence::ConeOfInfluence(AF &framework) {
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-ArgumentDistancePair::ArgumentDistancePair(uint32_t _argument, ConeOfInfluence coi) {
+ArgumentDistancePair::ArgumentDistancePair(uint32_t _argument, ConeOfInfluence &coi) {
 	Argument = _argument;
 	Distance_to_query = coi.Distance_to_query[_argument];
 }
 
 
-bool ArgumentDistancePair::compare_by_distance(ArgumentDistancePair firstElem, ArgumentDistancePair secondElem) {
+bool ArgumentDistancePair::compare_by_distance(ArgumentDistancePair &firstElem, ArgumentDistancePair &secondElem) {
 	return firstElem.Distance_to_query >= secondElem.Distance_to_query;
 }

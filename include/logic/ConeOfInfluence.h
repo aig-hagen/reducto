@@ -24,8 +24,14 @@ public:
 	/// </summary>
 	uint32_t Max_distance;
 
+	/// <summary>
+	/// The arguments contained in this cone of influence.
+	/// </summary>
+	vector<uint32_t> Arguments;
 
 	ConeOfInfluence(AF &framework);
+
+	void add_argument(uint32_t argument);
 };
 
 /// <summary>
@@ -41,9 +47,9 @@ public:
 	uint32_t Argument;
 	uint32_t Distance_to_query;
 
-	ArgumentDistancePair(uint32_t argument, ConeOfInfluence coi);
+	ArgumentDistancePair(uint32_t argument, ConeOfInfluence &coi);
 
-	static bool compare_by_distance(ArgumentDistancePair firstElem, ArgumentDistancePair secondElem);
+	static bool compare_by_distance(ArgumentDistancePair &firstElem, ArgumentDistancePair &secondElem);
 };
 
 inline bool operator == (ArgumentDistancePair const &lhs, ArgumentDistancePair const &rhs)

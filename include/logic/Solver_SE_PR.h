@@ -31,8 +31,17 @@ public:
 	/// </summary>
 	/// <param name="framework">The abstract argumentation framework, specifying the underlying attack relations between the arguments.</param>
 	/// <param name="proof_extension"> Calculated preferred extension.</param>
-	/// <returns>TRUE iff the argument is credulously accepted. FALSE otherwise.</returns>
+	/// <returns>TRUE iff an extension was found. FALSE otherwise.</returns>
 	static bool solve(AF &framework, list<uint32_t> &proof_extension);
+
+	/// <summary>
+	/// Checks if an extension of the preferred semantics can be calculated in the specified reduct of the framework.
+	/// </summary>
+	/// <param name="framework">The abstract argumentation framework, specifying the underlying attack relations between the arguments.</param>
+	/// <param name="reduct"></param>
+	/// <param name="proof_extension"> Calculated preferred extension.</param>
+	/// <returns>TRUE iff an extension was found. FALSE otherwise.</returns>
+	static bool solve(AF &framework, ArrayBitSet &reduct, list<uint32_t> &proof_extension);
 };
 
 #endif

@@ -83,6 +83,12 @@ public:
 	/// </summary>
 	/// <param name="number_args">The number of arguments in the framework to initialize.</param>
 	void initialize(uint32_t number_args);
+
+	/// <summary>
+	/// This method creates an ArrayBitSet containing all arguments of this framework.
+	/// </summary>
+	/// <returns>An ArrayBitSet of all arguments in this framework.</returns>
+	ArrayBitSet create_active_arguments();
 };
 
 #endif

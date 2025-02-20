@@ -22,6 +22,7 @@ extern "C" {
 #include "SatSolver.h"
 #include "ToolsArgsSet.h"
 #include "ToolsSolver.h"
+#include "Solver_SE_PR.h"
 
 #include "../util/Printer.h"
 #include "../util/ToolsList.h"
