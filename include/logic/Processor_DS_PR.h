@@ -12,7 +12,7 @@
 #include "ScepticalCheck.h"
 
 #include "../util/ArrayBitSet.h"
-#include "../util/ToolList.h"
+#include "../util/ToolsList.h"
 
 using namespace std;
 
