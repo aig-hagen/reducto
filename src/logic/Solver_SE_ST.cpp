@@ -10,7 +10,7 @@ static bool start_checking(AF &framework, ArrayBitSet &active_args, list<uint32_
 	Encoding::add_clauses_nonempty_stable_set(*solver, framework, active_args);
 	bool has_solution = (*solver).solve();
 	if (has_solution) {
-		Tools_Solver::UpdateCertificate(solver, active_args, proof_extension);
+		tools::Tools_Solver::UpdateCertificate(solver, active_args, proof_extension);
 	}
 
 	delete solver;

@@ -7,7 +7,7 @@ static std::__cxx11::list<uint32_t> get_set_from_solver(SatSolver &solver, Array
 {
 	list<uint32_t> initial_set = Decoding::get_set_from_solver(solver, active_args);
 
-	if (ScepticalCheck::check_rejection(query_argument, initial_set, framework)) {
+	if (tools::Tools_ArgsSet::check_attack(query_argument, initial_set, framework)) {
 		is_rejected = true;
 	}
 
@@ -46,8 +46,8 @@ list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &
 			list<uint32_t> calculated_set_2 = get_set_from_solver(solver, active_args, query_argument, framework, is_rejected);
 			//check if calculated CO extension contains query, if so then extend complement clause by the new extension
 			//since it is uninteresting to visit the combined extension once again
-			if (tools::ToolList::contains(calculated_set_2, query_argument)) {
-				list<uint32_t> calculated_set_tmp = tools::ToolList::extend_list(calculated_set, calculated_set_2);
+			if (tools::Tools_List::contains(calculated_set_2, query_argument)) {
+				list<uint32_t> calculated_set_tmp = tools::Tools_List::extend_list(calculated_set, calculated_set_2);
 				calculated_set = calculated_set_tmp;
 			}
 		}

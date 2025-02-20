@@ -7,8 +7,8 @@ void process_sat_solution(bool has_found_set, std::__cxx11::list<uint32_t> &exte
 	uint32_t query_argument, AF &framework, ConeOfInfluence &coi)
 {
 	if (has_found_set && is_rejected) {
-		list<uint32_t> new_extension = tools::ToolList::extend_list(extension_build, calculated_set);
-		Tools_Solver::UpdateCertificate(certificate_extension, new_extension);
+		list<uint32_t> new_extension = tools::Tools_List::extend_list(extension_build, calculated_set);
+		tools::Tools_Solver::UpdateCertificate(certificate_extension, new_extension);
 
 		//do not clear extension, since it is used as attribute of the object of class prio_stack_entry
 	}

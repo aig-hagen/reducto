@@ -11,7 +11,7 @@ static bool start_checking(AF &framework, ArrayBitSet &active_args, list<uint32_
 	//extend complete extension to get preferred extension
 	while (has_solution) {
 		list<uint32_t> calculated_extension = Decoding::get_set_from_solver(*solver, active_args);
-		Tools_Solver::UpdateCertificate(proof_extension, calculated_extension);
+		tools::Tools_Solver::UpdateCertificate(proof_extension, calculated_extension);
 		ArrayBitSet new_reduct = Reduct::get_reduct_set(active_args, framework, calculated_extension);
 		active_args = new_reduct;
 		if (active_args._array.empty()) {

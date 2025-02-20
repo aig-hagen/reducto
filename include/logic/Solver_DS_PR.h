@@ -20,7 +20,7 @@ extern "C" {
 #include "Processor_DS_PR.h"
 #include "Reduct.h"
 #include "SatSolver.h"
-#include "ScepticalCheck.h"
+#include "ToolsArgsSet.h"
 #include "ToolsSolver.h"
 
 #include "../util/Printer.h"
