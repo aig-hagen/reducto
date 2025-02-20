@@ -66,7 +66,7 @@ list<uint32_t> Proc_DS_PR::calculate_complete_set_query_out(uint32_t query_argum
 	SatSolver *solver = NULL;
 	solver = new SatSolver(active_args._array.size());
 	Encoding::add_clauses_nonempty_complete_set(*solver, framework, active_args);
-	has_found_solution = (*solver).solve(Encoding::get_literal_rejected(framework, query_argument, true));
+	has_found_solution = (*solver).solve(Encoding::get_literal_accepted(query_argument, false), Encoding::get_literal_rejected(framework, query_argument, true));
 	list<uint32_t> calculated_set;
 	if (has_found_solution) {
 		calculated_set = Decoding::get_set_from_solver(*solver, active_args);
