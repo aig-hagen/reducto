@@ -52,12 +52,12 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 	ConeOfInfluence &coi)
 {
 	list<uint32_t> extension;
-	bool is_query_attacked = false;
+	bool is_extension_certificate = false;
 	bool is_rejected = search_complete_sets_in_state(framework, active_args_preprocessed, query_argument, extension,
-		certificate_extension, coi, is_query_attacked);
+		certificate_extension, coi, is_extension_certificate);
 
 	//if skeptical acceptance of query got rejected, but query is not attacked by certificate, then extend certificate to get complete PR extension in original AF
-	if (is_rejected && !is_query_attacked) {
+	if (is_rejected && !is_extension_certificate) {
 		ArrayBitSet original_active_args = framework.create_active_arguments();
 		list<uint32_t> list_coi = active_args_preprocessed.to_list();
 		list<uint32_t> list_processed_args = tools::Tools_List::extend_list(list_coi, certificate_extension);
