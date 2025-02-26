@@ -24,14 +24,7 @@ public:
 	/// </summary>
 	uint32_t Max_distance;
 
-	/// <summary>
-	/// The arguments contained in this cone of influence.
-	/// </summary>
-	vector<uint32_t> Arguments;
-
 	ConeOfInfluence(AF &framework);
-
-	void add_argument(uint32_t argument);
 };
 
 /// <summary>
