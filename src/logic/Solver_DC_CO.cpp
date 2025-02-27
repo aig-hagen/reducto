@@ -9,7 +9,7 @@ bool start_checking(uint32_t query_argument, AF &framework, ArrayBitSet &active_
 	solver = new SatSolver(numVars);
 	Encoding::add_clauses_nonempty_complete_set(*solver, framework, active_args);
 	bool has_solution_with_query = (*solver).solve(Encoding::get_literal_accepted(query_argument, true),
-		Encoding::get_literal_rejected(framework.num_args, query_argument, false));
+		Encoding::get_literal_rejected(framework, query_argument, false));
 	if (has_solution_with_query) {
 		Tools_Solver::UpdateCertificate(solver, active_args, proof_extension);
 	}
