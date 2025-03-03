@@ -1,7 +1,7 @@
  ________________________________________________________________________________________________________________________________________________________________
 ||										Reducto											||
 ||______________________________________________________________________________________________________________________________________________________________||
-||									   Version: 2.05									||
+||									   Version: 2.06									||
 ||______________________________________________________________________________________________________________________________________________________________||
 ||									   created by										||
 ||					Lars Bengel	 	University of Hagen 		<lars.bengel@fernuni-hagen.de>					||
@@ -36,6 +36,7 @@ Description:
 - no parallel code (no OMP)
 - implements IPASIR interface
 - complete PR extension if query is skeptical rejected and not attacked by certificate in COI
+- check if found CO set rejects query
 
 - preprocessing:
 	- check self attack of query -> if true rejects query
