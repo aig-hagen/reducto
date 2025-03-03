@@ -47,6 +47,12 @@ list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &
 				// since the PR set does not contain the query, it's a counter-example
 				is_rejected = true;
 			}
+			else {
+				list<uint32_t> calculated_set_2 = get_set_from_solver(*solver_reduct, active_args, query_argument, framework, is_query_attacked);
+				if (is_query_attacked) {
+					is_rejected = true;
+				}
+			}
 			delete solver_reduct;
 		}
 		
