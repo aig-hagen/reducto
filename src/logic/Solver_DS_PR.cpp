@@ -55,7 +55,12 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 		ArrayBitSet original_active_args = framework.create_active_arguments();
 		list<uint32_t> list_coi = active_args_in_coi.to_list();
 		list<uint32_t> list_processed_args = tools::Tools_List::extend_list(list_coi, grounded_extension);
-		ArrayBitSet reduct = Reduct::get_reduct_set(original_active_args, framework, list_processed_args);
+		ArrayBitSet reduct;
+		if (list_processed_args.empty()) {
+			reduct = original_active_args.copy();
+		}else {
+			reduct = Reduct::get_reduct_set(original_active_args, framework, list_processed_args);
+		}
 		if (reduct._array.empty()) {
 			return is_rejected;
 		}
