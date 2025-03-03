@@ -12,11 +12,11 @@
 #include "PreProcessor_GR.h"
 #include "Reduct.h"
 #include "SatSolver.h"
-#include "ScepticalCheck.h"
+#include "ToolsArgsSet.h"
 #include "ToolsSolver.h"
 
 #include "../util/Printer.h"
-#include "../util/ToolList.h"
+#include "../util/ToolsList.h"
 
 using namespace std;
 

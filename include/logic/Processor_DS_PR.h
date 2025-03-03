@@ -9,9 +9,10 @@
 #include "Decoding.h"
 #include "PreProcessor_GR.h"
 #include "SatSolver.h"
-#include "ScepticalCheck.h"
+#include "ToolsArgsSet.h"
 
 #include "../util/ArrayBitSet.h"
+#include "../util/ToolsList.h"
 
 using namespace std;
 
@@ -28,12 +29,12 @@ public:
 	/// <param name="framework">The abstract argumentation framework of the problem.</param>
 	/// <param name="active_args">The arguments that are active in the current state of the framework.</param>
 	/// <param name="is_rejected">Flag used to signal that the argument is rejected or not.</param>
+	/// <param name="is_query_attacked">Flag used to signal if the calculated set of arguments attacks the query argument.</param>
 	/// <param name="solver">The solver used to calculate sets for this state of the framework.</param>
-	/// <param name="has_found_solution">Flag used to signal if the calculation of sets in state should be continued.</param>
-	/// <param name="found_counter_evidence">Flag that indicates that the processor has found an nonempty adm. set that is a counter evidence</param>
+	/// <param name="has_found_solution">Flag used to signal if the solver coudl calculate a solution.</param>
 	/// <param name="is_first_iteration">Flag indicating if this iteration to calculate a set is the first in the specified state or not.</param>
 	/// <returns>An non emtpy set, if such a set can be computed. Empty list otherwise.</returns>
-	static list<uint32_t> calculate_rejecting_set(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &is_rejected,
+	static list<uint32_t> calculate_rejecting_set(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &is_rejected, bool &is_query_attacked,
 		SatSolver &solver, bool &has_found_solution, bool is_first_iteration);
 };
 #endif

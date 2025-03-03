@@ -11,7 +11,7 @@ static bool start_checking(uint32_t query_argument, AF &framework, ArrayBitSet &
 	bool has_solution_without_query = (*solver).solve(Encoding::get_literal_accepted(query_argument, false),
 		Encoding::get_literal_rejected(framework, query_argument, true));
 	if (has_solution_without_query) {
-		Tools_Solver::UpdateCertificate(solver, active_args, proof_extension);
+		tools::Tools_Solver::UpdateCertificate(solver, active_args, proof_extension);
 	}
 	//only two cases remain: 1. no stable solution is computable; 2. all stable solutions contain the query; both cases lead to scetical acceptance
 		
@@ -39,7 +39,7 @@ bool Solver_DS_ST::solve(uint32_t query_argument, AF &framework, list<uint32_t> 
 			return false;
 		}
 
-		return !Tools_Solver::check_existance_stable_extension(framework, initial_reduct, proof_extension);
+		return !tools::Tools_Solver::check_existance_stable_extension(framework, initial_reduct, proof_extension);
 
 	default:
 		if (initial_reduct._array.size() == 0) {

@@ -11,7 +11,7 @@ bool start_checking(uint32_t query_argument, AF &framework, ArrayBitSet &active_
 	bool has_solution_with_query = (*solver).solve(Encoding::get_literal_accepted(query_argument, true),
 		Encoding::get_literal_rejected(framework, query_argument, false));
 	if (has_solution_with_query) {
-		Tools_Solver::UpdateCertificate(solver, active_args, proof_extension);
+		tools::Tools_Solver::UpdateCertificate(solver, active_args, proof_extension);
 	}
 	
 	delete solver;

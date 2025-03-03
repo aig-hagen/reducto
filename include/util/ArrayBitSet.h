@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <algorithm>
 #include <iterator>
+#include <list>
 
 using namespace std;
 
@@ -53,6 +54,15 @@ public:
         }
 
         return ArrayBitSet(copy_vector, copy_bitset);
+    }
+
+    list<uint32_t> to_list() {
+        list<uint32_t> output;
+        for(std::vector<unsigned int>::size_type i = 0; i < _array.size(); i++) {
+            output.push_back(_array[i]);
+        }
+
+        return output;
     }
 
     /// <summary>

@@ -20,11 +20,12 @@ extern "C" {
 #include "Processor_DS_PR.h"
 #include "Reduct.h"
 #include "SatSolver.h"
-#include "ScepticalCheck.h"
+#include "ToolsArgsSet.h"
 #include "ToolsSolver.h"
+#include "Solver_SE_PR.h"
 
 #include "../util/Printer.h"
-#include "../util/ToolList.h"
+#include "../util/ToolsList.h"
 
 using namespace std;
 

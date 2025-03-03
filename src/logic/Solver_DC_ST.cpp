@@ -11,7 +11,7 @@ static bool start_checking(uint32_t query_argument, AF &framework, ArrayBitSet &
 	bool has_solution_with_query = (*solver).solve(Encoding::get_literal_accepted(query_argument, true),
 		Encoding::get_literal_rejected(framework, query_argument, false));
 	if (has_solution_with_query) {
-		Tools_Solver::UpdateCertificate(solver, active_args, proof_extension);
+		tools::Tools_Solver::UpdateCertificate(solver, active_args, proof_extension);
 	}
 
 	delete solver;
@@ -38,7 +38,7 @@ bool Solver_DC_ST::solve(uint32_t query_argument, AF &framework, list<uint32_t> 
 			return true;
 		}
 
-		return Tools_Solver::check_existance_stable_extension(framework, initial_reduct, proof_extension);
+		return tools::Tools_Solver::check_existance_stable_extension(framework, initial_reduct, proof_extension);
 
 	default:
 		if (initial_reduct._array.size() == 0) {
