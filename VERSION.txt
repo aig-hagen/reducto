@@ -1,7 +1,7 @@
  ________________________________________________________________________________________________________________________________________________________________
 ||										Reducto											||
 ||______________________________________________________________________________________________________________________________________________________________||
-||									   Version: 2.04									||
+||									   Version: 2.05									||
 ||______________________________________________________________________________________________________________________________________________________________||
 ||									   created by										||
 ||					Lars Bengel	 	University of Hagen 		<lars.bengel@fernuni-hagen.de>					||
@@ -35,9 +35,6 @@ Description:
 - no limitation of iterations per reduct
 - no parallel code (no OMP)
 - implements IPASIR interface
-- after checking of found CO extension is PR:
-	- if CO extension in reduct contains query: then add both extensions as one complement clause
-	- if CO extension in reduct attacks query: then counter example found, reject skeptical acceptance of query
 - complete PR extension if query is skeptical rejected and not attacked by certificate in COI
 
 - preprocessing:
