@@ -76,7 +76,7 @@ bool Solver_DS_PR::solve(uint32_t query_argument, AF &framework, list<uint32_t> 
 	pre_proc_result result_preProcessor;
 	ConeOfInfluence coi(framework);
 	list<uint32_t> grounded_extension;
-	result_preProcessor = PreProc_GR::process(framework, query_argument, true, false, active_args_in_coi, grounded_extension, coi);
+	result_preProcessor = PreProc_GR::process(framework, query_argument, true, true, active_args_in_coi, grounded_extension, coi);
 	tools::Tools_Solver::UpdateCertificate(certificate_extension, grounded_extension);
 
 	switch (result_preProcessor) {
