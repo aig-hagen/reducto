@@ -51,7 +51,7 @@ extern "C" {
 #include "../include/logic/Enums.h"
 
 constexpr auto PROGRAM_NAME = "Reducto";
-constexpr auto VERSIONNUMBER = "2.07";
+constexpr auto VERSIONNUMBER = "2.08";
 
 /// <summary>
 /// Flags used for internal processing.
