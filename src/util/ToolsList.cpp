@@ -20,7 +20,7 @@ void tools::Tools_List::copy_in_list(std::list<uint32_t> &list_dest, std::vector
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 bool tools::Tools_List::contains(std::list<uint32_t> list_input, uint32_t query) {
-	for (std::list<uint32_t>::iterator mIter = std::next(list_input.begin()); mIter != list_input.end(); ++mIter) {
+	for (std::list<uint32_t>::iterator mIter = list_input.begin(); mIter != list_input.end(); ++mIter) {
 		if (*mIter == query) {
 			return true;
 		}
