@@ -1,18 +1,4 @@
 #include "../../include/logic/Processor_DS_PR.h"
-/*===========================================================================================================================================================*/
-/*===========================================================================================================================================================*/
-
-static std::__cxx11::list<uint32_t> get_set_from_solver(SatSolver &solver, ArrayBitSet &active_args, uint32_t query_argument, AF &framework, 
-	bool &is_attacked)
-{
-	list<uint32_t> initial_set = Decoding::get_set_from_solver(solver, active_args);
-
-	if (tools::Tools_ArgsSet::check_attack(query_argument, initial_set, framework)) {
-		is_attacked = true;
-	}
-
-	return initial_set;
-}
 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
@@ -31,11 +17,13 @@ list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &
 		return list<uint32_t>();
 	}
 	else {
-		//check if set is PR, by checking if reduct has CO set
-		list<uint32_t> calculated_set = get_set_from_solver(solver, active_args, query_argument, framework, is_query_attacked);
+		//check if calculated CO set attacks query
+		list<uint32_t> calculated_set = Decoding::get_set_from_solver(solver, active_args);
+		is_query_attacked = tools::Tools_ArgsSet::check_attack(query_argument, calculated_set, framework);
 		if (is_query_attacked) {
 			is_rejected = true;
 		}
+		//check if set is PR, by checking if reduct has CO set
 		ArrayBitSet reduct = Reduct::get_reduct_set(active_args, framework, calculated_set);
 		SatSolver *solver_reduct = NULL;
 		solver_reduct = new SatSolver(reduct._array.size());
