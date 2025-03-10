@@ -18,7 +18,7 @@ int64_t Encoding::get_literal_rejected(AF framework, uint32_t argument, bool isP
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static vector<int64_t> add_rejected_clauses(SatSolver &solver, AF framework, uint32_t argument)
+static vector<int64_t> add_rejected_clauses(SatSolver &solver, AF &framework, uint32_t argument)
 {
 	// basic acceptance and rejection clause
 	// Part I:  models that an argument cannot be accepted and rejected at the same time
@@ -46,7 +46,7 @@ static vector<int64_t> add_completeness_clause(SatSolver& solver, uint32_t argum
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static void add_rejected_clauses_per_attacker(SatSolver &solver, AF framework, uint32_t argument, uint32_t attacker, vector<int64_t> &rejection_reason_clause)
+static void add_rejected_clauses_per_attacker(SatSolver &solver, AF &framework, uint32_t argument, uint32_t attacker, vector<int64_t> &rejection_reason_clause)
 {
 	// Part II: ensures that if an attacker 'b' of an argument 'a' is accepted, then 'a' must be rejected
 	solver.add_clause_short(
@@ -77,7 +77,7 @@ static void add_conflict_free_per_attacker(SatSolver &solver, uint32_t argument,
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static void add_defense_per_attacker(SatSolver &solver, AF framework, uint32_t argument, uint32_t attacker)
+static void add_defense_per_attacker(SatSolver &solver, AF &framework, uint32_t argument, uint32_t attacker)
 {
 	if (argument == attacker)
 	{
@@ -95,7 +95,7 @@ static void add_defense_per_attacker(SatSolver &solver, AF framework, uint32_t a
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static void add_completeness_clause_per_attacker(SatSolver& solver, AF framework, uint32_t argument, uint32_t attacker, vector<int64_t>& completeness_clause) {
+static void add_completeness_clause_per_attacker(SatSolver& solver, AF &framework, uint32_t argument, uint32_t attacker, vector<int64_t> &completeness_clause) {
 	//constitutes that if an argument is not labelled IN, at least one of it's attacker has to be NOT_OUT
 	completeness_clause.push_back(Encoding::get_literal_rejected(framework, attacker, false));
 }
