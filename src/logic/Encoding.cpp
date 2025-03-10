@@ -9,7 +9,7 @@ int64_t Encoding::get_literal_accepted(uint32_t argument, bool isPositive)
 	return isPositive ? variable : -1 * variable;
 }
 
-int64_t Encoding::get_literal_rejected(AF framework, uint32_t argument, bool isPositive)
+int64_t Encoding::get_literal_rejected(AF &framework, uint32_t argument, bool isPositive)
 {
 	int64_t variable = static_cast<int64_t>(argument) + framework.num_args;
 	return isPositive ? variable : -1 * variable;
