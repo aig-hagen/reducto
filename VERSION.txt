@@ -39,6 +39,7 @@ Description:
 - check if found CO set rejects query
 - check if 2nd found CO set rejects query
 - break GR calculation if argument in GR extension attacks query
+- for check if found set is PR do not create new instance of solver, but by use assumptions that arguments of calculated set are true
 
 - preprocessing:
 	- check self attack of query -> if true rejects query
