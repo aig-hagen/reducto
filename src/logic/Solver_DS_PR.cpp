@@ -44,6 +44,22 @@ static bool search_complete_sets_in_state(AF &framework, ArrayBitSet &reduct, ui
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
+static void complete_certificate(AF &framework, list<uint32_t> &certificate_extension) {
+	ArrayBitSet original_active_args = framework.create_active_arguments();
+	ArrayBitSet reduct = Reduct::get_reduct_set(original_active_args, framework, certificate_extension);
+	if (reduct._array.empty()) {
+		return;
+	}
+	list<uint32_t> extension_outside_certificate;
+	bool has_extension_outside_certificate = Solver_SE_PR::solve(framework, reduct, extension_outside_certificate);
+	if (has_extension_outside_certificate) {
+		tools::Tools_Solver::UpdateCertificate(certificate_extension, extension_outside_certificate);
+	}
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
 static bool start_checking_rejection(uint32_t query_argument, AF &framework, ArrayBitSet &active_args_in_coi,
 	list<uint32_t> &grounded_extension, ConeOfInfluence &coi, list<uint32_t> &certificate_extension)
 {
@@ -51,17 +67,9 @@ static bool start_checking_rejection(uint32_t query_argument, AF &framework, Arr
 	bool is_rejected = search_complete_sets_in_state(framework, active_args_in_coi, query_argument, certificate_extension, coi, is_query_attacked);
 
 	//if skeptical acceptance of query got rejected, but query is not attacked by certificate, then extend certificate to get complete PR extension in original AF
-	if (is_rejected && !is_query_attacked && !certificate_extension.empty()) {
-		ArrayBitSet original_active_args = framework.create_active_arguments();
-		ArrayBitSet reduct = Reduct::get_reduct_set(original_active_args, framework, certificate_extension);
-		if (reduct._array.empty()) {
-			return is_rejected;
-		}
-		list<uint32_t> extension_outside_certificate;
-		bool has_extension_outside_certificate = Solver_SE_PR::solve(framework, reduct, extension_outside_certificate);
-		if (has_extension_outside_certificate) {
-			tools::Tools_Solver::UpdateCertificate(certificate_extension, extension_outside_certificate);
-		}
+	if (is_rejected && !is_query_attacked) {
+		complete_certificate(framework, certificate_extension);
+		return is_rejected;
 	}
 
 	return is_rejected;
@@ -85,6 +93,9 @@ bool Solver_DS_PR::solve(uint32_t query_argument, AF &framework, list<uint32_t> 
 		return true;
 
 	case rejected:
+		if (!tools::Tools_ArgsSet::check_attack(query_argument, certificate_extension, framework)) {
+			complete_certificate(framework, certificate_extension);
+		}
 		return false;
 
 	default:
