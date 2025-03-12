@@ -27,7 +27,7 @@ list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &
 		//check if set is PR, by checking if reduct has CO set
 		for (std::list<uint32_t>::iterator mIter = calculated_set.begin(); mIter != calculated_set.end(); ++mIter) {
 			solver.add_assumption(Encoding::get_literal_accepted(*mIter, true));
-			solver.add_assumption(Encoding::get_literal_rejected(*mIter, framework, false));
+			solver.add_assumption(Encoding::get_literal_rejected(framework, *mIter, false));
 		}
 		if (!solver.solve())
 		{
@@ -36,12 +36,13 @@ list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &
 			is_rejected = true;
 		}
 		else {
-			list<uint32_t> calculated_set_2 = get_set_from_solver(solver, active_args, query_argument, framework, is_query_attacked);
+			list<uint32_t> calculated_set_2 = Decoding::get_set_from_solver(solver, active_args);
+			is_query_attacked = tools::Tools_ArgsSet::check_attack(query_argument, calculated_set_2, framework);
 			if (is_query_attacked) {
 				is_rejected = true;
+				return calculated_set_2;
 			}
 		}
-		delete solver_reduct;
 		return calculated_set;
 	}
 }
