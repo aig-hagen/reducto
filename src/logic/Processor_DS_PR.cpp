@@ -31,31 +31,30 @@ list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &
 		return list<uint32_t>();
 	}
 	else {
-		//check if set is PR, by checking if reduct has CO set
+		//check if query gets attacked by found solution
 		list<uint32_t> calculated_set = get_set_from_solver(solver, active_args, query_argument, framework, is_query_attacked);
 		if (is_query_attacked) {
 			is_rejected = true;
+			return calculated_set;
+		}
+		//check if set is PR, by checking if reduct has CO set
+		ArrayBitSet reduct = Reduct::get_reduct_set(active_args, framework, calculated_set);
+		SatSolver *solver_reduct = NULL;
+		solver_reduct = new SatSolver(reduct._array.size());
+		Encoding::add_clauses_nonempty_complete_set(*solver_reduct, framework, reduct);
+		if (!(*solver_reduct).solve())
+		{
+			// cannot calculate CO set in reduct, hence set used for reduction has to be a PR set
+			// since the PR set does not contain the query, it's a counter-example
+			is_rejected = true;
 		}
 		else {
-			ArrayBitSet reduct = Reduct::get_reduct_set(active_args, framework, calculated_set);
-			SatSolver *solver_reduct = NULL;
-			solver_reduct = new SatSolver(reduct._array.size());
-			Encoding::add_clauses_nonempty_complete_set(*solver_reduct, framework, reduct);
-			if (!(*solver_reduct).solve())
-			{
-				// cannot calculate CO set in reduct, hence set used for reduction has to be a PR set
-				// since the PR set does not contain the query, it's a counter-example
+			list<uint32_t> calculated_set_2 = get_set_from_solver(*solver_reduct, active_args, query_argument, framework, is_query_attacked);
+			if (is_query_attacked) {
 				is_rejected = true;
 			}
-			else {
-				list<uint32_t> calculated_set_2 = get_set_from_solver(*solver_reduct, active_args, query_argument, framework, is_query_attacked);
-				if (is_query_attacked) {
-					is_rejected = true;
-				}
-			}
-			delete solver_reduct;
 		}
-		
+		delete solver_reduct;
 		return calculated_set;
 	}
 }
