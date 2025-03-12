@@ -24,6 +24,7 @@ list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &
 			is_rejected = true;
 			return calculated_set;
 		}
+
 		//check if set is PR, by checking if reduct has CO set
 		ArrayBitSet reduct = Reduct::get_reduct_set(active_args, framework, calculated_set);
 		SatSolver *solver_reduct = NULL;
