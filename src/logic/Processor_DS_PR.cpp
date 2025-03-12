@@ -24,6 +24,7 @@ list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &
 			is_rejected = true;
 			return calculated_set;
 		}
+
 		//check if set is PR, by checking if reduct has CO set
 		for (std::list<uint32_t>::iterator mIter = calculated_set.begin(); mIter != calculated_set.end(); ++mIter) {
 			solver.add_assumption(Encoding::get_literal_accepted(*mIter, true));
