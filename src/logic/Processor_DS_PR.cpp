@@ -1,18 +1,4 @@
 #include "../../include/logic/Processor_DS_PR.h"
-/*===========================================================================================================================================================*/
-/*===========================================================================================================================================================*/
-
-static std::__cxx11::list<uint32_t> get_set_from_solver(SatSolver &solver, ArrayBitSet &active_args, uint32_t query_argument, AF &framework, 
-	bool &is_attacked)
-{
-	list<uint32_t> initial_set = Decoding::get_set_from_solver(solver, active_args);
-
-	if (tools::Tools_ArgsSet::check_attack(query_argument, initial_set, framework)) {
-		is_attacked = true;
-	}
-
-	return initial_set;
-}
 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
@@ -31,29 +17,31 @@ list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &
 		return list<uint32_t>();
 	}
 	else {
-		//check if set is PR, by checking if reduct has CO set
-		list<uint32_t> calculated_set = get_set_from_solver(solver, active_args, query_argument, framework, is_query_attacked);
+		//check if calculated CO set attacks query
+		list<uint32_t> calculated_set = Decoding::get_set_from_solver(solver, active_args);
+		is_query_attacked = tools::Tools_ArgsSet::check_attack(query_argument, calculated_set, framework);
 		if (is_query_attacked) {
+			is_rejected = true;
+			return calculated_set;
+		}
+		//check if set is PR, by checking if reduct has CO set
+		for (std::list<uint32_t>::iterator mIter = calculated_set.begin(); mIter != calculated_set.end(); ++mIter) {
+			solver.add_assumption(Encoding::get_literal_accepted(*mIter, true));
+			solver.add_assumption(Encoding::get_literal_rejected(*mIter, framework, false));
+		}
+		if (!solver.solve())
+		{
+			// cannot calculate CO set in reduct, hence set used for reduction has to be a PR set
+			// since the PR set does not contain the query, it's a counter-example
 			is_rejected = true;
 		}
 		else {
-			for (std::list<uint32_t>::iterator mIter = calculated_set.begin(); mIter != calculated_set.end(); ++mIter) {
-				solver.add_assumption(Encoding::get_literal_accepted(*mIter, true));
-			}
-			if (!solver.solve())
-			{
-				// cannot calculate CO set in reduct, hence set used for reduction has to be a PR set
-				// since the PR set does not contain the query, it's a counter-example
+			list<uint32_t> calculated_set_2 = get_set_from_solver(solver, active_args, query_argument, framework, is_query_attacked);
+			if (is_query_attacked) {
 				is_rejected = true;
 			}
-			else {
-				list<uint32_t> calculated_set_2 = get_set_from_solver(solver, active_args, query_argument, framework, is_query_attacked);
-				if (is_query_attacked) {
-					is_rejected = true;
-				}
-			}
 		}
-		
+		delete solver_reduct;
 		return calculated_set;
 	}
 }
