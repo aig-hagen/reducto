@@ -50,7 +50,7 @@ static bool search_complete_sets_in_state(AF &framework, ArrayBitSet &reduct, ui
 
 static void complete_certificate(AF &framework, list<uint32_t> &certificate_extension) {
 	ArrayBitSet original_active_args = framework.create_active_arguments();
-	ArrayBitSet reduct = Reduct::get_reduct_set(original_active_args, framework, certificate_extension);
+	ArrayBitSet reduct = certificate_extension.empty() ? original_active_args : Reduct::get_reduct_set(original_active_args, framework, certificate_extension);
 	if (reduct._array.empty()) {
 		return;
 	}
