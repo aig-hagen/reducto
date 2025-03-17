@@ -52,8 +52,7 @@ list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &
 				//check if calculated CO extension contains query, if so then extend complement clause by the new extension
 				//since it is uninteresting to visit the combined extension once again
 				if (tools::Tools_List::contains(calculated_set_2, query_argument)) {
-					list<uint32_t> calculated_set_tmp = tools::Tools_List::extend_list(calculated_set, calculated_set_2);
-					calculated_set = calculated_set_tmp;
+					Encoding::add_complement_clause(solver, active_args);
 				}
 			}
 		}
