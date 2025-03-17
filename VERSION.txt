@@ -40,6 +40,7 @@ Description:
 - check if 2nd found CO set rejects query
 - break GR calculation if argument in GR extension attacks query
 - encoding labeling-based
+- extend complement clause if 2nd CO set contains query
 
 - preprocessing:
 	- check self attack of query -> if true rejects query

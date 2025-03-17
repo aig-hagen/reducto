@@ -37,11 +37,21 @@ list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &
 			is_rejected = true;
 		}
 		else {
+			//check if calculated CO extension rejects query
 			list<uint32_t> calculated_set_2 = Decoding::get_set_from_solver(solver, active_args);
 			is_query_attacked = tools::Tools_ArgsSet::check_attack(query_argument, calculated_set_2, framework);
 			if (is_query_attacked) {
+				list<uint32_t> calculated_set_tmp = tools::Tools_List::extend_list(calculated_set, calculated_set_2);
+				calculated_set = calculated_set_tmp;
 				is_rejected = true;
-				return calculated_set_2;
+			}
+			else {
+				//check if calculated CO extension contains query, if so then extend complement clause by the new extension
+				//since it is uninteresting to visit the combined extension once again
+				if (tools::Tools_List::contains(calculated_set_2, query_argument)) {
+					list<uint32_t> calculated_set_tmp = tools::Tools_List::extend_list(calculated_set, calculated_set_2);
+					calculated_set = calculated_set_tmp;
+				}
 			}
 		}
 		delete solver_reduct;
