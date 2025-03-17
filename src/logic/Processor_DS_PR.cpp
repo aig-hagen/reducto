@@ -25,6 +25,9 @@ list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &
 			return calculated_set;
 		}
 
+		//ensure that solver does not find same solution again
+		Encoding::add_complement_clause(solver, active_args);
+
 		//check if set is PR, by checking if reduct has CO set
 		for (std::list<uint32_t>::iterator mIter = calculated_set.begin(); mIter != calculated_set.end(); ++mIter) {
 			solver.add_assumption(Encoding::get_literal_accepted(*mIter, true));

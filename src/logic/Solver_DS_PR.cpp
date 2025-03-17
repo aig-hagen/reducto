@@ -31,7 +31,6 @@ static bool search_complete_sets_in_state(AF &framework, ArrayBitSet &reduct, ui
 
 	while (continue_calculation && !is_rejected) {
 		//iterate through additional sets in state
-		Encoding::add_complement_clause(*solver, reduct);
 		calculated_set = Proc_DS_PR::calculate_rejecting_set(query_argument, framework, reduct, is_rejected, is_query_attacked,
 			*solver, continue_calculation, false);
 		process_sat_solution(continue_calculation, calculated_set, is_rejected, certificate_extension, 
