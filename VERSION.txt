@@ -1,7 +1,7 @@
  ________________________________________________________________________________________________________________________________________________________________
 ||										Reducto											||
 ||______________________________________________________________________________________________________________________________________________________________||
-||									   Version: 2.08									||
+||									   Version: 2.10									||
 ||______________________________________________________________________________________________________________________________________________________________||
 ||									   created by										||
 ||					Lars Bengel	 	University of Hagen 		<lars.bengel@fernuni-hagen.de>					||
@@ -39,6 +39,7 @@ Description:
 - check if found CO set rejects query
 - check if 2nd found CO set rejects query
 - break GR calculation if argument in GR extension attacks query
+- encoding labeling-based
 
 - preprocessing:
 	- check self attack of query -> if true rejects query
