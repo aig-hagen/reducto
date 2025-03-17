@@ -2,18 +2,6 @@
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-void process_sat_solution(bool has_found_set, std::__cxx11::list<uint32_t> &calculated_set,
-	bool &is_rejected, std::__cxx11::list<uint32_t> &certificate_extension,
-	uint32_t query_argument, AF &framework, ConeOfInfluence &coi)
-{
-	if (has_found_set && is_rejected) {
-		tools::Tools_Solver::UpdateCertificate(certificate_extension, calculated_set);
-	}
-}
-
-/*===========================================================================================================================================================*/
-/*===========================================================================================================================================================*/
-
 static bool search_complete_sets_in_state(AF &framework, ArrayBitSet &reduct, uint32_t query_argument,	
 	std::__cxx11::list<uint32_t> &certificate_extension, ConeOfInfluence &coi, bool &is_query_attacked)
 {
@@ -26,16 +14,18 @@ static bool search_complete_sets_in_state(AF &framework, ArrayBitSet &reduct, ui
 	bool is_rejected = false;
 	list<uint32_t> calculated_set = Proc_DS_PR::calculate_rejecting_set(query_argument, framework, reduct, is_rejected, is_query_attacked,
 		*solver, continue_calculation, true);
-	process_sat_solution(continue_calculation, calculated_set, is_rejected, certificate_extension, 
-		query_argument, framework, coi);
+	if (is_rejected) {
+		tools::Tools_Solver::UpdateCertificate(certificate_extension, calculated_set);
+	}
 
 	while (continue_calculation && !is_rejected) {
 		//iterate through additional sets in state
 		Encoding::add_complement_clause(*solver, reduct);
 		calculated_set = Proc_DS_PR::calculate_rejecting_set(query_argument, framework, reduct, is_rejected, is_query_attacked,
 			*solver, continue_calculation, false);
-		process_sat_solution(continue_calculation, calculated_set, is_rejected, certificate_extension, 
-			query_argument, framework, coi);
+		if (is_rejected) {
+			tools::Tools_Solver::UpdateCertificate(certificate_extension, calculated_set);
+		}
 	}
 	delete solver;
 	return is_rejected;
