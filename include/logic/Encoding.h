@@ -65,3 +65,7 @@ public:
 };
 
 #endif
+
+static void add_consistence_clause(SatSolver &solver, AF &framework, uint32_t argument);
+
+static void add_legal_in_clause(SatSolver &solver, AF &framework, uint32_t argument, uint32_t attacker);

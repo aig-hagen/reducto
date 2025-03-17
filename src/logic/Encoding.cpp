@@ -18,86 +18,76 @@ int64_t Encoding::get_literal_rejected(AF &framework, uint32_t argument, bool is
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static vector<int64_t> add_rejected_clauses(SatSolver &solver, AF &framework, uint32_t argument)
+void add_consistence_clause(SatSolver &solver, AF &framework, uint32_t argument)
 {
-	// basic acceptance and rejection clause
-	// Part I:  models that an argument cannot be accepted and rejected at the same time
+	// models that an argument cannot be accepted and rejected at the same time
 	solver.add_clause_short(
 		Encoding::get_literal_rejected(framework, argument, false),
 		Encoding::get_literal_accepted(argument, false));
-
-	// Part III: constitutes that if an argument 'a' is rejected, one of its attackers must be accepted
-	vector<int64_t> rejection_reason_clause;
-	rejection_reason_clause.push_back(Encoding::get_literal_rejected(framework, argument, false));
-	return rejection_reason_clause;
 }
 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static vector<int64_t> add_completeness_clause(SatSolver& solver, uint32_t argument)
+void add_legal_in_clause(SatSolver &solver, AF &framework, uint32_t argument, uint32_t attacker)
 {
-	//constitutes that if an argument is not labelled IN, at least one of it's attacker has to be NOT_OUT
-	vector<int64_t> completeness_clause;
-	completeness_clause.push_back(Encoding::get_literal_accepted(argument, true));
-	return completeness_clause;
+	//ensures that all arguments are legally labeled IN
+	solver.add_clause_short(
+		Encoding::get_literal_accepted(argument, false),
+		Encoding::get_literal_rejected(framework, attacker, true)
+	);
 }
 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static void add_rejected_clauses_per_attacker(SatSolver &solver, AF &framework, uint32_t argument, uint32_t attacker, vector<int64_t> &rejection_reason_clause)
+
+static vector<int64_t> add_legal_out_clause(SatSolver &solver, AF &framework, uint32_t argument)
 {
-	// Part II: ensures that if an attacker 'b' of an argument 'a' is accepted, then 'a' must be rejected
+	// Part I of ensuring that all arguments are labeled legally OUT
+	vector<int64_t> legal_out_clause;
+	legal_out_clause.push_back(Encoding::get_literal_rejected(framework, argument, false));
+	return legal_out_clause;
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
+static void add_legal_out_clause_per_attacker(SatSolver &solver, AF &framework, uint32_t argument, uint32_t attacker, vector<int64_t> &legal_out_clause)
+{
+	// Part II of ensuring that all arguments are labeled legally OUT
+	legal_out_clause.push_back(Encoding::get_literal_accepted(attacker, true));
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
+void add_legal_undec_in_clause(SatSolver &solver, AF &framework, uint32_t argument, uint32_t attacker)
+{
+	//ensures that all arguments are legally labeled UNDEC by ensuring that there is no attacker of an UNDEC labeled argument that is labeled IN
 	solver.add_clause_short(
 		Encoding::get_literal_rejected(framework, argument, true),
 		Encoding::get_literal_accepted(attacker, false));
-
-	// Part III: constitutes that if an argument 'a' is rejected, one of its attackers must be accepted
-	rejection_reason_clause.push_back(Encoding::get_literal_accepted(attacker, true));
 }
 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static void add_conflict_free_per_attacker(SatSolver &solver, uint32_t argument, uint32_t attacker)
+static vector<int64_t> add_legal_undec_out_clause(SatSolver &solver, AF &framework, uint32_t argument)
 {
-	if (argument != attacker)
-	{
-		solver.add_clause_short(
-			Encoding::get_literal_accepted(argument, false),
-			Encoding::get_literal_accepted(attacker, false));
-	}
-	else
-	{
-		solver.add_clause_short(Encoding::get_literal_accepted(argument, false), 0);
-	}
+	// Part I of ensuring that all arguments are labeled legally UNDEC by ensuring that not all attackers of an UNDEC argument are labeled OUT
+	vector<int64_t> legal_undec_out_clause;
+	legal_undec_out_clause.push_back(Encoding::get_literal_accepted(argument, true));
+	return legal_undec_out_clause;
 }
 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static void add_defense_per_attacker(SatSolver &solver, AF &framework, uint32_t argument, uint32_t attacker)
+static void add_legal_undec_out_clause_per_attacker(SatSolver &solver, AF &framework, uint32_t argument, uint32_t attacker, vector<int64_t> &legal_undec_out_clause)
 {
-	if (argument == attacker)
-	{
-		return;
-	}
-	//is not a self-attack
-
-	//models the notion of defense in an abstract argumentation framework: 
-	// if an argument is accepted to be in the admissible set, all its attackers must be rejected
-	solver.add_clause_short(
-		Encoding::get_literal_accepted(argument, false),
-		Encoding::get_literal_rejected(framework, attacker, true));
-}
-
-/*===========================================================================================================================================================*/
-/*===========================================================================================================================================================*/
-
-static void add_completeness_clause_per_attacker(SatSolver& solver, AF &framework, uint32_t argument, uint32_t attacker, vector<int64_t> &completeness_clause) {
-	//constitutes that if an argument is not labelled IN, at least one of it's attacker has to be NOT_OUT
-	completeness_clause.push_back(Encoding::get_literal_rejected(framework, attacker, false));
+	// Part II of ensuring that all arguments are labeled legally UNDEC by ensuring that not all attackers of an UNDEC argument are labeled OUT
+	legal_undec_out_clause.push_back(Encoding::get_literal_rejected(framework, attacker, false));
 }
 
 /*===========================================================================================================================================================*/
@@ -105,22 +95,20 @@ static void add_completeness_clause_per_attacker(SatSolver& solver, AF &framewor
 
 static void add_admissible_encoding(SatSolver &solver, AF &framework, ArrayBitSet &activeArgs, uint32_t argument)
 {
-	vector<int64_t> rejection_reason_clause = add_rejected_clauses(solver, framework, argument);
-
+	add_consistence_clause(solver, framework, argument);
+	vector<int64_t> legal_out_clause = add_legal_out_clause(solver, framework, argument);
 	vector<uint32_t> attackers = framework.attackers[argument];
-
 	for (std::vector<unsigned int>::size_type i = 0; i < attackers.size(); i++)
 	{
 		if (activeArgs._bitset[attackers[i]])
 		{
-			add_rejected_clauses_per_attacker(solver, framework, argument, attackers[i], rejection_reason_clause);
-			add_conflict_free_per_attacker(solver, argument, attackers[i]);
-			add_defense_per_attacker(solver, framework, argument, attackers[i]);
+			add_legal_in_clause(solver, framework, argument, attackers[i]);
+			add_legal_out_clause_per_attacker(solver, framework, argument, attackers[i], legal_out_clause);
 		}
 	}
 
-	solver.add_clause(rejection_reason_clause);
-	rejection_reason_clause.clear();
+	solver.add_clause(legal_out_clause);
+	legal_out_clause.clear();
 }
 
 /*===========================================================================================================================================================*/
@@ -128,26 +116,25 @@ static void add_admissible_encoding(SatSolver &solver, AF &framework, ArrayBitSe
 
 static void add_complete_encoding(SatSolver &solver, AF &framework, ArrayBitSet &activeArgs, uint32_t argument)
 {
-	vector<int64_t> rejection_reason_clause = add_rejected_clauses(solver, framework, argument);
-	vector<int64_t> completeness_clause = add_completeness_clause(solver, argument);
-	
+	add_consistence_clause(solver, framework, argument);
+	vector<int64_t> legal_out_clause = add_legal_out_clause(solver, framework, argument);
+	vector<int64_t> legal_undec_out_clause = add_legal_undec_out_clause(solver, framework, argument);
 	vector<uint32_t> attackers = framework.attackers[argument];
-
 	for (std::vector<unsigned int>::size_type i = 0; i < attackers.size(); i++)
 	{
 		if (activeArgs._bitset[attackers[i]])
 		{
-			add_rejected_clauses_per_attacker(solver, framework, argument, attackers[i], rejection_reason_clause);
-			add_conflict_free_per_attacker(solver, argument, attackers[i]);
-			add_defense_per_attacker(solver, framework, argument, attackers[i]);
-			add_completeness_clause_per_attacker(solver, framework, argument, attackers[i], completeness_clause);
+			add_legal_in_clause(solver, framework, argument, attackers[i]);
+			add_legal_out_clause_per_attacker(solver, framework, argument, attackers[i], legal_out_clause);
+			add_legal_undec_out_clause_per_attacker(solver, framework, argument, attackers[i], legal_undec_out_clause);
+			add_legal_undec_in_clause(solver, framework, argument, attackers[i]);
 		}
 	}
 
-	solver.add_clause(rejection_reason_clause);
-	solver.add_clause(completeness_clause);
-	rejection_reason_clause.clear();
-	completeness_clause.clear();
+	solver.add_clause(legal_out_clause);
+	solver.add_clause(legal_undec_out_clause);
+	legal_out_clause.clear();
+	legal_undec_out_clause.clear();
 }
 
 /*===========================================================================================================================================================*/
