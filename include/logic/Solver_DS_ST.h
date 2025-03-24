@@ -12,7 +12,6 @@
 #include "PreProcessor_GR.h"
 #include "Reduct.h"
 #include "SatSolver.h"
-#include "ToolsArgsSet.h"
 #include "ToolsSolver.h"
 
 #include "../util/Printer.h"

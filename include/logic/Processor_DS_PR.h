@@ -9,7 +9,6 @@
 #include "Decoding.h"
 #include "PreProcessor_GR.h"
 #include "SatSolver.h"
-#include "ToolsArgsSet.h"
 
 #include "../util/ArrayBitSet.h"
 #include "../util/ToolsList.h"

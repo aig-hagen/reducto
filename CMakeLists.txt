@@ -39,7 +39,6 @@ set(HEADERS
 	${INCLD_LOGIC}/Solver_DS_ST.h
 	${INCLD_LOGIC}/Solver_SE_PR.h
 	${INCLD_LOGIC}/Solver_SE_ST.h
-	${INCLD_LOGIC}/ToolsArgsSet.h 
 	${INCLD_LOGIC}/ToolsSolver.h 
 
 	${INCLD_UTIL}/ArrayBitSet.h
@@ -66,7 +65,6 @@ set(SRCFILES
 	${SRC_LOGIC}Solver_DS_ST.cpp
 	${SRC_LOGIC}Solver_SE_PR.cpp
 	${SRC_LOGIC}Solver_SE_ST.cpp
-	${SRC_LOGIC}ToolsArgsSet.cpp
 	${SRC_LOGIC}ToolsSolver.cpp
 
 	${SRC_UTIL}MemoryWatchDog.c

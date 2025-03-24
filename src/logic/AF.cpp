@@ -16,6 +16,22 @@ bool AF::add_attack(uint32_t attacker, uint32_t victim)
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
+bool AF::check_attack(std::uint32_t argument, std::list<std::uint32_t> &set_arguments, AF &framework)
+{
+	//iterate through arguments of the set
+	for (list<uint32_t>::iterator mIter = set_arguments.begin(); mIter != set_arguments.end(); ++mIter) {
+		//check if query argument is victim of the set
+		if (framework.exists_attack(*mIter, argument)) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
 void AF::initialize(uint32_t number_args) {
 	num_args = number_args;
 	attackers.resize(static_cast<uint64_t>(num_args) + 1);

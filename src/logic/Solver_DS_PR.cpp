@@ -83,7 +83,7 @@ bool Solver_DS_PR::solve(uint32_t query_argument, AF &framework, list<uint32_t> 
 		return true;
 
 	case rejected:
-		if (!tools::Tools_ArgsSet::check_attack(query_argument, certificate_extension, framework)) {
+		if (!framework.check_attack(query_argument, certificate_extension, framework)) {
 			complete_certificate(framework, certificate_extension);
 		}
 		return false;

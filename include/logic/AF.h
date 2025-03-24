@@ -65,6 +65,14 @@ public:
     /// <param name="victim">The argument which is been attacked by the other.</param>
     /// <returns>TRUE iff the attack was successfully added.</returns>
     bool add_attack(uint32_t attacker, uint32_t victim);
+	/// <summary>
+	/// Checks if a specified argument gets attacked by any member of the specified set of arguments.
+	/// </summary>
+	/// <param name="argument">The argument, which could be attacked by the set or not.</param>
+	/// <param name="set_arguments">Set of arguments of the framework.</param>
+	/// <param name="framework">The abstract argumentation framework, specifying the underlying attack relations between the arguments.</param>
+	/// <returns>TRUE iff the any member of the set attacks the specified argument. FALSE otherwise.</returns>
+	bool check_attack(std::uint32_t argument, std::list<std::uint32_t> &set_arguments, AF &framework);
     /// <summary>
     /// This method checks if there's an attack from the one to the other specified 
 	/// argument.
