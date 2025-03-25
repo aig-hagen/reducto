@@ -1,25 +1,31 @@
 #include "../../include/logic/Solver_SE_PR.h"
+
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
 bool Solver_SE_PR::solve(AF &framework, ArrayBitSet &active_args, list<uint32_t> &out_certificate_extension)
 {
+	// initialize the SATSolver
 	ArrayBitSet reduct = active_args.copy();
 	SatSolver *solver = NULL;
 	solver = new SatSolver(reduct._array.size());
+	// add an encoding for a nonempty complete set to the SATSolver
 	Encoding::add_clauses_nonempty_complete_set(*solver, framework, reduct);
 	bool has_solution = (*solver).solve();
-	//extend complete extension to get preferred extension
+	// extend the complete extension to get preferred extension
+	// by repeating the process until no nonempty complete set can be found anymore
 	while (has_solution) {
+		// get the calculated extension and update the certificate
 		list<uint32_t> calculated_extension = Decoding::get_set_from_solver(*solver, reduct);
 		tools::Tools_Solver::UpdateCertificate(out_certificate_extension, calculated_extension);
+		// reduce the current state by the calculated extension
 		ArrayBitSet new_reduct = Reduct::get_reduct_set(reduct, framework, calculated_extension);
 		reduct = new_reduct;
 		if (reduct._array.empty()) {
 			//no more arguments left, therefor preferred extension is found
 			break;
 		}
-		// calculate complete extension in new reduct
+		// calculate a complete extension in the new reduct
 		delete solver;
 		solver = new SatSolver(reduct._array.size());
 		Encoding::add_clauses_nonempty_complete_set(*solver, framework, reduct);

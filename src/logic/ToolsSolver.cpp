@@ -1,4 +1,5 @@
 #include "../../include/logic/ToolsSolver.h"
+
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
@@ -21,11 +22,15 @@ void tools::Tools_Solver::UpdateCertificate(std::__cxx11::list<uint32_t> &out_ce
 /*===========================================================================================================================================================*/
 
 bool tools::Tools_Solver::check_existance_stable_extension(AF &framework, ArrayBitSet &active_args, list<uint32_t> &out_certificate_extension) {
+	// initialize the SATSolver
 	uint64_t numVars = active_args._array.size();
 	SatSolver *solver = NULL;
 	solver = new SatSolver(numVars);
+	// add encoding for nonempty stable sets
 	Encoding::add_clauses_nonempty_stable_set(*solver, framework, active_args);
+	// compute a solution
 	bool has_solution = (*solver).solve();
+	// update certificate if solution was found
 	if (has_solution) {
 		Tools_Solver::UpdateCertificate(solver, active_args, out_certificate_extension);
 	}
