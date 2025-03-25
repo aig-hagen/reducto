@@ -8,7 +8,7 @@
 #include <iostream>
 
 /// <summary>
-/// Abbreviations of the different type of tasks, which the solver can solve
+/// Abbreviations of the different types of tasks, which the solver can solve
 /// </summary>
 enum task { DC, DS, SE, UNKNOWN_TASK };
 /// <summary>
@@ -21,6 +21,9 @@ enum semantics { PR, CO, ST, UNKNOWN_SEM };
 /// </summary>
 enum pre_proc_result { accepted, rejected, unknown };
 
+/// <summary>
+/// Abbreviations of the different file formats, that the solver can handle
+/// </summary>
 enum format {I23, TGF, UNKNOWN_FORMAT};
 
 using namespace std;
@@ -46,10 +49,10 @@ public:
 	static semantics string_to_sem(string semantics_abbreviation);
 
 	/// <summary>
-	/// This method converts the specified string into a format.
+	/// This method converts the specified string into a file format.
 	/// </summary>
-	/// <param name="format_abbreviation">String containing the abbreviation of the format as used in the enum.</param>
-	/// <returns>Format corresponding to the specified string.</returns>
+	/// <param name="format_abbreviation">String containing the abbreviation of the file format as used in the enum.</param>
+	/// <returns>File format corresponding to the specified string.</returns>
 	static format string_to_format(string format_abbreviation);
 };
 

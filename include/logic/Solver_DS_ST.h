@@ -20,20 +20,20 @@
 using namespace std;
 
 /// <summary>
-/// This class is responsible for solving a problem of sceptical acceptance of an query-argument
-/// in extensions of the stable semantics.
+/// This class is responsible for deciding about the sceptical acceptance of an query-argument
+/// using the stable semantics.
 /// </summary>
 class Solver_DS_ST {
 public:
 
 	/// <summary>
-	/// Checks if a specified argument is sceptically accepted by all stable extensions.
+	/// Checks if a specified argument is sceptically accepted using the stable semantics.
 	/// </summary>
-	/// <param name="query_argument">The argument, which could be sceptical accepted or not.</param>
+	/// <param name="query_argument">The argument, which could be accepted or not.</param>
 	/// <param name="framework">The abstract argumentation framework, specifying the underlying attack relations between the arguments.</param>
-	/// <param name="proof_extension"> Extension proving, that the argument cannot be sceptically accepted.</param>
+	/// <param name="out_certificate_extension"> Extension proving, that the argument is not sceptically accepted.</param>
 	/// <returns>TRUE iff the argument is sceptically accepted. FALSE otherwise.</returns>
-	static bool solve(uint32_t query_argument, AF &framework, list<uint32_t> &proof_extension);
+	static bool solve(uint32_t query_argument, AF &framework, list<uint32_t> &out_certificate_extension);
 };
 
 #endif

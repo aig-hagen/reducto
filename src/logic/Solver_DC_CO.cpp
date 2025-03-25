@@ -3,7 +3,7 @@
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-bool start_checking(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, list<uint32_t> &proof_extension) {
+bool start_checking(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, list<uint32_t> &out_certificate_extension) {
 	uint64_t numVars = active_args._array.size();
 	SatSolver *solver = NULL;
 	solver = new SatSolver(numVars);
@@ -11,7 +11,7 @@ bool start_checking(uint32_t query_argument, AF &framework, ArrayBitSet &active_
 	bool has_solution_with_query = (*solver).solve(Encoding::get_literal_accepted(query_argument, true),
 		Encoding::get_literal_rejected(framework, query_argument, false));
 	if (has_solution_with_query) {
-		tools::Tools_Solver::UpdateCertificate(solver, active_args, proof_extension);
+		tools::Tools_Solver::UpdateCertificate(solver, active_args, out_certificate_extension);
 	}
 	
 	delete solver;
@@ -21,13 +21,13 @@ bool start_checking(uint32_t query_argument, AF &framework, ArrayBitSet &active_
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-bool Solver_DC_CO::solve(uint32_t query_argument, AF &framework, list<uint32_t> &proof_extension) {
+bool Solver_DC_CO::solve(uint32_t query_argument, AF &framework, list<uint32_t> &out_certificate_extension) {
 
 	ArrayBitSet initial_reduct = ArrayBitSet();
 	pre_proc_result result_preProcessor;
 	ConeOfInfluence coi(framework);
 
-	result_preProcessor = PreProc_GR::process(framework, query_argument, false, true, initial_reduct, proof_extension, coi);
+	result_preProcessor = PreProc_GR::process(framework, query_argument, false, true, initial_reduct, out_certificate_extension, coi);
 	
 	switch (result_preProcessor) {
 
@@ -38,9 +38,9 @@ bool Solver_DC_CO::solve(uint32_t query_argument, AF &framework, list<uint32_t> 
 		return false;
 
 	case unknown:
-		return start_checking(query_argument, framework, initial_reduct, proof_extension);
+		return start_checking(query_argument, framework, initial_reduct, out_certificate_extension);
 
 	default:
-		return start_checking(query_argument, framework, initial_reduct, proof_extension);
+		return start_checking(query_argument, framework, initial_reduct, out_certificate_extension);
 	}
 }

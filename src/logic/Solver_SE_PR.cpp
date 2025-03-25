@@ -2,7 +2,7 @@
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-bool Solver_SE_PR::solve(AF &framework, ArrayBitSet &active_args, list<uint32_t> &proof_extension)
+bool Solver_SE_PR::solve(AF &framework, ArrayBitSet &active_args, list<uint32_t> &out_certificate_extension)
 {
 	ArrayBitSet reduct = active_args.copy();
 	SatSolver *solver = NULL;
@@ -12,7 +12,7 @@ bool Solver_SE_PR::solve(AF &framework, ArrayBitSet &active_args, list<uint32_t>
 	//extend complete extension to get preferred extension
 	while (has_solution) {
 		list<uint32_t> calculated_extension = Decoding::get_set_from_solver(*solver, reduct);
-		tools::Tools_Solver::UpdateCertificate(proof_extension, calculated_extension);
+		tools::Tools_Solver::UpdateCertificate(out_certificate_extension, calculated_extension);
 		ArrayBitSet new_reduct = Reduct::get_reduct_set(reduct, framework, calculated_extension);
 		reduct = new_reduct;
 		if (reduct._array.empty()) {
@@ -35,10 +35,10 @@ bool Solver_SE_PR::solve(AF &framework, ArrayBitSet &active_args, list<uint32_t>
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-bool Solver_SE_PR::solve(AF &framework, list<uint32_t> &proof_extension)
+bool Solver_SE_PR::solve(AF &framework, list<uint32_t> &out_certificate_extension)
 {
 	ArrayBitSet initial_reduct;
-	initial_reduct = PreProc_GR::process_only_grounded(framework, proof_extension);
+	initial_reduct = PreProc_GR::process_only_grounded(framework, out_certificate_extension);
 		
-	return solve(framework, initial_reduct, proof_extension);
+	return solve(framework, initial_reduct, out_certificate_extension);
 }

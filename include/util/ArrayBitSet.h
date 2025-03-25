@@ -56,6 +56,10 @@ public:
         return ArrayBitSet(copy_vector, copy_bitset);
     }
 
+    /// <summary>
+    /// This method creates a list, that contains all elements of this data structure.
+    /// </summary>
+    /// <returns>List containing all elements.</returns>
     list<uint32_t> to_list() {
         list<uint32_t> output;
         for(std::vector<unsigned int>::size_type i = 0; i < _array.size(); i++) {

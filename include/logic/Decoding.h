@@ -12,7 +12,7 @@
 using namespace std;
 
 /// <summary>
-/// This class is responsible to decode a SATProblem in structure of arguments.
+/// This class is responsible to decode a SATProblem, returning a structure of arguments.
 /// </summary>
 class Decoding {
 public:
