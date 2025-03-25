@@ -7,7 +7,7 @@
 #include <iostream>	
 #include <omp.h>
 
-#include "../util/VectorBitSet.h"
+#include "../util/ArrayBitSet.h"
 
 template <class T>
 inline void hash_combine(std::size_t &seed, const T &v)
@@ -42,13 +42,13 @@ public:
     /// </summary>
     uint32_t num_args;
     /// <summary>
-    /// Lists for each argument a list of the arguments, attacking ist.
+    /// Lists for each argument a list of the arguments, attacking it.
     /// </summary>
-    std::vector<ArrayBitSet> attackers;
+    std::vector<vector<uint32_t>> attackers;
 	/// <summary>
 	/// Lists for each argument a list of the arguments, which are attacked by it.
 	/// </summary>
-	std::vector<ArrayBitSet> victims;
+	std::vector<vector<uint32_t>> victims;
 	/// <summary>
 	/// Booleans indicating if an arguments attacks itself.
 	/// </summary>
@@ -57,14 +57,6 @@ public:
     /// Set in which the buckets contain pairs of arguments, indicating that the first argument is attacking the second.
     /// </summary>
     std::unordered_set<std::pair<uint32_t, uint32_t>> attacks;
-	/// <summary>
-	/// Set in which the buckets contain pairs of arguments, indicating that each argument is attacking the other.
-	/// </summary>
-	std::unordered_set<std::pair<uint32_t, uint32_t>> symmetric_attacks;
-	/// <summary>
-	/// List for all arguments their distance to the argument of the query.
-	/// </summary>
-	std::vector<uint32_t> distance_to_query;
 
     /// <summary>
     /// Adds an attack to the instance.
@@ -73,6 +65,14 @@ public:
     /// <param name="victim">The argument which is been attacked by the other.</param>
     /// <returns>TRUE iff the attack was successfully added.</returns>
     bool add_attack(uint32_t attacker, uint32_t victim);
+	/// <summary>
+	/// Checks if a specified argument gets attacked by any member of the specified set of arguments.
+	/// </summary>
+	/// <param name="argument">The argument, which could be attacked by the set or not.</param>
+	/// <param name="set_arguments">Set of arguments of the framework.</param>
+	/// <param name="framework">The abstract argumentation framework, specifying the underlying attack relations between the arguments.</param>
+	/// <returns>TRUE iff the any member of the set attacks the specified argument. FALSE otherwise.</returns>
+	bool check_attack(std::uint32_t argument, std::list<std::uint32_t> &set_arguments, AF &framework);
     /// <summary>
     /// This method checks if there's an attack from the one to the other specified 
 	/// argument.
@@ -91,6 +91,12 @@ public:
 	/// </summary>
 	/// <param name="number_args">The number of arguments in the framework to initialize.</param>
 	void initialize(uint32_t number_args);
+
+	/// <summary>
+	/// This method creates an ArrayBitSet containing all arguments of this framework.
+	/// </summary>
+	/// <returns>An ArrayBitSet of all arguments in this framework.</returns>
+	ArrayBitSet create_active_arguments();
 };
 
 #endif

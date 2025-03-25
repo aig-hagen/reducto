@@ -23,7 +23,8 @@ void static print_version()
 {
 	cout << PROGRAM_NAME << " (version "<< VERSIONNUMBER <<")\n"
 		<< "Lars Bengel, University of Hagen <lars.bengel@fernuni-hagen.de>\n" 
-		<< "Julian Sander, University of Hagen <julian.sander@fernuni-hagen.de>\n";
+		<< "Julian Sander, University of Hagen <julian.sander@fernuni-hagen.de>\n"
+		<< "Matthias Thimm, University of Hagen <matthias.thimm@fernuni-hagen.de>\n";
 }
 
 /*===========================================================================================================================================================*/
@@ -31,7 +32,7 @@ void static print_version()
 
 void static print_formats()
 {
-	cout << "[i23]\n";
+	cout << "[i23,tgf]\n";
 }
 
 /*===========================================================================================================================================================*/
@@ -39,31 +40,40 @@ void static print_formats()
 
 void static print_problems()
 {
-	/*vector<string> tasks = { "DC", "DS", "SE", "EE", "CE" };
-	vector<string> sems = { "IT", "PR", "UC" };*/
-	vector<string> tasks = { "DS"};
-	vector<string> sems = { "PR"};
-	cout << "[";
-	for (uint32_t i = 0; i < tasks.size(); i++) {
-		for (uint32_t j = 0; j < sems.size(); j++) {
-			string problem = tasks[i] + "-" + sems[j];
-			if (j != sems.size() - 1)
-			{
-				cout << problem << ",";
-			}
-			else
-			{
-				cout << problem;
-			}
-		}
-	}
-	cout << "]\n";
+	cout << "[DC-CO,DC-ST,DS-PR,DS-ST,SE-PR,SE-ST]" << endl;
 }
 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-int execute(int argc, char **argv)
+void static print_proof(std::__cxx11::list<uint32_t> &proof_extension)
+{
+	cout << "w ";
+
+	if (!proof_extension.empty()) {
+		for (list<uint32_t>::iterator mIter = proof_extension.begin(); mIter != proof_extension.end(); ++mIter) {
+			cout << *mIter << " ";
+		}
+		cout << endl;
+	}
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
+bool static check_query(uint32_t query, char **argv)
+{
+	if (query == 0) {
+		cerr << argv[0] << ": Query argument must be specified via -a flag\n";
+		return false;
+	}
+	return true;
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
+int static execute(int argc, char **argv)
 {
 	if (argc == 1) {
 		print_version();
@@ -130,12 +140,17 @@ int execute(int argc, char **argv)
 	}
 
 	AF framework;
-	if (fileformat == "i23") {
-		ParserICCMA::parse_af(framework, file);
-	}
-	else {
-		cerr << argv[0] << ": Unsupported file format\n";
-		return 1;
+	uint32_t query_argument = 0;
+	switch (Enums::string_to_format(fileformat)) {
+		case I23:
+			query_argument = ParserICCMA::parse_af_i23(framework, query, file);
+			break;
+		case TGF:
+			query_argument = ParserICCMA::parse_af_tgf(framework, query, file);
+			break;
+		default:
+			cerr << argv[0] << ": Unsupported file format\n";
+			return 1;
 	}
 
 	string task = problem.substr(0, problem.find("-"));
@@ -144,18 +159,19 @@ int execute(int argc, char **argv)
 	switch (Enums::string_to_task(task)) {
 		case DS:
 		{
-			if (query.empty()) {
-				cerr << argv[0] << ": Query argument must be specified via -a flag\n";
+			if (!check_query(query_argument, argv)) {
 				return 1;
-			}
+			}			
 
-			uint32_t argument = std::stoi(query);
 			list<uint32_t> proof_extension;
 			bool skept_accepted = false;
 
 			switch (Enums::string_to_sem(sem)) {
 				case PR:
-					skept_accepted = Solver_DS_PR::solve(argument, framework, proof_extension, NUM_CORES);
+					skept_accepted = Solver_DS_PR::solve(query_argument, framework, proof_extension);
+					break;
+				case ST:
+					skept_accepted = Solver_DS_ST::solve(query_argument, framework, proof_extension);
 					break;
 				default:
 					cerr << argv[0] << ": Unsupported semantics\n";
@@ -165,21 +181,75 @@ int execute(int argc, char **argv)
 			cout << (skept_accepted ? "YES" : "NO") << endl;
 			if (!skept_accepted)
 			{
-				cout << "w " << endl;
+				print_proof(proof_extension);
+			}
 
-				if (!proof_extension.empty()) {
-					for (list<uint32_t>::iterator mIter = proof_extension.begin(); mIter != proof_extension.end(); ++mIter) {
-						cout << *mIter << " ";
-					}
-					proof_extension;
-					cout << endl;
-				}
+			//free allocated memory
+			proof_extension.clear();			
+		}
+		break;
+
+		case DC:
+		{
+			if (!check_query(query_argument, argv)) {
+				return 1;
+			}
+
+			list<uint32_t> proof_extension;
+			bool cred_accepted = false;
+
+			switch (Enums::string_to_sem(sem)) {
+			case CO:
+				cred_accepted = Solver_DC_CO::solve(query_argument, framework, proof_extension);
+				break;
+			case ST:
+				cred_accepted = Solver_DC_ST::solve(query_argument, framework, proof_extension);
+				break;
+			default:
+				cerr << argv[0] << ": Unsupported semantics\n";
+				return 1;
+			}
+
+			cout << (cred_accepted ? "YES" : "NO") << endl;
+			if (cred_accepted)
+			{
+				print_proof(proof_extension);
 			}
 
 			//free allocated memory
 			proof_extension.clear();
-			break;
 		}
+		break;
+
+		case SE:
+		{
+			list<uint32_t> proof_extension;
+			bool has_extension = false;
+			switch (Enums::string_to_sem(sem)) {
+			case PR:
+				has_extension = Solver_SE_PR::solve(framework, proof_extension);
+				break;
+			case ST:
+				has_extension = Solver_SE_ST::solve(framework, proof_extension);
+				break;
+			default:
+				cerr << argv[0] << ": Unsupported semantics\n";
+				return 1;
+			}
+
+			if (has_extension)
+			{
+				print_proof(proof_extension);
+			}
+			else {
+				cout << "NO" << endl;
+			}
+
+			//free allocated memory
+			proof_extension.clear();
+		}
+		break;
+			
 		default:
 			cerr << argv[0] << ": Problem not supported!\n";
 			return 1;

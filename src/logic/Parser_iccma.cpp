@@ -2,7 +2,7 @@
 
 using namespace std;
 
-void ParserICCMA::parse_af(AF &framework, string file)
+uint32_t ParserICCMA::parse_af_i23(AF &framework, string query, string file)
 {
 	ifstream input;
 	input.open(file);
@@ -39,4 +39,55 @@ void ParserICCMA::parse_af(AF &framework, string file)
 
 	input.close();
 	framework.finish_initilization();
+
+	if (!query.empty()) {
+		return std::stoi(query);
+	}
+	else {
+		return 0;
+	}
+}
+
+
+uint32_t ParserICCMA::parse_af_tgf(AF &framework, string query, string file) {
+	ifstream input;
+	input.open(file);
+
+	if (!input.good()) {
+		cerr << "Cannot open input file\n";
+		exit(1);
+	}
+	
+	string line, arg;
+	uint32_t n_args = 0;
+	unordered_map<string, uint32_t> arg_str_to_int;
+
+	while (!input.eof()) {
+		getline(input, line);
+		std::istringstream iss(line);
+		iss >> arg;
+		if (arg == "#") break;
+		arg_str_to_int[arg] = ++n_args;
+	}
+
+	framework.initialize(n_args);
+
+	string attacker, victim;
+	while (!input.eof()) {
+		getline(input, line);
+		if (line.empty()) break;
+		std::istringstream iss(line);
+		iss >> attacker >> victim;
+		framework.add_attack(arg_str_to_int[attacker], arg_str_to_int[victim]);
+	}
+
+	input.close();
+	framework.finish_initilization();
+
+	if (!query.empty()) {
+		return  arg_str_to_int[query];
+	}
+	else {
+		return 0;
+	}
 }

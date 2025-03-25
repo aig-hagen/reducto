@@ -33,7 +33,6 @@
 #include <iostream>
 #include <stdio.h>
 #include <stdint.h>
-#include <omp.h>
 #include <getopt.h>
 
 extern "C" {
@@ -42,20 +41,17 @@ extern "C" {
 
 #include "../include/logic/AF.h"
 #include "../include/logic/Parser_iccma.h"
+#include "../include/logic/Solver_DC_CO.h"
+#include "../include/logic/Solver_DC_ST.h"
 #include "../include/logic/Solver_DS_PR.h"
+#include "../include/logic/Solver_DS_ST.h"
+#include "../include/logic/Solver_SE_PR.h"
+#include "../include/logic/Solver_SE_ST.h"
 
 #include "../include/logic/Enums.h"
 
-constexpr auto PROGRAM_NAME = "ParallelSolver";
-constexpr auto VERSIONNUMBER = "1.15";
-/// <summary>
-/// Number of cores requested to use during the computation of a solution.
-/// Keep in mind that the actual number of cores used depends on the 
-/// OS scheduler and might be lower. If value == 0, then the system 
-/// is free to choose the /// number of cores automatically without any 
-/// restrictions.
-/// </summary>
-constexpr auto NUM_CORES = 0;
+constexpr auto PROGRAM_NAME = "Reducto";
+constexpr auto VERSIONNUMBER = "2.11";
 
 /// <summary>
 /// Flags used for internal processing.

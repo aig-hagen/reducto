@@ -1,27 +1,18 @@
-#ifndef SOLVER_DS_PR_H
-#define SOLVER_DS_PR_H
+#ifndef SOLVER_DS_ST_H
+#define SOLVER_DS_ST_H
 
 #include <iostream>
 #include <cstdint>
-#include <string_view>
-#include <functional>
 #include <vector>
-#include <queue>
-
-extern "C" {
-	#include "../util/MemoryWatchDog.h"
-}
 
 #include "AF.h"
 #include "Decoding.h"
 #include "Encoding.h"
 #include "Enums.h"
 #include "PreProcessor_GR.h"
-#include "Processor_DS_PR.h"
 #include "Reduct.h"
 #include "SatSolver.h"
 #include "ToolsSolver.h"
-#include "Solver_SE_PR.h"
 
 #include "../util/Printer.h"
 #include "../util/ToolsList.h"
@@ -30,13 +21,13 @@ using namespace std;
 
 /// <summary>
 /// This class is responsible for solving a problem of sceptical acceptance of an query-argument
-/// in extensions of the preferred semantics.
+/// in extensions of the stable semantics.
 /// </summary>
-class Solver_DS_PR {
+class Solver_DS_ST {
 public:
 
 	/// <summary>
-	/// Checks if a specified argument is sceptically accepted by all preferred extensions.
+	/// Checks if a specified argument is sceptically accepted by all stable extensions.
 	/// </summary>
 	/// <param name="query_argument">The argument, which could be sceptical accepted or not.</param>
 	/// <param name="framework">The abstract argumentation framework, specifying the underlying attack relations between the arguments.</param>

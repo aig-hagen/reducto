@@ -1,10 +1,11 @@
-#ifndef VECTOR_BITSET_H
-#define VECTOR_BITSET_H
+#ifndef ARRAY_BITSET_H
+#define ARRAY_BITSET_H
 
 #include <vector>
 #include <cstdint>
 #include <algorithm>
 #include <iterator>
+#include <list>
 
 using namespace std;
 
@@ -25,7 +26,7 @@ public:
 
     ArrayBitSet() {}
 
-    ArrayBitSet(std::vector<uint32_t> new_vector, std::vector<uint8_t> new_bitset) : _array{ new_vector }, _bitset{ new_bitset } {}
+    ArrayBitSet(std::vector<uint32_t> new_array, std::vector<uint8_t> new_bitset) : _array{ new_array }, _bitset{ new_bitset } {}
 
     ~ArrayBitSet() {
         _bitset.clear();
@@ -44,7 +45,7 @@ public:
         std::vector<uint8_t> copy_bitset;
         copy_bitset.resize(bitset_size);
 
-        for (int i = 0; i < bitset_size; i++) {
+        for (uint64_t i = 0; i < bitset_size; i++) {
             if (i < vector_size) {
                 copy_vector.push_back(_array[i]);
             }
@@ -53,6 +54,15 @@ public:
         }
 
         return ArrayBitSet(copy_vector, copy_bitset);
+    }
+
+    list<uint32_t> to_list() {
+        list<uint32_t> output;
+        for(std::vector<unsigned int>::size_type i = 0; i < _array.size(); i++) {
+            output.push_back(_array[i]);
+        }
+
+        return output;
     }
 
     /// <summary>

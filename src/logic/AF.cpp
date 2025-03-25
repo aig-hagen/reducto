@@ -13,65 +13,67 @@ bool AF::add_attack(uint32_t attacker, uint32_t victim)
 	return true;
 }
 
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
+bool AF::check_attack(std::uint32_t argument, std::list<std::uint32_t> &set_arguments, AF &framework)
+{
+	//iterate through arguments of the set
+	for (list<uint32_t>::iterator mIter = set_arguments.begin(); mIter != set_arguments.end(); ++mIter) {
+		//check if query argument is victim of the set
+		if (framework.exists_attack(*mIter, argument)) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
 void AF::initialize(uint32_t number_args) {
 	num_args = number_args;
 	attackers.resize(static_cast<uint64_t>(num_args) + 1);
 	victims.resize(static_cast<uint64_t>(num_args) + 1);
 	self_attack.resize(static_cast<uint64_t>(num_args) + 1);
 	std::fill(self_attack.begin(), self_attack.end(), 0);
-	distance_to_query.resize(static_cast<uint64_t>(num_args) + 1);
-	std::fill(distance_to_query.begin(), distance_to_query.end(), 0);
 }
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
 
 void AF::finish_initilization()
 {
-	const uint64_t tmp_num_args = static_cast<uint64_t>(num_args) + 1;
-	vector<vector<uint32_t>> attackers_vectors;
-	attackers_vectors.resize(tmp_num_args);
-	vector<vector<uint8_t>> attackers_bitsets;
-	attackers_bitsets.resize(tmp_num_args);
-	vector<vector<uint32_t>> victims_vectors;
-	victims_vectors.resize(tmp_num_args);
-	vector<vector<uint8_t>> victims_bitsets;
-	victims_bitsets.resize(tmp_num_args);
-	for (int i = 0; i < tmp_num_args; i++) {
-		attackers_bitsets[i].resize(tmp_num_args);
-		victims_bitsets[i].resize(tmp_num_args);
-	}
-
 	for (const pair<uint32_t, uint32_t> &attack : attacks) {
 		int32_t source = attack.first;
 		int32_t target = attack.second;
-		attackers_vectors[target].push_back(source);
-		attackers_bitsets[target][source] = true;
-		victims_vectors[source].push_back(target);
-		victims_bitsets[source][target] = true;
+		attackers[target].push_back(source);
+		victims[source].push_back(target);
 
 		if (source == target)
 			self_attack[source] = true;
-		if (attacks.count(make_pair(target, source))) {
-			symmetric_attacks.insert(make_pair(source, target));
-			symmetric_attacks.insert(make_pair(target, source));
-		}
 	}
-
-	for (int i = 0; i < attackers.size(); i++) {
-		attackers_vectors[i].shrink_to_fit();
-		attackers[i] = ArrayBitSet(attackers_vectors[i], attackers_bitsets[i]);
-	}
-	attackers_vectors.clear();
-	attackers_bitsets.clear();
-
-	for (int i = 0; i < victims.size(); i++) {
-		victims_vectors[i].shrink_to_fit();
-		victims[i] = ArrayBitSet(victims_vectors[i], victims_bitsets[i]);
-	}
-	victims_vectors.clear();
-	victims_bitsets.clear();
-
-	self_attack.shrink_to_fit();
 }
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
 
 bool AF::exists_attack(uint32_t attacker, uint32_t victim) const {
 	return attacks.count(make_pair(attacker, victim));
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
+ArrayBitSet AF::create_active_arguments() {
+	vector<uint32_t> active_args_vector;
+	vector<uint8_t> active_args_bitset(num_args + 1, 1);
+	active_args_bitset[0] = false;
+
+	for (std::vector<unsigned int>::size_type i = 0; i < num_args; i++) {
+		active_args_vector.push_back(i + 1);
+	}
+
+	return ArrayBitSet(active_args_vector, active_args_bitset);
 }
