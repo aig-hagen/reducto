@@ -37,7 +37,7 @@ static bool search_complete_sets_in_state(AF &framework, ArrayBitSet &reduct, ui
 		}
 	}
 	delete solver;
-	return is_rejected;
+	return !is_rejected;
 }
 
 /*===========================================================================================================================================================*/
@@ -92,14 +92,14 @@ bool Solver_DS_PR::solve(uint32_t query_argument, AF &framework, list<uint32_t> 
 
 	default:
 		bool is_query_attacked = false;
-		bool is_rejected = search_complete_sets_in_state(framework, active_args_in_coi, query_argument, out_certificate_extension, coi, is_query_attacked);
+		bool is_skeptically_accepted = search_complete_sets_in_state(framework, active_args_in_coi, query_argument, out_certificate_extension, coi, is_query_attacked);
 
 		//if skeptical acceptance of query got rejected, but query is not attacked by certificate, then extend certificate to get complete PR extension in original AF
-		if (is_rejected && !is_query_attacked) {
+		if (!is_skeptically_accepted && !is_query_attacked) {
 			complete_certificate(framework, out_certificate_extension);
-			return is_rejected;
+			return is_skeptically_accepted;
 		}
 
-		return !is_rejected;
+		return is_skeptically_accepted;
 	}
 }
