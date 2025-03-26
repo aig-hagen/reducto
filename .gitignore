@@ -12,6 +12,7 @@
 *.sln
 *.vcxproj
 sat/**
+!*/ipasir.h
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
