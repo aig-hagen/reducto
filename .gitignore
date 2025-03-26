@@ -11,7 +11,7 @@
 *.sln.docstates
 *.sln
 *.vcxproj
-cadical/
+sat/**
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
