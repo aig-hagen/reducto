@@ -79,8 +79,7 @@ all: CCFLAGS += -DNDEBUG
 all: $(BUILD_DIR)/$(TARGET)
 
 .PHONY: clean
-clean:
-	rm -r $(BUILD_DIR)
+clean: rm -r $(BUILD_DIR)
 
 .PHONY: debug
 debug: CXXFLAGS += -DDEBUG -g
