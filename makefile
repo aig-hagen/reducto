@@ -41,9 +41,9 @@ INCLUDE_UTIL	=	./include/util/
 #--------------------------------------------------------------------------#
 
 CC	=	gcc
-CFLAGS	?=	-Wall -O3 -std=c11
+CFLAGS	?=	-Wall -std=c11
 CXX = g++
-CXXFLAGS ?= -Wall -O3 -std=c++11
+CXXFLAGS ?= -Wall -std=c++11
 LDFLAGS ?= -L$(IPASIRLIBDIR)
 LDLIBS ?= -l$(IPASIRSOLVER)
 
@@ -74,16 +74,16 @@ CPPFLAGS := $(INC_FLAGS) -MMD -MP
 #--------------------------------------------------------------------------#
 
 .PHONY:	all
-all: CXXFLAGS += -DNDEBUG
-all: CCFLAGS += -DNDEBUG
+all: CXXFLAGS += -DNDEBUG -O3 
+all: CCFLAGS += -DNDEBUG -O3 
 all: $(BUILD_DIR)/$(TARGET)
 
 .PHONY: clean
 clean: rm -r $(BUILD_DIR)
 
 .PHONY: debug
-debug: CXXFLAGS += -DDEBUG -g
-debug: CCFLAGS += -DDEBUG -g
+debug: CXXFLAGS += -DDEBUG -g -O0
+debug: CCFLAGS += -DDEBUG -g -O0
 debug: $(BUILD_DIR)/$(TARGET)
 
 #--------------------------------------------------------------------------#
