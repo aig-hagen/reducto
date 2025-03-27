@@ -5,7 +5,7 @@
 /// <summary>
 ///  This method is used to check the skeptical acceptance after the framework has been preprocessed
 /// </summary>
-static bool start_checking(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, list<uint32_t> &out_certificate_extension)
+static bool check_for_stable_extension_without_query(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, list<uint32_t> &out_certificate_extension)
 {
 	// initialise the SATSolver
 	uint64_t numVars = active_args._array.size();
@@ -23,7 +23,7 @@ static bool start_checking(uint32_t query_argument, AF &framework, ArrayBitSet &
 	//only two cases remain: 1. no stable solution is computable; 2. all stable solutions contain the query; both cases lead to scetical acceptance
 		
 	delete solver;
-	return !has_solution_without_query;
+	return has_solution_without_query;
 }
 
 /*===========================================================================================================================================================*/
@@ -32,9 +32,18 @@ static bool start_checking(uint32_t query_argument, AF &framework, ArrayBitSet &
 bool Solver_DS_ST::solve(uint32_t query_argument, AF &framework, list<uint32_t> &out_certificate_extension)
 {
 	// preprocess the framework
+
+	// check if query is unattacked
+	if (framework.attackers[query_argument].empty())
+	{
+		return true;
+	}
+
+	// get the original state (active arguments) of the framework
+	ArrayBitSet active_args = framework.create_active_arguments();
 	ArrayBitSet initial_reduct = ArrayBitSet();
-	pre_proc_result result_preProcessor;
-	result_preProcessor = PreProc_GR::process_only_grounded(framework, query_argument, true, false, initial_reduct, out_certificate_extension);
+	// reduce by grounded extension
+	pre_proc_result result_preProcessor = PreProc_GR::reduce_by_grounded(framework, active_args, query_argument, true, false, initial_reduct, out_certificate_extension);
 
 	switch (result_preProcessor) {
 
@@ -47,15 +56,11 @@ bool Solver_DS_ST::solve(uint32_t query_argument, AF &framework, list<uint32_t> 
 			return false;
 		}
 
-		return !tools::Tools_Solver::check_existance_stable_extension(framework, initial_reduct, out_certificate_extension);
+		return !check_for_stable_extension_without_query(query_argument, framework, initial_reduct, out_certificate_extension);
 
 	default:
-		if (initial_reduct._array.size() == 0) {
-			//calculated grounded extension is the stable extension
-			cout << "ERROR should be impossible" << endl;
-			return false;
-		}
+		
 
-		return start_checking(query_argument, framework, initial_reduct, out_certificate_extension);
+		return !check_for_stable_extension_without_query(query_argument, framework, initial_reduct, out_certificate_extension);
 	}
 }
