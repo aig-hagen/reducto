@@ -25,7 +25,7 @@ extern "C" {
 /// <summary>
 /// Name of the program
 /// </summary>
-constexpr auto PROGRAM_NAME = "Reducto";
+constexpr auto PROGRAM_NAME = "reducto";
 constexpr auto VERSIONNUMBER = "2.09";
 
 /// <summary>
