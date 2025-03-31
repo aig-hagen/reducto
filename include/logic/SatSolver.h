@@ -22,6 +22,12 @@ public:
 	SatSolver(uint32_t num_args);
 
 	/// <summary>
+	/// This method adds a temporary assumption to the solver, which will be deleted after the solver calculates the next solution.
+	/// </summary>
+	/// <param name="clause">Variable the SAT-solver has to assume to be true if positive and false if negative.</param>
+	void add_assumption(int64_t assumption);
+
+	/// <summary>
 	/// Adds a new clause to the SAT-problem of the solver. This method is used to define the propositional formula of the SatSolver, which is formulated in conjunctive normal form.
 	/// </summary>
 	/// <param name="clause">List of numbers, representing the literals, which are combined by an disjunction.</param>

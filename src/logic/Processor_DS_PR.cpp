@@ -26,12 +26,15 @@ list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &
 			return calculated_set;
 		}
 
+		//ensure that solver does not find same solution again
+		Encoding::add_complement_clause(solver, active_args);
+
 		//check if set is PR, by checking if reduct has CO set
-		ArrayBitSet reduct = Reduct::get_reduct_set(active_args, framework, calculated_set);
-		SatSolver *solver_reduct = NULL;
-		solver_reduct = new SatSolver(reduct._array.size());
-		Encoding::add_clauses_nonempty_complete_set(*solver_reduct, framework, reduct);
-		if (!(*solver_reduct).solve())
+		for (std::list<uint32_t>::iterator mIter = calculated_set.begin(); mIter != calculated_set.end(); ++mIter) {
+			solver.add_assumption(Encoding::get_literal_accepted(*mIter, true));
+			solver.add_assumption(Encoding::get_literal_rejected(framework, *mIter, false));
+		}
+		if (!solver.solve())
 		{
 			// cannot calculate CO set in reduct, hence set used for reduction has to be a PR set
 			// since the PR set does not contain the query, it's a counter-example
@@ -50,12 +53,10 @@ list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &
 				//check if calculated CO extension contains query, if so then extend complement clause by the new extension
 				//since it is uninteresting to visit the combined extension once again
 				if (tools::Tools_List::contains(calculated_set_2, query_argument)) {
-					list<uint32_t> calculated_set_tmp = tools::Tools_List::extend_list(calculated_set, calculated_set_2);
-					calculated_set = calculated_set_tmp;
+					Encoding::add_complement_clause(solver, active_args);
 				}
 			}
 		}
-		delete solver_reduct;
 		return calculated_set;
 	}
 }
