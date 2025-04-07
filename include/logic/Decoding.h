@@ -6,6 +6,7 @@
 #include <unordered_set>
 
 #include "SatSolver.h"
+#include "Encoding.h"
 
 #include "../util/ArrayBitSet.h"
 

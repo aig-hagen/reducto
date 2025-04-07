@@ -22,6 +22,7 @@ list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &
 		list<uint32_t> calculated_set = Decoding::get_set_from_solver(solver, active_args);
 		out_is_query_attacked = framework.check_attack(query_argument, calculated_set, framework);
 		if (out_is_query_attacked) {
+			// found counter-example
 			out_is_rejected = true;
 			return calculated_set;
 		}
@@ -45,6 +46,7 @@ list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &
 			list<uint32_t> calculated_set_2 = Decoding::get_set_from_solver(solver, active_args);
 			out_is_query_attacked = framework.check_attack(query_argument, calculated_set_2, framework);
 			if (out_is_query_attacked) {
+				// found counter-example
 				list<uint32_t> calculated_set_tmp = tools::Tools_List::extend_list(calculated_set, calculated_set_2);
 				calculated_set = calculated_set_tmp;
 				out_is_rejected = true;

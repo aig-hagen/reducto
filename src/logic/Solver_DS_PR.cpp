@@ -10,7 +10,7 @@ static bool search_complete_sets_in_state(AF &framework, ArrayBitSet &reduct, ui
 	std::__cxx11::list<uint32_t> &out_certificate_extension, ConeOfInfluence &coi, bool &is_query_attacked)
 {
 	// initialize SATSolver
-	uint64_t numVars = reduct._array.size();
+	uint64_t numVars = framework.num_args;
 	SatSolver *solver = NULL;
 	solver = new SatSolver(numVars);
 	// add encoding for nonempty complete sets to the SATSolver
@@ -26,8 +26,6 @@ static bool search_complete_sets_in_state(AF &framework, ArrayBitSet &reduct, ui
 	}
 	// iterate through all possible sets in the state
 	while (continue_calculation && !is_rejected) {
-		// add a complement clause to the solver
-		Encoding::add_complement_clause(*solver, reduct);
 		// calculate a set of arguments by solving the SAT problem
 		calculated_set = Proc_DS_PR::calculate_rejecting_set(query_argument, framework, reduct, is_rejected, is_query_attacked,
 			*solver, continue_calculation, false);
