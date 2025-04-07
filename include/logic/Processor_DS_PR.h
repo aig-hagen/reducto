@@ -9,7 +9,6 @@
 #include "Decoding.h"
 #include "PreProcessor_GR.h"
 #include "SatSolver.h"
-#include "ToolsArgsSet.h"
 
 #include "../util/ArrayBitSet.h"
 #include "../util/ToolsList.h"
@@ -23,18 +22,18 @@ class Proc_DS_PR {
 
 public:
 	/// <summary>
-	/// This method calculates a nonemtpy set, if such a set can be calculated in the specified reduct, using the specified solver.
+	/// This method calculates a nonemtpy set which attacks the specified query argument, if such a set can be calculated in the specified reduct, using the specified solver.
 	/// </summary>
 	/// <param name="query_argument">The query argument of the DS-PR problem</param>
 	/// <param name="framework">The abstract argumentation framework of the problem.</param>
 	/// <param name="active_args">The arguments that are active in the current state of the framework.</param>
-	/// <param name="is_rejected">Flag used to signal that the argument is rejected or not.</param>
-	/// <param name="is_query_attacked">Flag used to signal if the calculated set of arguments attacks the query argument.</param>
+	/// <param name="out_is_rejected">[Output-Parameter] Flag used to signal that the argument is rejected.</param>
+	/// <param name="out_is_query_attacked">[Output-Parameter] Flag used to signal if the calculated set of arguments attacks the query argument.</param>
 	/// <param name="solver">The solver used to calculate sets for this state of the framework.</param>
-	/// <param name="has_found_solution">Flag used to signal if the solver coudl calculate a solution.</param>
-	/// <param name="is_first_iteration">Flag indicating if this iteration to calculate a set is the first in the specified state or not.</param>
+	/// <param name="out_has_solution_without_query">[Output-Parameter] Flag used to signal if the solver could calculate a solution.</param>
+	/// <param name="is_first_iteration">Flag indicating if this iteration to calculate a set is the first in the specified state of the framework.</param>
 	/// <returns>An non emtpy set, if such a set can be computed. Empty list otherwise.</returns>
-	static list<uint32_t> calculate_rejecting_set(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &is_rejected, bool &is_query_attacked,
-		SatSolver &solver, bool &has_found_solution, bool is_first_iteration);
+	static list<uint32_t> calculate_rejecting_set(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &out_is_rejected, bool &out_is_query_attacked,
+		SatSolver &solver, bool &out_has_solution_without_query, bool is_first_iteration);
 };
 #endif

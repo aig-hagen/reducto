@@ -1,16 +1,59 @@
 #include "../../include/logic/AF.h"
-
 using namespace std;
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
 
 bool AF::add_attack(uint32_t attacker, uint32_t victim)
 {
-	if (attacker < 0 || victim < 0) return false;
+	//check that input is valid
+	if (attacker == 0 || victim == 0) return false;
 	
+	//check if attack is already contained
 	if (attacks.count(make_pair(attacker, victim))) {
 		return false;
 	}
 	attacks.insert(make_pair(attacker, victim));
 	return true;
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
+bool AF::check_attack(std::uint32_t argument, std::list<std::uint32_t> &set_arguments, AF &framework)
+{
+	//iterate through arguments of the set
+	for (list<uint32_t>::iterator mIter = set_arguments.begin(); mIter != set_arguments.end(); ++mIter) {
+		//check if query argument is victim of the set
+		if (framework.exists_attack(*mIter, argument)) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
+ArrayBitSet AF::create_active_arguments() {
+	vector<uint32_t> active_args_vector;
+	vector<uint8_t> active_args_bitset(num_args + 1, 1);
+	active_args_bitset[0] = false;
+
+	//iterate through the arguments to append them to the vector
+	for (std::vector<unsigned int>::size_type i = 0; i < num_args; i++) {
+		active_args_vector.push_back(i + 1);
+	}
+
+	return ArrayBitSet(active_args_vector, active_args_bitset);
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
+bool AF::exists_attack(uint32_t attacker, uint32_t victim) const {
+	return attacks.count(make_pair(attacker, victim));
 }
 
 /*===========================================================================================================================================================*/
@@ -38,26 +81,4 @@ void AF::finish_initilization()
 		if (source == target)
 			self_attack[source] = true;
 	}
-}
-
-/*===========================================================================================================================================================*/
-/*===========================================================================================================================================================*/
-
-bool AF::exists_attack(uint32_t attacker, uint32_t victim) const {
-	return attacks.count(make_pair(attacker, victim));
-}
-
-/*===========================================================================================================================================================*/
-/*===========================================================================================================================================================*/
-
-ArrayBitSet AF::create_active_arguments() {
-	vector<uint32_t> active_args_vector;
-	vector<uint8_t> active_args_bitset(num_args + 1, 1);
-	active_args_bitset[0] = false;
-
-	for (std::vector<unsigned int>::size_type i = 0; i < num_args; i++) {
-		active_args_vector.push_back(i + 1);
-	}
-
-	return ArrayBitSet(active_args_vector, active_args_bitset);
 }

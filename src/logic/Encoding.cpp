@@ -3,11 +3,17 @@
 using namespace std;
 using std::vector;
 
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
 int64_t Encoding::get_literal_accepted(uint32_t argument, bool isPositive)
 {
 	int64_t variable = static_cast<int64_t>(argument);
 	return isPositive ? variable : -1 * variable;
 }
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
 
 int64_t Encoding::get_literal_rejected(AF &framework, uint32_t argument, bool isPositive)
 {
@@ -144,6 +150,7 @@ void Encoding::add_clauses_nonempty_admissible_set(SatSolver &solver, AF &framew
 {
 	vector<int64_t> non_empty_clause;
 
+	// iterate through all active arguments
 	for (std::vector<unsigned int>::size_type i = 0; i < activeArgs._array.size(); i++) {
 		non_empty_clause.push_back(Encoding::get_literal_accepted(activeArgs._array[i], true));
 		add_admissible_encoding(solver, framework, activeArgs, activeArgs._array[i]);
@@ -160,6 +167,7 @@ void Encoding::add_clauses_nonempty_complete_set(SatSolver &solver, AF &framewor
 {
 	vector<int64_t> non_empty_clause;
 
+	// iterate through all active arguments
 	for (std::vector<unsigned int>::size_type i = 0; i < activeArgs._array.size(); i++) {
 		non_empty_clause.push_back(Encoding::get_literal_accepted(activeArgs._array[i], true));
 		add_complete_encoding(solver, framework, activeArgs, activeArgs._array[i]);
@@ -176,6 +184,7 @@ void Encoding::add_clauses_nonempty_stable_set(SatSolver &solver, AF &framework,
 {
 	vector<int64_t> non_empty_clause;
 
+	// iterate through all active arguments
 	for (std::vector<unsigned int>::size_type i = 0; i < activeArgs._array.size(); i++) {
 		non_empty_clause.push_back(Encoding::get_literal_accepted(activeArgs._array[i], true));
 		add_complete_encoding(solver, framework, activeArgs, activeArgs._array[i]);
@@ -196,6 +205,7 @@ void Encoding::add_complement_clause(SatSolver &solver, ArrayBitSet &activeArgs)
 {
 	vector<int64_t> clause;
 
+	// iterate through all active arguments
 	for (std::vector<unsigned int>::size_type i = 0; i < activeArgs._array.size(); i++) {
 		int64_t in_variable = get_literal_accepted(activeArgs._array[i], true);
 		if (!solver.check_var_model(in_variable)) {

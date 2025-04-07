@@ -2,6 +2,9 @@
 
 using namespace std;
 
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
 void static print_usage()
 {
 	cout << "Usage: " << PROGRAM_NAME << " -p <task> -f <file> -fo <format> [-a <query>]\n\n";
@@ -75,6 +78,7 @@ bool static check_query(uint32_t query, char **argv)
 
 int static execute(int argc, char **argv)
 {
+	// read command arguments
 	if (argc == 1) {
 		print_version();
 		return 0;
@@ -139,6 +143,7 @@ int static execute(int argc, char **argv)
 		fileformat = file.substr(file.find_last_of(".") + 1, file.length() - file.find_last_of(".") - 1);
 	}
 
+	// parse the framework
 	AF framework;
 	uint32_t query_argument = 0;
 	switch (Enums::string_to_format(fileformat)) {
@@ -153,10 +158,13 @@ int static execute(int argc, char **argv)
 			return 1;
 	}
 
+	// parse the problem and semantics
 	string task = problem.substr(0, problem.find("-"));
 	problem.erase(0, problem.find("-") + 1);
 	string sem = problem.substr(0, problem.find("-"));
+	// process the problem
 	switch (Enums::string_to_task(task)) {
+		// skeptical acceptance problem
 		case DS:
 		{
 			if (!check_query(query_argument, argv)) {
@@ -166,6 +174,7 @@ int static execute(int argc, char **argv)
 			list<uint32_t> proof_extension;
 			bool skept_accepted = false;
 
+			// process the semantics
 			switch (Enums::string_to_sem(sem)) {
 				case PR:
 					skept_accepted = Solver_DS_PR::solve(query_argument, framework, proof_extension);
@@ -178,6 +187,7 @@ int static execute(int argc, char **argv)
 					return 1;
 			}
 
+			// print result
 			cout << (skept_accepted ? "YES" : "NO") << endl;
 			if (!skept_accepted)
 			{
@@ -189,6 +199,7 @@ int static execute(int argc, char **argv)
 		}
 		break;
 
+		// credulous acceptance problem
 		case DC:
 		{
 			if (!check_query(query_argument, argv)) {
@@ -198,6 +209,7 @@ int static execute(int argc, char **argv)
 			list<uint32_t> proof_extension;
 			bool cred_accepted = false;
 
+			// process the semantics
 			switch (Enums::string_to_sem(sem)) {
 			case CO:
 				cred_accepted = Solver_DC_CO::solve(query_argument, framework, proof_extension);
@@ -210,6 +222,7 @@ int static execute(int argc, char **argv)
 				return 1;
 			}
 
+			// print result
 			cout << (cred_accepted ? "YES" : "NO") << endl;
 			if (cred_accepted)
 			{
@@ -221,10 +234,13 @@ int static execute(int argc, char **argv)
 		}
 		break;
 
+		// single extension problem
 		case SE:
 		{
 			list<uint32_t> proof_extension;
 			bool has_extension = false;
+
+			// process the semantics
 			switch (Enums::string_to_sem(sem)) {
 			case PR:
 				has_extension = Solver_SE_PR::solve(framework, proof_extension);
@@ -237,6 +253,7 @@ int static execute(int argc, char **argv)
 				return 1;
 			}
 
+			// print result
 			if (has_extension)
 			{
 				print_proof(proof_extension);

@@ -2,31 +2,47 @@
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static bool start_checking(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, list<uint32_t> &proof_extension)
+/// <summary>
+///  This method is used to check the skeptical acceptance after the framework has been preprocessed
+/// </summary>
+static bool check_for_stable_extension_without_query(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, list<uint32_t> &out_certificate_extension)
 {
-	uint64_t numVars = framework.num_args;
+	// initialise the SATSolver
 	SatSolver *solver = NULL;
-	solver = new SatSolver(numVars);
+	solver = new SatSolver();
+	// add an encoding for nonempty stable sets
 	Encoding::add_clauses_nonempty_stable_set(*solver, framework, active_args);
+	// compute a solution with the SATSolver
 	bool has_solution_without_query = (*solver).solve(Encoding::get_literal_accepted(query_argument, false),
 		Encoding::get_literal_rejected(framework, query_argument, true));
+	// update the certificate iff a solution was found
 	if (has_solution_without_query) {
-		tools::Tools_Solver::UpdateCertificate(solver, active_args, proof_extension);
+		tools::Tools_Solver::UpdateCertificate(solver, active_args, out_certificate_extension);
 	}
 	//only two cases remain: 1. no stable solution is computable; 2. all stable solutions contain the query; both cases lead to scetical acceptance
 		
 	delete solver;
-	return !has_solution_without_query;
+	return has_solution_without_query;
 }
 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-bool Solver_DS_ST::solve(uint32_t query_argument, AF &framework, list<uint32_t> &proof_extension)
+bool Solver_DS_ST::solve(uint32_t query_argument, AF &framework, list<uint32_t> &out_certificate_extension)
 {
+	// preprocess the framework
+
+	// check if query is unattacked
+	if (framework.attackers[query_argument].empty())
+	{
+		return true;
+	}
+
+	// get the original state (active arguments) of the framework
+	ArrayBitSet active_args = framework.create_active_arguments();
 	ArrayBitSet initial_reduct = ArrayBitSet();
-	pre_proc_result result_preProcessor;
-	result_preProcessor = PreProc_GR::process_only_grounded(framework, query_argument, true, false, initial_reduct, proof_extension);
+	// reduce by grounded extension
+	pre_proc_result result_preProcessor = PreProc_GR::reduce_by_grounded(framework, active_args, query_argument, true, false, initial_reduct, out_certificate_extension);
 
 	switch (result_preProcessor) {
 
@@ -39,15 +55,11 @@ bool Solver_DS_ST::solve(uint32_t query_argument, AF &framework, list<uint32_t> 
 			return false;
 		}
 
-		return !tools::Tools_Solver::check_existance_stable_extension(framework, initial_reduct, proof_extension);
+		return !check_for_stable_extension_without_query(query_argument, framework, initial_reduct, out_certificate_extension);
 
 	default:
-		if (initial_reduct._array.size() == 0) {
-			//calculated grounded extension is the stable extension
-			cout << "ERROR should be impossible" << endl;
-			return false;
-		}
+		
 
-		return start_checking(query_argument, framework, initial_reduct, proof_extension);
+		return !check_for_stable_extension_without_query(query_argument, framework, initial_reduct, out_certificate_extension);
 	}
 }

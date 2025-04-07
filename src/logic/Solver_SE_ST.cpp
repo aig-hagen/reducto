@@ -2,15 +2,18 @@
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static bool start_checking(AF &framework, ArrayBitSet &active_args, list<uint32_t> &proof_extension)
+static bool start_checking(AF &framework, ArrayBitSet &active_args, list<uint32_t> &out_certificate_extension)
 {
-	uint64_t numVars = framework.num_args;
+	// initialize SATSolver
 	SatSolver *solver = NULL;
-	solver = new SatSolver(numVars);
+	solver = new SatSolver();
+	// add encoding for nonempty stable sets
 	Encoding::add_clauses_nonempty_stable_set(*solver, framework, active_args);
+	// compute a solution with the SATSolver
 	bool has_solution = (*solver).solve();
+	// update the certificate if a solution was found
 	if (has_solution) {
-		tools::Tools_Solver::UpdateCertificate(solver, active_args, proof_extension);
+		tools::Tools_Solver::UpdateCertificate(solver, active_args, out_certificate_extension);
 	}
 
 	delete solver;
@@ -20,15 +23,17 @@ static bool start_checking(AF &framework, ArrayBitSet &active_args, list<uint32_
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-bool Solver_SE_ST::solve(AF &framework, list<uint32_t> &proof_extension)
+bool Solver_SE_ST::solve(AF &framework, list<uint32_t> &out_certificate_extension)
 {
+	// preprocess the framework
 	ArrayBitSet initial_reduct;
-	initial_reduct = PreProc_GR::process_only_grounded(framework, proof_extension);
+	initial_reduct = PreProc_GR::process_only_grounded(framework, out_certificate_extension);
 		
 	//check if grounded extension is stable
 	if (initial_reduct._array.size() == 0) {
 		//reduct is empty, therefore grounded extension is only stable extension
 		return true;
 	}
-	return start_checking(framework, initial_reduct, proof_extension);
+
+	return start_checking(framework, initial_reduct, out_certificate_extension);
 }
