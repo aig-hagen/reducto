@@ -1,5 +1,8 @@
 #include "../../include/logic/SatSolver.h"
 
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
 SatSolver::SatSolver(uint32_t num_args_tmp) {
     _num_arguments = num_args_tmp;
     _solver = ipasir_init();
@@ -44,7 +47,7 @@ void SatSolver::add_clause_short(int64_t lit1, int64_t lit2){
 
 std::vector<bool> SatSolver::get_model() {
     std::vector<bool> model;
-    // Get the model from the CMS solver
+    // Get the model from the solver
     for (uint32_t i = 1; i < _num_arguments + 1; ++i) {
         model.push_back(ipasir_val(_solver, i) > 0);
     }

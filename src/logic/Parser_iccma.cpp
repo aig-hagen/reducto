@@ -2,6 +2,9 @@
 
 using namespace std;
 
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
 uint32_t ParserICCMA::parse_af_i23(AF &framework, string query, string file)
 {
 	ifstream input;
@@ -12,9 +15,9 @@ uint32_t ParserICCMA::parse_af_i23(AF &framework, string query, string file)
 		exit(1);
 	}
 
+	// parse first line
 	string line;
 	int32_t n_args = 0;
-	
 	getline(input, line);
 	std::istringstream iss(line);
 	if (line[0] == 'p') {
@@ -26,8 +29,8 @@ uint32_t ParserICCMA::parse_af_i23(AF &framework, string query, string file)
 		exit(1);
 	}
 
+	// parse rest of lines
 	framework.initialize(n_args);
-
 	while (!input.eof()) {
 		getline(input, line);
 		if (line.length() == 0 || line[0] == '#') continue;
@@ -48,6 +51,8 @@ uint32_t ParserICCMA::parse_af_i23(AF &framework, string query, string file)
 	}
 }
 
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
 
 uint32_t ParserICCMA::parse_af_tgf(AF &framework, string query, string file) {
 	ifstream input;
@@ -57,11 +62,11 @@ uint32_t ParserICCMA::parse_af_tgf(AF &framework, string query, string file) {
 		cerr << "Cannot open input file\n";
 		exit(1);
 	}
-	
+
+	// parse first part about arguments
 	string line, arg;
 	uint32_t n_args = 0;
 	unordered_map<string, uint32_t> arg_str_to_int;
-
 	while (!input.eof()) {
 		getline(input, line);
 		std::istringstream iss(line);
@@ -70,8 +75,8 @@ uint32_t ParserICCMA::parse_af_tgf(AF &framework, string query, string file) {
 		arg_str_to_int[arg] = ++n_args;
 	}
 
+	// parse second part about attacks
 	framework.initialize(n_args);
-
 	string attacker, victim;
 	while (!input.eof()) {
 		getline(input, line);
