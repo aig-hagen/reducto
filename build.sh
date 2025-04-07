@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #==========================================================================================
-# installs teh SATSolver CaDiCaL (https://github.com/arminbiere/cadical), which is 
+# installs the SAT-Solver CaDiCaL (https://github.com/arminbiere/cadical), which is 
 # the default SAT-Solver of this Argumentation Solver
 #==========================================================================================
 
