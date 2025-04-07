@@ -5,7 +5,7 @@
 static bool start_checking(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, list<uint32_t> &out_certificate_extension)
 {
 	// initialize SATSolver
-	uint64_t numVars = active_args._array.size();
+	uint64_t numVars = framework.num_args;
 	SatSolver *solver = NULL;
 	solver = new SatSolver(numVars);
 	// add encoding for nonempty stable sets to SATSolver
