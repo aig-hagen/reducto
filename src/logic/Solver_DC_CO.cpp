@@ -4,7 +4,7 @@
 /*===========================================================================================================================================================*/
 
 bool start_checking(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, list<uint32_t> &proof_extension) {
-	uint64_t numVars = active_args._array.size();
+	uint64_t numVars = framework.num_args;
 	SatSolver *solver = NULL;
 	solver = new SatSolver(numVars);
 	Encoding::add_clauses_nonempty_complete_set(*solver, framework, active_args);
