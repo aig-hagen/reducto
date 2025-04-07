@@ -50,7 +50,7 @@ public:
 	/// </summary>
 	std::vector<vector<uint32_t>> victims;
 	/// <summary>
-	/// Booleans indicating if an arguments attacks itself.
+	/// Booleans indicating if an argument attacks itself.
 	/// </summary>
 	std::vector<uint8_t> self_attack;
     /// <summary>
@@ -68,13 +68,18 @@ public:
 	/// <summary>
 	/// Checks if a specified argument gets attacked by any member of the specified set of arguments.
 	/// </summary>
-	/// <param name="argument">The argument, which could be attacked by the set or not.</param>
+	/// <param name="argument">An argument of the framework.</param>
 	/// <param name="set_arguments">Set of arguments of the framework.</param>
 	/// <param name="framework">The abstract argumentation framework, specifying the underlying attack relations between the arguments.</param>
-	/// <returns>TRUE iff the any member of the set attacks the specified argument. FALSE otherwise.</returns>
+	/// <returns>TRUE iff any member of the set attacks the specified argument. FALSE otherwise.</returns>
 	bool check_attack(std::uint32_t argument, std::list<std::uint32_t> &set_arguments, AF &framework);
+	/// <summary>
+	/// This method creates an ArrayBitSet containing all arguments of this framework.
+	/// </summary>
+	/// <returns>An ArrayBitSet of all arguments in this framework.</returns>
+	ArrayBitSet create_active_arguments();
     /// <summary>
-    /// This method checks if there's an attack from the one to the other specified 
+    /// This method checks if there's an attack from the first to the second specified 
 	/// argument.
     /// </summary>
     /// <param name="attacker">The argument which is attacking the other.</param>
@@ -91,12 +96,6 @@ public:
 	/// </summary>
 	/// <param name="number_args">The number of arguments in the framework to initialize.</param>
 	void initialize(uint32_t number_args);
-
-	/// <summary>
-	/// This method creates an ArrayBitSet containing all arguments of this framework.
-	/// </summary>
-	/// <returns>An ArrayBitSet of all arguments in this framework.</returns>
-	ArrayBitSet create_active_arguments();
 };
 
 #endif

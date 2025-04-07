@@ -5,14 +5,16 @@
 #include <list>
 #include <unordered_set>
 
+#include "Encoding.h"
 #include "SatSolver.h"
+#include "Encoding.h"
 
 #include "../util/ArrayBitSet.h"
 
 using namespace std;
 
 /// <summary>
-/// This class is responsible to decode a SATProblem in structure of arguments.
+/// This class is responsible to decode a SATProblem, returning a structure of arguments.
 /// </summary>
 class Decoding {
 public:

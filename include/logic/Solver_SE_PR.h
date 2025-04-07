@@ -21,27 +21,27 @@
 using namespace std;
 
 /// <summary>
-/// This class is responsible for calculating an extension of the preferred semantics.
+/// This class is responsible for calculating an extension using the preferred semantics.
 /// </summary>
 class Solver_SE_PR {
 public:
 
 	/// <summary>
-	/// Checks if an extension of the preferred semantics can be calculated.
+	/// Checks if an extension can be calculated using the preferred semantics.
 	/// </summary>
 	/// <param name="framework">The abstract argumentation framework, specifying the underlying attack relations between the arguments.</param>
-	/// <param name="proof_extension"> Calculated preferred extension.</param>
+	/// <param name="out_certificate_extension"> The calculated preferred extension.</param>
 	/// <returns>TRUE iff an extension was found. FALSE otherwise.</returns>
-	static bool solve(AF &framework, list<uint32_t> &proof_extension);
+	static bool solve(AF &framework, list<uint32_t> &out_certificate_extension);
 
 	/// <summary>
-	/// Checks if an extension of the preferred semantics can be calculated in the specified reduct of the framework.
+	/// Checks if an extension can be calculated in the specified reduct of the framework using the preferred semantics.
 	/// </summary>
 	/// <param name="framework">The abstract argumentation framework, specifying the underlying attack relations between the arguments.</param>
-	/// <param name="reduct"></param>
-	/// <param name="proof_extension"> Calculated preferred extension.</param>
+	/// <param name="reduct">The set of active arguments, used to describe the state of the specified argumentation framework.</param>
+	/// <param name="out_certificate_extension"> The calculated preferred extension.</param>
 	/// <returns>TRUE iff an extension was found. FALSE otherwise.</returns>
-	static bool solve(AF &framework, ArrayBitSet &reduct, list<uint32_t> &proof_extension);
+	static bool solve(AF &framework, ArrayBitSet &reduct, list<uint32_t> &out_certificate_extension);
 };
 
 #endif

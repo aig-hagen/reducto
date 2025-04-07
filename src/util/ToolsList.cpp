@@ -1,5 +1,8 @@
 #include "../../include/util/ToolsList.h"
 
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
 std::list<uint32_t> tools::Tools_List::extend_list(std::list<uint32_t> &listA, std::list<uint32_t> &listB)
 {
 	std::list<uint32_t> tmpCopy_1, tmpCopy_2;
@@ -20,6 +23,7 @@ void tools::Tools_List::copy_in_list(std::list<uint32_t> &list_dest, std::vector
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 bool tools::Tools_List::contains(std::list<uint32_t> list_input, uint32_t query) {
+	// iterate through elements of the list
 	for (std::list<uint32_t>::iterator mIter = list_input.begin(); mIter != list_input.end(); ++mIter) {
 		if (*mIter == query) {
 			return true;
