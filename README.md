@@ -22,9 +22,9 @@ make all IPASIRSOLVER=MYSATSOLVER
 ```
 
 #### Specific location
-If your SAT-Solver is located in a specific directory (e.g. PATHTOMYSATEXEC) use the following command:
+If your SAT-Solver(.a or .so file) is located in a specific directory (e.g. PATHTOMYSATSOLVERLIB) use the following command:
 ```
-make all IPASIRSOLVER=MYSATSOLVER IPASIRLIBDIR=PATHTOMYSATEXEC
+make all IPASIRSOLVER=MYSATSOLVER IPASIRLIBDIR=PATHTOMYSATSOLVERLIB
 ```
 
 ## Features
