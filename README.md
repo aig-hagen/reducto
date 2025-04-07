@@ -15,7 +15,7 @@ As default reducto uses <a href="https://github.com/arminbiere/cadical">CaDiCaL<
 reducto supports the use of SAT-Solvers implementing the interface <a href="https://github.com/biotomas/ipasir">ipasir</a>.
 In case you want reducto to use a specific IPASIR-SAT-Solver (e.g. MYSATSOLVER) follow this build process:
 #### Default location
-- Copy the executable of your IPASIR-SAT-Solver in `/sat/MYSATSOLVER/build`
+- Copy your compiled IPASIR-SAT-Solver to `/sat/MYSATSOLVER/build`
 - execute the makefile as follows
 ```
 make all IPASIRSOLVER=MYSATSOLVER
