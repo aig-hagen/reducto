@@ -8,7 +8,7 @@ bool Solver_SE_PR::solve(AF &framework, ArrayBitSet &active_args, list<uint32_t>
 	// initialize the SATSolver
 	ArrayBitSet reduct = active_args.copy();
 	SatSolver *solver = NULL;
-	solver = new SatSolver(reduct._array.size());
+	solver = new SatSolver();
 	// add an encoding for a nonempty complete set to the SATSolver
 	Encoding::add_clauses_nonempty_complete_set(*solver, framework, reduct);
 	bool has_solution = (*solver).solve();
@@ -27,7 +27,7 @@ bool Solver_SE_PR::solve(AF &framework, ArrayBitSet &active_args, list<uint32_t>
 		}
 		// calculate a complete extension in the new reduct
 		delete solver;
-		solver = new SatSolver(reduct._array.size());
+		solver = new SatSolver();
 		Encoding::add_clauses_nonempty_complete_set(*solver, framework, reduct);
 		has_solution = (*solver).solve();
 		//if has_solution == false, then no more complete set can be calculated, therefor extension found so far cannot be extended, and is therefor preferred
