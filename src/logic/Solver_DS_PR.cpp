@@ -6,7 +6,7 @@ static bool search_complete_sets_in_state(AF &framework, ArrayBitSet &reduct, ui
 	std::__cxx11::list<uint32_t> &certificate_extension, ConeOfInfluence &coi, bool &is_query_attacked)
 {
 	//calculate set in state
-	uint64_t numVars = reduct._array.size();
+	uint64_t numVars = framework.num_args;
 	SatSolver *solver = NULL;
 	solver = new SatSolver(numVars);
 	Encoding::add_clauses_nonempty_complete_set(*solver, framework, reduct);
