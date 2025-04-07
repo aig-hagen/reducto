@@ -5,6 +5,7 @@
 #include <list>
 #include <unordered_set>
 
+#include "Encoding.h"
 #include "SatSolver.h"
 #include "Encoding.h"
 

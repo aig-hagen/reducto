@@ -15,11 +15,7 @@ extern "C" {
 class SatSolver {
 public:
 
-	/// <summary>
-	/// Instantiates the a new SATSolver.
-	/// </summary>
-	/// <param name="num_args">Number of arguments in the current state of the framework.</param>
-	SatSolver(uint32_t num_args);
+	SatSolver();
 
 	/// <summary>
 	/// This method adds a temporary assumption to the solver, which will be deleted after the solver calculates the next solution.
@@ -40,14 +36,6 @@ public:
 	/// <param name="lit2">Second literal of the clause to add. 
 	/// In case, that the clause has only 1 literal, this parameter is NULL</param>
 	void add_clause_short(int64_t lit1, int64_t lit2);
-
-	/// <summary>
-	/// This method is used after the SatSolver has finished calculating a solution to get the calculated solution.
-	/// Returns an assignment of the variables, which evaluates the propositional formula of the problem to true. 
-	/// Rejecting variables are listed in the second half of the returned data.
-	/// </summary>
-	/// <returns>Array of type bool, indicating for each variable if it's set or not</returns>
-	std::vector<bool> get_model();
 
 	/// <summary>
 	/// Method to check if single variable is set true in the solution of the SATProblem. An assignment of variables solving the SATProblem is also called a "model".
@@ -79,7 +67,6 @@ public:
 
 private:
 	void *_solver;
-	uint32_t _num_arguments;
 };
 
 

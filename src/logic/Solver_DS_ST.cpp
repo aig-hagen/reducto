@@ -8,9 +8,8 @@
 static bool check_for_stable_extension_without_query(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, list<uint32_t> &out_certificate_extension)
 {
 	// initialise the SATSolver
-	uint64_t numVars = framework.num_args;
 	SatSolver *solver = NULL;
-	solver = new SatSolver(numVars);
+	solver = new SatSolver();
 	// add an encoding for nonempty stable sets
 	Encoding::add_clauses_nonempty_stable_set(*solver, framework, active_args);
 	// compute a solution with the SATSolver
