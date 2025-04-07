@@ -5,9 +5,8 @@
 static bool start_checking(AF &framework, ArrayBitSet &active_args, list<uint32_t> &out_certificate_extension)
 {
 	// initialize SATSolver
-	uint64_t numVars = active_args._array.size();
 	SatSolver *solver = NULL;
-	solver = new SatSolver(numVars);
+	solver = new SatSolver();
 	// add encoding for nonempty stable sets
 	Encoding::add_clauses_nonempty_stable_set(*solver, framework, active_args);
 	// compute a solution with the SATSolver

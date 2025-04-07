@@ -10,9 +10,8 @@ static bool search_complete_sets_in_state(AF &framework, ArrayBitSet &reduct, ui
 	std::__cxx11::list<uint32_t> &out_certificate_extension, ConeOfInfluence &coi, bool &is_query_attacked)
 {
 	// initialize SATSolver
-	uint64_t numVars = framework.num_args;
 	SatSolver *solver = NULL;
-	solver = new SatSolver(numVars);
+	solver = new SatSolver();
 	// add encoding for nonempty complete sets to the SATSolver
 	Encoding::add_clauses_nonempty_complete_set(*solver, framework, reduct);
 	bool continue_calculation = false;
