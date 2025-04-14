@@ -15,9 +15,8 @@ bool Solver_SE_PR::solve(AF &framework, ArrayBitSet &active_args, list<uint32_t>
 	// extend the complete extension to get preferred extension
 	// by repeating the process until no nonempty complete set can be found anymore
 	while (has_solution) {
-		// get the calculated extension and update the certificate
+		// get the calculated extension
 		list<uint32_t> calculated_extension = Decoding::get_set_from_solver(*solver, reduct);
-		tools::Tools_Solver::UpdateCertificate(out_certificate_extension, calculated_extension);
 
 		//ensure that solver does not find same solution again
 		Encoding::add_complement_clause(*solver, active_args);
