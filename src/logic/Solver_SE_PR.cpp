@@ -18,14 +18,15 @@ bool Solver_SE_PR::solve(AF &framework, ArrayBitSet &active_args, list<uint32_t>
 		// get the calculated extension and update the certificate
 		list<uint32_t> calculated_extension = Decoding::get_set_from_solver(*solver, reduct);
 		tools::Tools_Solver::UpdateCertificate(out_certificate_extension, calculated_extension);
+
+		//ensure that solver does not find same solution again
+		Encoding::add_complement_clause(*solver, active_args);
+
 		// reduce the current state by the calculated extension
 		for (std::list<uint32_t>::iterator mIter = calculated_extension.begin(); mIter != calculated_extension.end(); ++mIter) {
 			solver->add_clause_short(Encoding::get_literal_accepted(*mIter, true), NULL);
 			solver->add_clause_short(Encoding::get_literal_rejected(framework, *mIter, false), NULL);
 		}
-
-		//ensure that solver does not find same solution again
-		Encoding::add_complement_clause(*solver, active_args);
 
 		has_solution = (*solver).solve();
 		//if has_solution == false, then no more complete set can be calculated, therefor extension found so far cannot be extended, and is therefor preferred
