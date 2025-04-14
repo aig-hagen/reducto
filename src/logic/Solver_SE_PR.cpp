@@ -32,6 +32,10 @@ bool Solver_SE_PR::solve(AF &framework, ArrayBitSet &active_args, list<uint32_t>
 		calculated_extension.clear();
 	}
 
+	// get certificate
+	list<uint32_t> preferred_extension = Decoding::get_set_from_solver(*solver, reduct);
+	tools::Tools_Solver::UpdateCertificate(out_certificate_extension, preferred_extension);
+
 	delete solver;
 	return true;
 }
