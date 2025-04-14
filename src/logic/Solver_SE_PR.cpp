@@ -9,6 +9,7 @@ bool Solver_SE_PR::solve(AF &framework, ArrayBitSet &active_args, list<uint32_t>
 	ArrayBitSet reduct = active_args.copy();
 	SatSolver *solver = NULL;
 	solver = new SatSolver();
+	list<uint32_t> calculated_extension;
 	// add an encoding for a nonempty complete set to the SATSolver
 	Encoding::add_clauses_nonempty_complete_set(*solver, framework, reduct);
 	bool has_solution = (*solver).solve();
@@ -16,7 +17,8 @@ bool Solver_SE_PR::solve(AF &framework, ArrayBitSet &active_args, list<uint32_t>
 	// by repeating the process until no nonempty complete set can be found anymore
 	while (has_solution) {
 		// get the calculated extension
-		list<uint32_t> calculated_extension = Decoding::get_set_from_solver(*solver, reduct);
+		calculated_extension.clear();
+		calculated_extension = Decoding::get_set_from_solver(*solver, reduct);
 
 		//ensure that solver does not find same solution again
 		Encoding::add_complement_clause(*solver, active_args);
@@ -29,12 +31,10 @@ bool Solver_SE_PR::solve(AF &framework, ArrayBitSet &active_args, list<uint32_t>
 
 		has_solution = (*solver).solve();
 		//if has_solution == false, then no more complete set can be calculated, therefor extension found so far cannot be extended, and is therefor preferred
-		calculated_extension.clear();
 	}
 
 	// get certificate
-	list<uint32_t> preferred_extension = Decoding::get_set_from_solver(*solver, reduct);
-	tools::Tools_Solver::UpdateCertificate(out_certificate_extension, preferred_extension);
+	tools::Tools_Solver::UpdateCertificate(out_certificate_extension, calculated_extension);
 
 	delete solver;
 	return true;
