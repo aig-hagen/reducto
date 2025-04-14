@@ -23,8 +23,8 @@ bool Solver_SE_PR::solve(AF &framework, ArrayBitSet &active_args, list<uint32_t>
 
 		// reduce the current state by the calculated extension
 		for (std::list<uint32_t>::iterator mIter = calculated_extension.begin(); mIter != calculated_extension.end(); ++mIter) {
-			solver->add_clause_short(Encoding::get_literal_accepted(*mIter, true), NULL);
-			solver->add_clause_short(Encoding::get_literal_rejected(framework, *mIter, false), NULL);
+			solver->add_clause_short(Encoding::get_literal_accepted(*mIter, true), 0);
+			solver->add_clause_short(Encoding::get_literal_rejected(framework, *mIter, false), 0);
 		}
 
 		has_solution = (*solver).solve();

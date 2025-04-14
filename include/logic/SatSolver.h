@@ -34,7 +34,7 @@ public:
 	/// </summary>
 	/// <param name="lit1">First literal of the clause to add.</param>
 	/// <param name="lit2">Second literal of the clause to add. 
-	/// In case, that the clause has only 1 literal, this parameter is NULL</param>
+	/// In case, that the clause has only 1 literal, this parameter is 0</param>
 	void add_clause_short(int64_t lit1, int64_t lit2);
 
 	/// <summary>
