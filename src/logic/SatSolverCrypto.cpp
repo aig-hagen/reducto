@@ -6,7 +6,7 @@ using namespace CMSat;
 SatSolverCrypto::SatSolverCrypto(int32_t n_vars)
 {
     solver.set_num_threads(1);
-    solver.new_vars(n_vars);
+    solver.new_vars(2 * n_vars);
     num_vars = n_vars;
 }
 
