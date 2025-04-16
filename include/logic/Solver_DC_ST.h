@@ -12,7 +12,7 @@
 #include "Enums.h"
 #include "PreProcessor_GR.h"
 #include "Reduct.h"
-#include "SatSolver.h"
+#include "SatSolverCadical.h"
 #include "ToolsSolver.h"
 
 #include "../util/Printer.h"

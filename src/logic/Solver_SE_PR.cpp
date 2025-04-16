@@ -8,7 +8,7 @@ bool Solver_SE_PR::solve(AF &framework, ArrayBitSet &active_args, list<uint32_t>
 	// initialize the SATSolver
 	ArrayBitSet reduct = active_args.copy();
 	SatSolver *solver = NULL;
-	solver = new SatSolver();
+	solver = new SatSolverCadical();
 	list<uint32_t> calculated_extension;
 	// add an encoding for a nonempty complete set to the SATSolver
 	Encoding::add_clauses_nonempty_complete_set(*solver, framework, reduct);

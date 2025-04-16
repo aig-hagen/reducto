@@ -6,7 +6,7 @@ static bool start_checking(uint32_t query_argument, AF &framework, ArrayBitSet &
 {
 	// initialize SATSolver
 	SatSolver *solver = NULL;
-	solver = new SatSolver();
+	solver = new SatSolverCadical();
 	// add encoding for nonempty stable sets to SATSolver
 	Encoding::add_clauses_nonempty_stable_set(*solver, framework, active_args);
 	// compute solution using SATSolver

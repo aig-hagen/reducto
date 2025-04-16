@@ -10,7 +10,7 @@
 #include "AF.h"
 #include "Decoding.h"
 #include "Encoding.h"
-#include "SatSolver.h"
+#include "SatSolverCadical.h"
 
 #include "../util/Printer.h"
 #include "../util/ToolsList.h"
