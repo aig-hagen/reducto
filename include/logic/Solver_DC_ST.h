@@ -12,7 +12,7 @@
 #include "Enums.h"
 #include "PreProcessor_GR.h"
 #include "Reduct.h"
-#include "SatSolverGlucose.h"
+#include "SatSolverCrypto.h"
 #include "ToolsSolver.h"
 
 #include "../util/Printer.h"

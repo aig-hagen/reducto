@@ -1,20 +1,19 @@
-#ifndef SAT_GLUCOSE
-#define SAT_GLUCOSE
+#ifndef SAT_CRYPTO
+#define SAT_CRYPTO
 
 
 #include "SatSolver.h"
-#include "../../sat/glucose/core/Solver.h"
+#include "../../sat/crypto/src/cryptominisat.h"
 
-class SatSolverGlucose : public SatSolver {
+class SatSolverCrypto : public SatSolver {
 
 private:
-	Glucose::Solver *solver;
-	Glucose::vec<Glucose::Lit> assumptions;
-	std::vector<bool> model;
+	CMSat::SATSolver solver;
+	std::vector<CMSat::Lit> assumptions;
 	int32_t num_vars;
 public:
-	SatSolverGlucose(int32_t n_vars);
-	~SatSolverGlucose() { delete solver; };
+	SatSolverCrypto(int32_t n_vars);
+	~SatSolverCrypto() { };
 	void add_assumption(int64_t assumption);
 	void add_clause(std::vector<int64_t> &clause);
 	void add_clause_short(int64_t lit1, int64_t lit2);

@@ -38,8 +38,8 @@ CC	=	gcc
 CFLAGS	?=	-Wall -std=c11
 CXX = g++
 CXXFLAGS ?= -Wall -std=c++11
-LDFLAGS ?= -Lsat/glucose/simp/
-LDLIBS ?= -lglucose
+LDFLAGS ?= -Lsat/crypto/build/cryptominisat5
+LDLIBS ?= -lcryptominisat5
 
 # Find all the C and C++ files we want to compile
 # Note the single quotes around the * expressions. The shell will incorrectly expand these otherwise, but we want to send the * directly to the find command.

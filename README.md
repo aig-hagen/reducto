@@ -6,8 +6,16 @@
 ## Build process
 
 ### For compilation:
-
-- add glucose sat solver under ./sat/glucose/
-- call ``` make ``` in  ./sat/glucose/simp to compile glucose
-- call ``` make ``` in  ./ to compile reducto
+- get CryptoMiniSat 5.11.21 from https://github.com/msoos/cryptominisat/releases
+- add crypto to sat/crypto/
+- to compile crypto:
+```
+cd ./sat/crypto/
+mkdir -p build && cd build
+cmake .. 
+make 
+sudo make install 
+sudo ldconfig
+```
+- call ``` make ``` in ./ to compile reducto
 

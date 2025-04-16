@@ -6,7 +6,7 @@ static bool start_checking(AF &framework, ArrayBitSet &active_args, list<uint32_
 {
 	// initialize SATSolver
 	SatSolver *solver = NULL;
-	solver = new SatSolverGlucose(framework.num_args);
+	solver = new SatSolverCrypto(framework.num_args);
 	// add encoding for nonempty stable sets
 	Encoding::add_clauses_nonempty_stable_set(*solver, framework, active_args);
 	// compute a solution with the SATSolver
