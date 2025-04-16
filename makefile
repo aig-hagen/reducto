@@ -16,12 +16,6 @@ TARGET=$(shell basename "`pwd`")
 # front-end.
 #--------------------------------------------------------------------------#
 
-# Name of IPASIR solver (library), e.g., cadical
-IPASIRSOLVER	?= cadical
-
-# Path to the IPASIR library (e.g., points to where libcadical.a is)
-IPASIRLIBDIR	?=	sat/$(IPASIRSOLVER)/build/ 
-
 # Directory to store object files, libraries, executables, and dependencies:
 BUILD_DIR := ./build
 
@@ -44,8 +38,8 @@ CC	=	gcc
 CFLAGS	?=	-Wall -std=c11
 CXX = g++
 CXXFLAGS ?= -Wall -std=c++11
-LDFLAGS ?= -L$(IPASIRLIBDIR)
-LDLIBS ?= -l$(IPASIRSOLVER)
+LDFLAGS ?= -Lsat/cadical/build/ -Lsat/glucose/simp/
+LDLIBS ?= -lcadical -lglucose
 
 # Find all the C and C++ files we want to compile
 # Note the single quotes around the * expressions. The shell will incorrectly expand these otherwise, but we want to send the * directly to the find command.

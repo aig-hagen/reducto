@@ -11,7 +11,7 @@
 #include "Enums.h"
 #include "PreProcessor_GR.h"
 #include "Reduct.h"
-#include "SatSolverCadical.h"
+#include "SatSolverGlucose.h"
 #include "ToolsSolver.h"
 
 #include "../util/Printer.h"

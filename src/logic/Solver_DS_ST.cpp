@@ -9,7 +9,7 @@ static bool check_for_stable_extension_without_query(uint32_t query_argument, AF
 {
 	// initialise the SATSolver
 	SatSolver *solver = NULL;
-	solver = new SatSolverCadical();
+	solver = new SatSolverGlucose(framework.num_args);
 	// add an encoding for nonempty stable sets
 	Encoding::add_clauses_nonempty_stable_set(*solver, framework, active_args);
 	// compute a solution with the SATSolver

@@ -11,7 +11,7 @@ static bool search_complete_sets_in_state(AF &framework, ArrayBitSet &reduct, ui
 {
 	// initialize SATSolver
 	SatSolver *solver = NULL;
-	solver = new SatSolverCadical();
+	solver = new SatSolverGlucose(framework.num_args);
 	// add encoding for nonempty complete sets to the SATSolver
 	Encoding::add_clauses_nonempty_complete_set(*solver, framework, reduct);
 	bool continue_calculation = false;

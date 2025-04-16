@@ -6,7 +6,7 @@
 bool start_checking(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, list<uint32_t> &out_certificate_extension) {
 	// initialize SATSolver
 	SatSolver *solver = NULL;
-	solver = new SatSolverCadical();
+	solver = new SatSolverGlucose(framework.num_args);
 	// add encoding for nonempty complete sets to SATSolver
 	Encoding::add_clauses_nonempty_complete_set(*solver, framework, active_args);
 	// compute solution using SATSolver
