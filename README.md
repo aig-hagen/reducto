@@ -28,7 +28,7 @@ make all IPASIRSOLVER=MYSATSOLVER IPASIRLIBDIR=PATHTOMYSATSOLVERLIB
 ```
 
 ## Features
-Supported problems: [DC-ST,DC,PR,DS-ST,DS-PR, SE-ST, SE-PR]
+Supported problems: [DC-ST,DC-CO,DS-ST,DS-PR,SE-ST,SE-PR]
 
 Supported file-formats : [.i23, .tgf]	
 
