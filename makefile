@@ -8,7 +8,7 @@
 #--------------------------------------------------------------------------#
 
 # Directories for the source of the SAT Solvers
-GLUCOSE_DIR	= sat/glucose-syrup-4.1
+GLUCOSE_DIR	= sat/glucose-4.2.1/simp
 CADICAL_DIR	= sat/cadical-rel-2.1.3
 CMSAT_DIR	= sat/cryptominisat-5.11.21
 
@@ -27,11 +27,11 @@ SATLIBNAME ?= $(SOLVER)
 ifeq ($(SOLVER), cryptominisat)
 	SATLIBNAME  = cryptominisat5
 else ifeq ($(SOLVER), glucose)
-	SATLIBDIR	= $(GLUCOSE_DIR)/build/dynamic/lib
+	SATLIBDIR	= $(GLUCOSE_DIR)
 endif
 
 # Directory to store object files, libraries, executables, and dependencies:
-BUILD_DIR := ./build
+BUILD_DIR := ./build/$(SOLVER)
 
 # Paths to the .cpp files
 SRC				=	./src/
@@ -75,7 +75,7 @@ ifeq ($(SOLVER), cryptominisat)
 else ifeq ($(SOLVER), cadical)
 	INC_DIRS	+= ./$(CADICAL_DIR)/src
 else ifeq ($(SOLVER), glucose)
-	INC_DIRS	+= ./$(GLUCOSE_DIR)/
+	INC_DIRS	+= ./$(GLUCOSE_DIR)
 endif
 
 # Add a prefix to INC_DIRS. So moduleA would become -ImoduleA. GCC understands this -I flag
@@ -125,9 +125,7 @@ cadical:
 glucose:
 	@echo "Compiling Glucose..."
 	cd $(GLUCOSE_DIR) && \
-	make && \
-	sudo make install && \
-	sudo ldconfig
+	make
 
 .PHONY:	all
 all: CXXFLAGS += -DNDEBUG -O3 

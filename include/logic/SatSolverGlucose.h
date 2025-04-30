@@ -4,17 +4,17 @@
 #ifdef SAT_GLUCOSE
 
 #include "SatSolver.h"
-#include <core/Solver.h>
+#include <SimpSolver.h>
 
 class SatSolverGlucose : public SatSolver {
 
 private:
-	Glucose::Solver *solver;
-	Glucose::vec<Glucose::Lit> assumptions;
+	Glucose::SimpSolver *solver;
+	std::vector<Glucose::Lit> assumptions;
 	std::vector<bool> model;
 	int32_t num_vars;
 public:
-	SatSolverGlucose(uint32_t n_vars);
+	SatSolverGlucose(uint32_t num_args);
 	~SatSolverGlucose() { delete solver; };
 	void add_assumption(int64_t assumption);
 	void add_clause(std::vector<int64_t> &clause);
