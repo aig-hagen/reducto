@@ -11,9 +11,8 @@ class SatSolverCrypto : public SatSolver {
 private:
 	CMSat::SATSolver solver;
 	std::vector<CMSat::Lit> assumptions;
-	int32_t num_vars;
 public:
-	SatSolverCrypto(uint32_t n_vars);
+	SatSolverCrypto(uint32_t num_args);
 	~SatSolverCrypto() { };
 	void add_assumption(int64_t assumption);
 	void add_clause(std::vector<int64_t> &clause);

@@ -105,8 +105,8 @@ full:
 	@$(MAKE) all SOLVER=cadical
 	@$(MAKE) all SOLVER=glucose
 
-.PHONY:	cmsat
-cmsat:
+.PHONY:	cryptominisat
+cryptominisat:
 	@echo "Compiling CryptoMiniSat..."
 	cd $(CMSAT_DIR) && \
 	mkdir -p build && cd build && \

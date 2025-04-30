@@ -1,6 +1,9 @@
+
+#ifdef SAT_CADICAL
+
 #include "../../include/logic/SatSolverCadical.h"
 
-SatSolverCadical::SatSolverCadical(uint32_t n_vars)
+SatSolverCadical::SatSolverCadical(uint32_t num_args)
 {
     solver = new CaDiCaL::Solver;
 }
@@ -69,3 +72,5 @@ bool SatSolverCadical::solve(int64_t assumption1, int64_t assumption2) {
     solver->assume(assumption2);
     return solve();
 }
+
+#endif

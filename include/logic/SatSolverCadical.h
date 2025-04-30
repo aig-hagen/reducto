@@ -11,7 +11,7 @@ class SatSolverCadical : public SatSolver {
 private:
 	CaDiCaL::Solver *solver;
 public:
-	SatSolverCadical(uint32_t n_vars);
+	SatSolverCadical(uint32_t num_args);
 	~SatSolverCadical() { delete solver; };
 	void add_assumption(int64_t assumption);
 	void add_clause(std::vector<int64_t> &clause);
