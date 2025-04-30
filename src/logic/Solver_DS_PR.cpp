@@ -10,15 +10,14 @@ static bool search_complete_sets_in_state(AF &framework, ArrayBitSet &reduct, ui
 	std::__cxx11::list<uint32_t> &out_certificate_extension, ConeOfInfluence &coi, bool &is_query_attacked)
 {
 	// initialize SATSolver
-	SatSolver *solver = NULL;
-	solver = new SatSolver();
+	SAT_Solver solver = SAT_Solver(framework.num_args);
 	// add encoding for nonempty complete sets to the SATSolver
-	Encoding::add_clauses_nonempty_complete_set(*solver, framework, reduct);
+	Encoding::add_clauses_nonempty_complete_set(solver, framework, reduct);
 	bool continue_calculation = false;
 	bool is_rejected = false;
 	// calculate a set of arguments by solving the SAT problem
 	list<uint32_t> calculated_set = Proc_DS_PR::calculate_rejecting_set(query_argument, framework, reduct, is_rejected, is_query_attacked,
-		*solver, continue_calculation, true);
+		solver, continue_calculation, true);
 	// update the certificate if such a set was found
 	if (is_rejected) {
 		tools::Tools_Solver::UpdateCertificate(out_certificate_extension, calculated_set);
@@ -27,13 +26,12 @@ static bool search_complete_sets_in_state(AF &framework, ArrayBitSet &reduct, ui
 	while (continue_calculation && !is_rejected) {
 		// calculate a set of arguments by solving the SAT problem
 		calculated_set = Proc_DS_PR::calculate_rejecting_set(query_argument, framework, reduct, is_rejected, is_query_attacked,
-			*solver, continue_calculation, false);
+			solver, continue_calculation, false);
 		// update the certificate if such a set was found
 		if (is_rejected) {
 			tools::Tools_Solver::UpdateCertificate(out_certificate_extension, calculated_set);
 		}
 	}
-	delete solver;
 	return !is_rejected;
 }
 

@@ -1,70 +1,71 @@
-#include "../../include/logic/SatSolver.h"
+#include "../../include/logic/SatSolverCadical.h"
 
-SatSolver::SatSolver() {
-    _solver = ipasir_init();
+SatSolverCadical::SatSolverCadical(uint32_t n_vars)
+{
+    solver = new CaDiCaL::Solver;
 }
 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-void SatSolver::add_assumption(int64_t assumption) {
-    ipasir_assume(_solver, assumption);
+void SatSolverCadical::add_assumption(int64_t assumption) {
+    solver->assume(assumption);
 }
 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-void SatSolver::add_clause(std::vector<int64_t> &clause) {
+void SatSolverCadical::add_clause(std::vector<int64_t> &clause) {
     // Add the clause to the CMS solver
     for (auto literal : clause) {
-        ipasir_add(_solver, literal);
+        solver->add(literal);
     }
-    ipasir_add(_solver, 0); // Terminate clause with 0
+    solver->add(0); // Terminate clause with 0
 }
 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-void SatSolver::add_clause_short(int64_t lit1, int64_t lit2){
-    ipasir_add(_solver, lit1);
-    
+void SatSolverCadical::add_clause_short(int64_t lit1, int64_t lit2) {
+    solver->add(lit1);
+
     if (lit2 != 0)
     {
-        ipasir_add(_solver, lit2);
+        solver->add(lit2);
     }
-    
-    ipasir_add(_solver, 0); // Terminate clause with 0
+
+    solver->add(0); // Terminate clause with 0
 }
 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-std::uint8_t SatSolver::check_var_model(int64_t variable) {
-    return ipasir_val(_solver, variable) > 0;
+std::uint8_t SatSolverCadical::check_var_model(int64_t variable) {
+    return solver->val(variable) > 0;
 }
 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
 
-bool SatSolver::solve() {
+bool SatSolverCadical::solve() {
     // Solve the SAT problem using the CMS solver
-    return ipasir_solve(_solver) == 10; // Returns true if a solution is found, false otherwise
+    return solver->solve() == 10; // Returns true if a solution is found, false otherwise
 }
 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-bool SatSolver::solve(int64_t assumption) {
-    ipasir_assume(_solver, assumption);
+bool SatSolverCadical::solve(int64_t assumption) {
+    solver->assume(assumption);
     return solve();
 }
 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-bool SatSolver::solve(int64_t assumption1, int64_t assumption2) {
-    ipasir_assume(_solver, assumption1);
-    ipasir_assume(_solver, assumption2);
+bool SatSolverCadical::solve(int64_t assumption1, int64_t assumption2) {
+    solver->assume(assumption1);
+    solver->assume(assumption2);
     return solve();
 }

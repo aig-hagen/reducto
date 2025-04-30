@@ -24,7 +24,7 @@ int64_t Encoding::get_literal_rejected(AF &framework, uint32_t argument, bool is
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static vector<int64_t> add_rejected_clauses(SatSolver &solver, AF &framework, uint32_t argument)
+static vector<int64_t> add_rejected_clauses(SAT_Solver &solver, AF &framework, uint32_t argument)
 {
 	// basic acceptance and rejection clause
 	// Part I:  models that an argument cannot be accepted and rejected at the same time
@@ -41,7 +41,7 @@ static vector<int64_t> add_rejected_clauses(SatSolver &solver, AF &framework, ui
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static vector<int64_t> add_completeness_clause(SatSolver& solver, uint32_t argument)
+static vector<int64_t> add_completeness_clause(SAT_Solver &solver, uint32_t argument)
 {
 	//constitutes that if an argument is not labelled IN, at least one of it's attacker has to be NOT_OUT
 	vector<int64_t> completeness_clause;
@@ -52,7 +52,7 @@ static vector<int64_t> add_completeness_clause(SatSolver& solver, uint32_t argum
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static void add_rejected_clauses_per_attacker(SatSolver &solver, AF &framework, uint32_t argument, uint32_t attacker, vector<int64_t> &rejection_reason_clause)
+static void add_rejected_clauses_per_attacker(SAT_Solver &solver, AF &framework, uint32_t argument, uint32_t attacker, vector<int64_t> &rejection_reason_clause)
 {
 	// Part II: ensures that if an attacker 'b' of an argument 'a' is accepted, then 'a' must be rejected
 	solver.add_clause_short(
@@ -66,7 +66,7 @@ static void add_rejected_clauses_per_attacker(SatSolver &solver, AF &framework, 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static void add_conflict_free_per_attacker(SatSolver &solver, uint32_t argument, uint32_t attacker)
+static void add_conflict_free_per_attacker(SAT_Solver &solver, uint32_t argument, uint32_t attacker)
 {
 	if (argument != attacker)
 	{
@@ -85,7 +85,7 @@ static void add_conflict_free_per_attacker(SatSolver &solver, uint32_t argument,
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static void add_defense_per_attacker(SatSolver &solver, AF &framework, uint32_t argument, uint32_t attacker)
+static void add_defense_per_attacker(SAT_Solver &solver, AF &framework, uint32_t argument, uint32_t attacker)
 {
 	if (argument == attacker)
 	{
@@ -103,7 +103,7 @@ static void add_defense_per_attacker(SatSolver &solver, AF &framework, uint32_t 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static void add_completeness_clause_per_attacker(SatSolver& solver, AF &framework, uint32_t argument, uint32_t attacker, vector<int64_t> &completeness_clause) {
+static void add_completeness_clause_per_attacker(SAT_Solver &solver, AF &framework, uint32_t argument, uint32_t attacker, vector<int64_t> &completeness_clause) {
 	//constitutes that if an argument is not labelled IN, at least one of it's attacker has to be NOT_OUT
 	completeness_clause.push_back(Encoding::get_literal_rejected(framework, attacker, false));
 }
@@ -111,7 +111,7 @@ static void add_completeness_clause_per_attacker(SatSolver& solver, AF &framewor
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static void add_admissible_encoding(SatSolver &solver, AF &framework, ArrayBitSet &activeArgs, uint32_t argument)
+static void add_admissible_encoding(SAT_Solver &solver, AF &framework, ArrayBitSet &activeArgs, uint32_t argument)
 {
 	vector<int64_t> rejection_reason_clause = add_rejected_clauses(solver, framework, argument);
 	vector<uint32_t> attackers = framework.attackers[argument];
@@ -135,7 +135,7 @@ static void add_admissible_encoding(SatSolver &solver, AF &framework, ArrayBitSe
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static void add_complete_encoding(SatSolver &solver, AF &framework, ArrayBitSet &activeArgs, uint32_t argument)
+static void add_complete_encoding(SAT_Solver &solver, AF &framework, ArrayBitSet &activeArgs, uint32_t argument)
 {
 	vector<int64_t> rejection_reason_clause = add_rejected_clauses(solver, framework, argument);
 	vector<int64_t> completeness_clause = add_completeness_clause(solver, argument);
@@ -163,7 +163,7 @@ static void add_complete_encoding(SatSolver &solver, AF &framework, ArrayBitSet 
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-void Encoding::add_clauses_nonempty_admissible_set(SatSolver &solver, AF &framework, ArrayBitSet &activeArgs)
+void Encoding::add_clauses_nonempty_admissible_set(SAT_Solver &solver, AF &framework, ArrayBitSet &activeArgs)
 {
 	vector<int64_t> non_empty_clause;
 
@@ -180,7 +180,7 @@ void Encoding::add_clauses_nonempty_admissible_set(SatSolver &solver, AF &framew
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-void Encoding::add_clauses_nonempty_complete_set(SatSolver &solver, AF &framework, ArrayBitSet &activeArgs)
+void Encoding::add_clauses_nonempty_complete_set(SAT_Solver &solver, AF &framework, ArrayBitSet &activeArgs)
 {
 	vector<int64_t> non_empty_clause;
 
@@ -197,7 +197,7 @@ void Encoding::add_clauses_nonempty_complete_set(SatSolver &solver, AF &framewor
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-void Encoding::add_clauses_nonempty_stable_set(SatSolver &solver, AF &framework, ArrayBitSet &activeArgs)
+void Encoding::add_clauses_nonempty_stable_set(SAT_Solver &solver, AF &framework, ArrayBitSet &activeArgs)
 {
 	vector<int64_t> non_empty_clause;
 
@@ -218,7 +218,7 @@ void Encoding::add_clauses_nonempty_stable_set(SatSolver &solver, AF &framework,
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-void Encoding::add_complement_clause(SatSolver &solver, ArrayBitSet &activeArgs)
+void Encoding::add_complement_clause(SAT_Solver &solver, ArrayBitSet &activeArgs)
 {
 	vector<int64_t> clause;
 

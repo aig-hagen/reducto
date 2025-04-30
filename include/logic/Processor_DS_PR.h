@@ -8,7 +8,6 @@
 #include "Encoding.h"
 #include "Decoding.h"
 #include "PreProcessor_GR.h"
-#include "SatSolver.h"
 
 #include "../util/ArrayBitSet.h"
 #include "../util/ToolsList.h"
@@ -34,6 +33,6 @@ public:
 	/// <param name="is_first_iteration">Flag indicating if this iteration to calculate a set is the first in the specified state of the framework.</param>
 	/// <returns>An non emtpy set, if such a set can be computed. Empty list otherwise.</returns>
 	static list<uint32_t> calculate_rejecting_set(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &out_is_rejected, bool &out_is_query_attacked,
-		SatSolver &solver, bool &out_has_solution_without_query, bool is_first_iteration);
+		SAT_Solver &solver, bool &out_has_solution_without_query, bool is_first_iteration);
 };
 #endif

@@ -19,7 +19,6 @@ extern "C" {
 #include "PreProcessor_GR.h"
 #include "Processor_DS_PR.h"
 #include "Reduct.h"
-#include "SatSolver.h"
 #include "ToolsSolver.h"
 #include "Solver_SE_PR.h"
 

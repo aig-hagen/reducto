@@ -5,19 +5,17 @@
 static bool start_checking(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, list<uint32_t> &out_certificate_extension)
 {
 	// initialize SATSolver
-	SatSolver *solver = NULL;
-	solver = new SatSolver();
+	SAT_Solver solver = SAT_Solver(framework.num_args);
 	// add encoding for nonempty stable sets to SATSolver
-	Encoding::add_clauses_nonempty_stable_set(*solver, framework, active_args);
+	Encoding::add_clauses_nonempty_stable_set(solver, framework, active_args);
 	// compute solution using SATSolver
-	bool has_solution_with_query = (*solver).solve(Encoding::get_literal_accepted(query_argument, true),
+	bool has_solution_with_query = solver.solve(Encoding::get_literal_accepted(query_argument, true),
 		Encoding::get_literal_rejected(framework, query_argument, false));
 	// update certificate if solution was found
 	if (has_solution_with_query) {
 		tools::Tools_Solver::UpdateCertificate(solver, active_args, out_certificate_extension);
 	}
 
-	delete solver;
 	return has_solution_with_query;
 }
 

@@ -4,23 +4,31 @@
 .DELETE_ON_ERROR:
 
 #--------------------------------------------------------------------------#
-# The target name should be the name of this app, which actually should be
-# the same as the name of this directory, e.g., 'parallelSolver'.
+#	Paths to SAT solvers
 #--------------------------------------------------------------------------#
 
-TARGET=$(shell basename "`pwd`")
+# Directories for the source of the SAT Solvers
+GLUCOSE_DIR	= sat/glucose-syrup-4.1
+CADICAL_DIR	= sat/cadical-rel-2.1.3
+CMSAT_DIR	= sat/cryptominisat-5.11.21
 
 #--------------------------------------------------------------------------#
-# When called from the 'mkone.sh' script the 'IPASIRSOLVER' variable will be
-# overwritten.  For testing purposes, we simply set it to the default CaDiCaL
-# front-end.
+#	Build Variables
 #--------------------------------------------------------------------------#
 
-# Name of IPASIR solver (library), e.g., cadical
-IPASIRSOLVER	?= cadical
+# Default value for the chosen SAT Solver
+SOLVER		?= cadical
+TARGET=$(shell basename "`pwd`")_$(SOLVER)
 
-# Path to the IPASIR library (e.g., points to where libcadical.a is)
-IPASIRLIBDIR	?=	sat/$(IPASIRSOLVER)/build/ 
+# Path to the SAT solver library (e.g., points to where libcadical.a is)
+SATLIBDIR	?=	sat/$(SOLVER)/build/ 
+SATLIBNAME ?= $(SOLVER)
+
+ifeq ($(SOLVER), cryptominisat)
+	SATLIBNAME  = cryptominisat5
+else ifeq ($(SOLVER), glucose)
+	SATLIBDIR	= $(GLUCOSE_DIR)/build/dynamic/lib
+endif
 
 # Directory to store object files, libraries, executables, and dependencies:
 BUILD_DIR := ./build
@@ -36,16 +44,16 @@ INCLUDE_LOGIC	=	./include/logic/
 INCLUDE_UTIL	=	./include/util/
 
 #--------------------------------------------------------------------------#
-# There is usually no need to change something here unless you want to force
-# a specific compiler or specific compile flags.
+#	Flags
 #--------------------------------------------------------------------------#
+
 
 CC	=	gcc
 CFLAGS	?=	-Wall -std=c11
 CXX = g++
-CXXFLAGS ?= -Wall -std=c++11
-LDFLAGS ?= -L$(IPASIRLIBDIR)
-LDLIBS ?= -l$(IPASIRSOLVER)
+CXXFLAGS = -Wall -std=c++11
+LDFLAGS = -L$(SATLIBDIR)
+LDLIBS = -l$(SATLIBNAME)
 
 # Find all the C and C++ files we want to compile
 # Note the single quotes around the * expressions. The shell will incorrectly expand these otherwise, but we want to send the * directly to the find command.
@@ -61,17 +69,65 @@ DEPS := $(OBJS:.o=.d)
 
 # Every folder in ./include will need to be passed to GCC so that it can find header files
 INC_DIRS := $(shell find $(INCLUDE) -type d)
+
+ifeq ($(SOLVER), cryptominisat)
+	INC_DIRS	+= ./$(CMSAT_DIR)/src
+else ifeq ($(SOLVER), cadical)
+	INC_DIRS	+= ./$(CADICAL_DIR)/src
+else ifeq ($(SOLVER), glucose)
+	INC_DIRS	+= ./$(GLUCOSE_DIR)/
+endif
+
 # Add a prefix to INC_DIRS. So moduleA would become -ImoduleA. GCC understands this -I flag
 INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 # The -MMD and -MP flags together generate Makefiles for us!
 # These files will have .d instead of .o as the output.
 CPPFLAGS := $(INC_FLAGS) -MMD -MP
 
+ifeq ($(SOLVER), cryptominisat)
+	CPPFLAGS    += -D SAT_CMSAT
+else ifeq ($(SOLVER), cadical)
+	CPPFLAGS	+= -D SAT_CADICAL
+else ifeq ($(SOLVER), glucose)
+	CPPFLAGS	+= -D SAT_GLUCOSE
+endif
+
 #--------------------------------------------------------------------------#
-# Here comes the real makefile part which needs to be adapted and provide
-# both an 'all' and a 'clean' target. In essence, you need to provide
-# linking options, which link your app to a generic 'IPASIRSOLVER'.
+#	Targets
 #--------------------------------------------------------------------------#
+.PHONY:	full
+full:
+	@$(MAKE) clean
+	@$(MAKE) cmsat
+	@$(MAKE) cadical
+	@$(MAKE) glucose
+	@$(MAKE) all SOLVER=cryptominisat
+	@$(MAKE) all SOLVER=cadical
+	@$(MAKE) all SOLVER=glucose
+
+.PHONY:	cmsat
+cmsat:
+	@echo "Compiling CryptoMiniSat..."
+	cd $(CMSAT_DIR) && \
+	mkdir -p build && cd build && \
+	cmake .. && \
+	make && \
+	sudo make install && \
+	sudo ldconfig
+
+.PHONY:	cadical
+cadical:
+	@echo "Compiling CaDiCal..."
+	cd $(CADICAL_DIR) && \
+	./configure && make
+
+.PHONY:	glucose
+glucose:
+	@echo "Compiling Glucose..."
+	cd $(GLUCOSE_DIR) && \
+	make && \
+	sudo make install && \
+	sudo ldconfig
 
 .PHONY:	all
 all: CXXFLAGS += -DNDEBUG -O3 
@@ -88,17 +144,11 @@ debug: CCFLAGS += -DDEBUG -g -O0
 debug: $(BUILD_DIR)/$(TARGET)
 
 #--------------------------------------------------------------------------#
-# The executable target (your program).
+#	Build Rules
 #--------------------------------------------------------------------------#
 
 $(BUILD_DIR)/$(TARGET): $(OBJS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OBJS) -o $@ $(LDFLAGS) $(LDLIBS)
-
-#--------------------------------------------------------------------------#
-# Local app specific rules.
-#--------------------------------------------------------------------------#
-
-# Rule to build the object file for your C++ program
 
 # Build step for C source
 $(BUILD_DIR)/%.c.o: %.c

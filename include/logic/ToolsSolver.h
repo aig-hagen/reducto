@@ -10,7 +10,6 @@
 #include "AF.h"
 #include "Decoding.h"
 #include "Encoding.h"
-#include "SatSolver.h"
 
 #include "../util/Printer.h"
 #include "../util/ToolsList.h"
@@ -29,7 +28,7 @@ namespace tools {
 		/// <param name="solver">The solver, which has calculated a solution.</param>
 		/// <param name="active_args">The arguments that are active in the current state of the framework.</param>
 		/// <param name="certificate_extension"> The extension used as certificate/proof of the result.</param>
-		static void UpdateCertificate(SatSolver *solver, ArrayBitSet &active_args, std::__cxx11::list<uint32_t> &out_certificate_extension);
+		static void UpdateCertificate(SatSolver &solver, ArrayBitSet &active_args, std::__cxx11::list<uint32_t> &out_certificate_extension);
 
 		/// <summary>
 		/// Updates the certificate by extending it by the specified set of arguments.

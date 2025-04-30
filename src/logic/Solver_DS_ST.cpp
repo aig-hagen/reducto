@@ -8,12 +8,11 @@
 static bool check_for_stable_extension_without_query(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, list<uint32_t> &out_certificate_extension)
 {
 	// initialise the SATSolver
-	SatSolver *solver = NULL;
-	solver = new SatSolver();
+	SAT_Solver solver = SAT_Solver(framework.num_args);
 	// add an encoding for nonempty stable sets
-	Encoding::add_clauses_nonempty_stable_set(*solver, framework, active_args);
+	Encoding::add_clauses_nonempty_stable_set(solver, framework, active_args);
 	// compute a solution with the SATSolver
-	bool has_solution_without_query = (*solver).solve(Encoding::get_literal_accepted(query_argument, false),
+	bool has_solution_without_query = solver.solve(Encoding::get_literal_accepted(query_argument, false),
 		Encoding::get_literal_rejected(framework, query_argument, true));
 	// update the certificate iff a solution was found
 	if (has_solution_without_query) {
@@ -21,7 +20,6 @@ static bool check_for_stable_extension_without_query(uint32_t query_argument, AF
 	}
 	//only two cases remain: 1. no stable solution is computable; 2. all stable solutions contain the query; both cases lead to scetical acceptance
 		
-	delete solver;
 	return has_solution_without_query;
 }
 

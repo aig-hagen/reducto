@@ -4,7 +4,7 @@
 /*===========================================================================================================================================================*/
 
 list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &out_is_rejected, bool &out_is_query_attacked,
-	SatSolver &solver, bool &out_has_solution_without_query, bool is_first_iteration){
+	SAT_Solver &solver, bool &out_has_solution_without_query, bool is_first_iteration){
 	// compute a solution with SATSolver
 	out_has_solution_without_query = solver.solve(Encoding::get_literal_accepted(query_argument, false));
 	if (!out_has_solution_without_query) {
