@@ -97,7 +97,6 @@ endif
 #--------------------------------------------------------------------------#
 .PHONY:	all
 all:
-	@$(MAKE) clean
 	@$(MAKE) cmsat
 	@$(MAKE) cadical
 	@$(MAKE) glucose
