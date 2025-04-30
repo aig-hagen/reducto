@@ -95,15 +95,15 @@ endif
 #--------------------------------------------------------------------------#
 #	Targets
 #--------------------------------------------------------------------------#
-.PHONY:	full
-full:
+.PHONY:	all
+all:
 	@$(MAKE) clean
 	@$(MAKE) cmsat
 	@$(MAKE) cadical
 	@$(MAKE) glucose
-	@$(MAKE) all SOLVER=cryptominisat
-	@$(MAKE) all SOLVER=cadical
-	@$(MAKE) all SOLVER=glucose
+	@$(MAKE) solo SOLVER=cryptominisat
+	@$(MAKE) solo SOLVER=cadical
+	@$(MAKE) solo SOLVER=glucose
 
 .PHONY:	cryptominisat
 cryptominisat:
@@ -127,10 +127,10 @@ glucose:
 	cd $(GLUCOSE_DIR) && \
 	make
 
-.PHONY:	all
-all: CXXFLAGS += -DNDEBUG -O3 
-all: CCFLAGS += -DNDEBUG -O3 
-all: $(BUILD_DIR)/$(TARGET)
+.PHONY:	solo
+solo: CXXFLAGS += -DNDEBUG -O3 
+solo: CCFLAGS += -DNDEBUG -O3 
+solo: $(BUILD_DIR)/$(TARGET)
 
 .PHONY: clean
 clean: 
