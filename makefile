@@ -97,7 +97,7 @@ endif
 #--------------------------------------------------------------------------#
 .PHONY:	all
 all:
-	@$(MAKE) cmsat
+	@$(MAKE) cryptominisat
 	@$(MAKE) cadical
 	@$(MAKE) glucose
 	@$(MAKE) solo SOLVER=cryptominisat
