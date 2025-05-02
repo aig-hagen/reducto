@@ -11,8 +11,6 @@
 *.sln.docstates
 *.sln
 *.vcxproj
-sat/**
-!*/ipasir.h
 
 build/
 
