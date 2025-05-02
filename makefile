@@ -9,7 +9,6 @@
 
 # Directories for the source of the SAT Solvers
 GLUCOSE_DIR	= sat/glucose-4.2.1/simp
-CADICAL_DIR	= sat/cadical-rel-2.1.3
 CMSAT_DIR	= sat/cryptominisat-5.11.21
 
 #--------------------------------------------------------------------------#
@@ -17,7 +16,7 @@ CMSAT_DIR	= sat/cryptominisat-5.11.21
 #--------------------------------------------------------------------------#
 
 # Default value for the chosen SAT Solver
-SOLVER		?= cadical
+SOLVER		?= glucose
 TARGET=$(shell basename "`pwd`")_$(SOLVER)
 
 # Path to the SAT solver library (e.g., points to where libcadical.a is)
@@ -72,8 +71,6 @@ INC_DIRS := $(shell find $(INCLUDE) -type d)
 
 ifeq ($(SOLVER), cryptominisat)
 	INC_DIRS	+= ./$(CMSAT_DIR)/src
-else ifeq ($(SOLVER), cadical)
-	INC_DIRS	+= ./$(CADICAL_DIR)/src
 else ifeq ($(SOLVER), glucose)
 	INC_DIRS	+= ./$(GLUCOSE_DIR)
 endif
@@ -86,8 +83,6 @@ CPPFLAGS := $(INC_FLAGS) -MMD -MP
 
 ifeq ($(SOLVER), cryptominisat)
 	CPPFLAGS    += -D SAT_CMSAT
-else ifeq ($(SOLVER), cadical)
-	CPPFLAGS	+= -D SAT_CADICAL
 else ifeq ($(SOLVER), glucose)
 	CPPFLAGS	+= -D SAT_GLUCOSE
 endif
@@ -98,10 +93,8 @@ endif
 .PHONY:	all
 all:
 	@$(MAKE) cryptominisat
-	@$(MAKE) cadical
 	@$(MAKE) glucose
 	@$(MAKE) solo SOLVER=cryptominisat
-	@$(MAKE) solo SOLVER=cadical
 	@$(MAKE) solo SOLVER=glucose
 
 .PHONY:	cryptominisat
@@ -113,12 +106,6 @@ cryptominisat:
 	make && \
 	sudo make install && \
 	sudo ldconfig
-
-.PHONY:	cadical
-cadical:
-	@echo "Compiling CaDiCal..."
-	cd $(CADICAL_DIR) && \
-	./configure && make
 
 .PHONY:	glucose
 glucose:
