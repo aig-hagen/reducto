@@ -3,7 +3,7 @@
 ## SAT solver comparison
 This is a branch of the reducto solver created to compare different SAT solvers.
 Currently this version offers to compare the solver CryptoMiniSat 5.11.21 and Glucose 4.2.1.
-To run the **reducto** with the SAT solver Cadical, see the main branch.
+To run **reducto** with the SAT solver Cadical, see the main branch.
 
 ## Compilation
 
