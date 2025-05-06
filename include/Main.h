@@ -26,7 +26,7 @@ extern "C" {
 /// Name of the program
 /// </summary>
 constexpr auto PROGRAM_NAME = "reducto";
-constexpr auto VERSIONNUMBER = "2.12";
+constexpr auto VERSIONNUMBER = "2.13";
 
 /// <summary>
 /// Flags used for internal processing.
