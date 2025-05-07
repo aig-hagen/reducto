@@ -8,7 +8,7 @@
 #--------------------------------------------------------------------------#
 
 # Directories for the source of the SAT Solvers
-GLUCOSE_DIR	= sat/glucose-4.2.1/simp
+GLUCOSE_DIR	= sat/glucose-4.2.1
 CMSAT_DIR	= sat/cryptominisat-5.11.21
 
 #--------------------------------------------------------------------------#
@@ -20,13 +20,13 @@ SOLVER		?= glucose
 TARGET=$(shell basename "`pwd`")_$(SOLVER)
 
 # Path to the SAT solver library (e.g., points to where libcadical.a is)
-SATLIBDIR	?=	sat/$(SOLVER)/build/ 
+SATLIBDIR	?=	./sat/$(SOLVER)/build/ 
 SATLIBNAME ?= $(SOLVER)
 
 ifeq ($(SOLVER), cryptominisat)
 	SATLIBNAME  = cryptominisat5
 else ifeq ($(SOLVER), glucose)
-	SATLIBDIR	= $(GLUCOSE_DIR)
+	SATLIBDIR	= ./$(GLUCOSE_DIR)/simp
 endif
 
 # Directory to store object files, libraries, executables, and dependencies:
