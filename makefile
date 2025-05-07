@@ -110,7 +110,7 @@ cryptominisat:
 .PHONY:	glucose
 glucose:
 	@echo "Compiling Glucose..."
-	cd $(GLUCOSE_DIR)\simp\ && \
+	cd $(GLUCOSE_DIR)/simp/ && \
 	make
 
 .PHONY:	solo
