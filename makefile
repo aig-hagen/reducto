@@ -26,7 +26,7 @@ SATLIBNAME ?= $(SOLVER)
 ifeq ($(SOLVER), cryptominisat)
 	SATLIBNAME  = cryptominisat5
 else ifeq ($(SOLVER), glucose)
-	SATLIBDIR	= ./$(GLUCOSE_DIR)/simp/
+	SATLIBDIR	= ./$(GLUCOSE_DIR)/simp
 endif
 
 # Directory to store object files, libraries, executables, and dependencies:
@@ -51,7 +51,8 @@ CC	=	gcc
 CFLAGS	?=	-Wall -std=c11
 CXX = g++
 CXXFLAGS = -Wall -std=c++11
-LDFLAGS = -l$(SATLIBNAME) -L$(SATLIBDIR) 
+LDFLAGS = -L$(SATLIBDIR)
+LDLIBS = -l$(SATLIBNAME)
 
 # Find all the C and C++ files we want to compile
 # Note the single quotes around the * expressions. The shell will incorrectly expand these otherwise, but we want to send the * directly to the find command.
@@ -131,7 +132,7 @@ debug: $(BUILD_DIR)/$(TARGET)
 #--------------------------------------------------------------------------#
 
 $(BUILD_DIR)/$(TARGET): $(OBJS)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OBJS) -o $@ $(LDFLAGS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(OBJS) -o $@ $(LDFLAGS) $(LDLIBS)
 
 # Build step for C source
 $(BUILD_DIR)/%.c.o: %.c
