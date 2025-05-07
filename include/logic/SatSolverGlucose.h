@@ -4,7 +4,7 @@
 #ifdef SAT_GLUCOSE
 
 #include "SatSolver.h"
-#include <simp/SimpSolver.h>
+#include <SimpSolver.h>
 
 class SatSolverGlucose : public SatSolver {
 
