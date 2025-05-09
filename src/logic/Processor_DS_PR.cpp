@@ -3,7 +3,7 @@
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &out_is_rejected, bool &out_is_query_attacked,
+list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &framework, ArrayBitSet &active_args, bool &out_is_rejected, bool &out_is_query_attacked, bool &out_is_complete_pr,
 	SatSolver &solver, bool &out_has_solution_without_query, bool is_first_iteration){
 	// compute a solution with SATSolver
 	out_has_solution_without_query = solver.solve(Encoding::get_literal_accepted(query_argument, false));
@@ -12,8 +12,9 @@ list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &
 		if (is_first_iteration && !solver.solve(Encoding::get_literal_accepted(query_argument, true))) {
 			// this is the first iteration, so there have been no solution excluded by a complement clause
 			// there is no nonempty adm. set, with or without the query argument, that's why there is only the empty set as adm. set
-			// which means we found a complete extension, which is not containing the query argument, hence we found a counter evidence
+			// which means we found a preferred extension, which is not containing the query argument, hence we found a counter evidence
 			out_is_rejected = true;
+			out_is_complete_pr = true;
 		}
 		return list<uint32_t>();
 	}
@@ -40,6 +41,7 @@ list<uint32_t> Proc_DS_PR::calculate_rejecting_set(uint32_t query_argument, AF &
 			// cannot calculate CO set in reduct, hence set used for reduction has to be a PR set
 			// since the PR set does not contain the query, it's a counter-example
 			out_is_rejected = true;
+			out_is_complete_pr = true;
 		}
 		else {
 			//check if calculated CO extension rejects query
