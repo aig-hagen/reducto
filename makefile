@@ -16,6 +16,8 @@ TARGET=$(shell basename "`pwd`")
 # front-end.
 #--------------------------------------------------------------------------#
 
+PREPROCESSING	?= y
+
 # Name of IPASIR solver (library), e.g., cadical
 IPASIRSOLVER	?= cadical
 
@@ -46,6 +48,10 @@ CXX = g++
 CXXFLAGS ?= -Wall -std=c++11
 LDFLAGS ?= -L$(IPASIRLIBDIR)
 LDLIBS ?= -l$(IPASIRSOLVER)
+
+ifeq ($(PREPROCESSING), y)
+	CXXFLAGS    += -D DO_PREPROC
+endif
 
 # Find all the C and C++ files we want to compile
 # Note the single quotes around the * expressions. The shell will incorrectly expand these otherwise, but we want to send the * directly to the find command.

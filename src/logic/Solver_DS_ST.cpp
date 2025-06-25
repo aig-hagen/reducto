@@ -41,8 +41,13 @@ bool Solver_DS_ST::solve(uint32_t query_argument, AF &framework, list<uint32_t> 
 	// get the original state (active arguments) of the framework
 	ArrayBitSet active_args = framework.create_active_arguments();
 	ArrayBitSet initial_reduct = ArrayBitSet();
-	// reduce by grounded extension
-	pre_proc_result result_preProcessor = PreProc_GR::reduce_by_grounded(framework, active_args, query_argument, true, false, initial_reduct, out_certificate_extension);
+	pre_proc_result result_preProcessor = pre_proc_result::unknown;
+
+#ifdef DO_PREPROC
+	result_preProcessor = PreProc_GR::reduce_by_grounded(framework, active_args, query_argument, true, false, initial_reduct, out_certificate_extension);
+#else
+	initial_reduct = framework.create_active_arguments();
+#endif
 
 	switch (result_preProcessor) {
 

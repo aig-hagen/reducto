@@ -46,7 +46,12 @@ bool Solver_SE_PR::solve(AF &framework, ArrayBitSet &active_args, list<uint32_t>
 bool Solver_SE_PR::solve(AF &framework, list<uint32_t> &out_certificate_extension)
 {
 	ArrayBitSet initial_reduct;
+
+#ifdef DO_PREPROC
 	initial_reduct = PreProc_GR::process_only_grounded(framework, out_certificate_extension);
+#else
+	initial_reduct = framework.create_active_arguments();
+#endif
 		
 	return solve(framework, initial_reduct, out_certificate_extension);
 }

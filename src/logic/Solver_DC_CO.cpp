@@ -27,11 +27,15 @@ bool start_checking(uint32_t query_argument, AF &framework, ArrayBitSet &active_
 bool Solver_DC_CO::solve(uint32_t query_argument, AF &framework, list<uint32_t> &out_certificate_extension) {
 
 	ArrayBitSet initial_reduct = ArrayBitSet();
-	pre_proc_result result_preProcessor;
+	pre_proc_result result_preProcessor = pre_proc_result::unknown;
 	ConeOfInfluence coi(framework);
 
+#ifdef DO_PREPROC
 	result_preProcessor = PreProc_GR::process(framework, query_argument, false, true, initial_reduct, out_certificate_extension, coi);
-	
+#else
+	initial_reduct = framework.create_active_arguments();
+#endif
+
 	switch (result_preProcessor) {
 
 	case accepted:

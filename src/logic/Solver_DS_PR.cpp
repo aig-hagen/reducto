@@ -68,12 +68,18 @@ bool Solver_DS_PR::solve(uint32_t query_argument, AF &framework, list<uint32_t> 
 {
 	// initialize variables
 	ArrayBitSet active_args_in_coi = ArrayBitSet();
-	pre_proc_result result_preProcessor;
+	pre_proc_result result_preProcessor = pre_proc_result::unknown;
 	ConeOfInfluence coi(framework);
 	list<uint32_t> grounded_extension;
 	// preprocess the framework
+
+#ifdef DO_PREPROC
+
 	result_preProcessor = PreProc_GR::process(framework, query_argument, true, true, active_args_in_coi, grounded_extension, coi);
 	tools::Tools_Solver::UpdateCertificate(out_certificate_extension, grounded_extension);
+#else
+	active_args_in_coi = framework.create_active_arguments();
+#endif
 
 	switch (result_preProcessor) {
 

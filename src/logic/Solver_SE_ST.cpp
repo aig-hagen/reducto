@@ -27,8 +27,13 @@ bool Solver_SE_ST::solve(AF &framework, list<uint32_t> &out_certificate_extensio
 {
 	// preprocess the framework
 	ArrayBitSet initial_reduct;
+
+#ifdef DO_PREPROC
 	initial_reduct = PreProc_GR::process_only_grounded(framework, out_certificate_extension);
-		
+#else
+	initial_reduct = framework.create_active_arguments();
+#endif
+
 	//check if grounded extension is stable
 	if (initial_reduct._array.size() == 0) {
 		//reduct is empty, therefore grounded extension is only stable extension

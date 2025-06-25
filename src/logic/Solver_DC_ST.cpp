@@ -27,9 +27,14 @@ static bool start_checking(uint32_t query_argument, AF &framework, ArrayBitSet &
 bool Solver_DC_ST::solve(uint32_t query_argument, AF &framework, list<uint32_t> &out_certificate_extension)
 {
 	ArrayBitSet initial_reduct = ArrayBitSet();
-	pre_proc_result result_preProcessor;
+	pre_proc_result result_preProcessor = pre_proc_result::unknown;
+
+#ifdef DO_PREPROC
 	result_preProcessor = PreProc_GR::process_only_grounded(framework, query_argument, false, true, initial_reduct, out_certificate_extension);
-	
+#else
+	initial_reduct = framework.create_active_arguments();
+#endif
+		
 	switch (result_preProcessor) {
 
 	case rejected:
