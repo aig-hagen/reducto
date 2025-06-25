@@ -1,9 +1,12 @@
 #ifndef ENUMS_H
 #define ENUMS_H
 
+#include "../ipafair.h"
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdexcept>
 
 #include <iostream>
 
@@ -11,10 +14,6 @@
 /// Abbreviations of the different types of tasks, which the solver can solve
 /// </summary>
 enum task { DC, DS, SE, UNKNOWN_TASK };
-/// <summary>
-/// Abbreviations of the different semantics of the solutions to calculate.
-/// </summary>
-enum semantics { PR, CO, ST, UNKNOWN_SEM };
 
 /// <summary>
 /// Return values of the preprocessor, indicating if the preprocessor solved the problem, and if so to what conclusion

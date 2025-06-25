@@ -16,10 +16,10 @@ task Enums::string_to_task(string task)
 
 semantics Enums::string_to_sem(string semantics)
 {
-	if (semantics == "PR") return PR;
-	if (semantics == "CO") return CO;
-	if (semantics == "ST") return ST;
-	return UNKNOWN_SEM;
+	if (semantics == "PR") return preferred;
+	if (semantics == "CO") return complete;
+	if (semantics == "ST") return stable;
+	throw std::invalid_argument("semantics is unknown");
 }
 
 /*===========================================================================================================================================================*/

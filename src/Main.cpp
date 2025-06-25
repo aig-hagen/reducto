@@ -176,10 +176,10 @@ int static execute(int argc, char **argv)
 
 			// process the semantics
 			switch (Enums::string_to_sem(sem)) {
-				case PR:
+				case preferred:
 					skept_accepted = Solver_DS_PR::solve(query_argument, framework, proof_extension);
 					break;
-				case ST:
+				case stable:
 					skept_accepted = Solver_DS_ST::solve(query_argument, framework, proof_extension);
 					break;
 				default:
@@ -211,10 +211,10 @@ int static execute(int argc, char **argv)
 
 			// process the semantics
 			switch (Enums::string_to_sem(sem)) {
-			case CO:
+			case complete:
 				cred_accepted = Solver_DC_CO::solve(query_argument, framework, proof_extension);
 				break;
-			case ST:
+			case stable:
 				cred_accepted = Solver_DC_ST::solve(query_argument, framework, proof_extension);
 				break;
 			default:
@@ -242,10 +242,10 @@ int static execute(int argc, char **argv)
 
 			// process the semantics
 			switch (Enums::string_to_sem(sem)) {
-			case PR:
+			case preferred:
 				has_extension = Solver_SE_PR::solve(framework, proof_extension);
 				break;
-			case ST:
+			case stable:
 				has_extension = Solver_SE_ST::solve(framework, proof_extension);
 				break;
 			default:
