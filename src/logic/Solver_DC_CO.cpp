@@ -24,19 +24,33 @@ bool start_checking(uint32_t query_argument, AF &framework, ArrayBitSet &active_
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
+static acceptance_result apply_shortcuts(AF &framework, uint32_t query_argument, ArrayBitSet &initial_reduct, std::__cxx11::list<uint32_t> &out_certificate_extension)
+{
+	if (framework.self_attack[query_argument])
+	{
+		return acceptance_result::rejected;
+	}
+
+	if (framework.attackers[query_argument].empty())
+	{
+		return acceptance_result::accepted;
+	}
+
+	ArrayBitSet initial_actives = framework.create_active_arguments();
+	return Solver_GR::reduce_by_grounded(framework, initial_actives, query_argument, false, true, initial_reduct, out_certificate_extension);
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
+
 bool Solver_DC_CO::solve(uint32_t query_argument, AF &framework, list<uint32_t> &out_certificate_extension) {
 
 	ArrayBitSet initial_reduct = ArrayBitSet();
-	pre_proc_result result_preProcessor = pre_proc_result::unknown;
+	acceptance_result result_shortcuts = acceptance_result::unknown;
 	ConeOfInfluence coi(framework);
-
-#ifdef DO_PREPROC
-	result_preProcessor = PreProc_GR::process(framework, query_argument, false, true, initial_reduct, out_certificate_extension, coi);
-#else
-	initial_reduct = framework.create_active_arguments();
-#endif
-
-	switch (result_preProcessor) {
+	result_shortcuts = apply_shortcuts(framework, query_argument, initial_reduct, out_certificate_extension);
+	switch (result_shortcuts) {
 
 	case accepted:
 		return true;

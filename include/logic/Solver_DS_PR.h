@@ -16,7 +16,7 @@ extern "C" {
 #include "Decoding.h"
 #include "Encoding.h"
 #include "Enums.h"
-#include "PreProcessor_GR.h"
+#include "Solver_GR.h"
 #include "Processor_DS_PR.h"
 #include "Reduct.h"
 #include "SatSolver.h"

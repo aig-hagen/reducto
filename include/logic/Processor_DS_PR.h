@@ -7,7 +7,6 @@
 
 #include "Encoding.h"
 #include "Decoding.h"
-#include "PreProcessor_GR.h"
 #include "SatSolver.h"
 
 #include "../util/ArrayBitSet.h"

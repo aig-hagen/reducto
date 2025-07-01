@@ -18,7 +18,7 @@ enum task { DC, DS, SE, UNKNOWN_TASK };
 /// <summary>
 /// Return values of the preprocessor, indicating if the preprocessor solved the problem, and if so to what conclusion
 /// </summary>
-enum pre_proc_result { accepted, rejected, unknown };
+enum acceptance_result { accepted, rejected, unknown };
 
 /// <summary>
 /// Abbreviations of the different file formats, that the solver can handle
