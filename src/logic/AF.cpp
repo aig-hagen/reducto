@@ -36,6 +36,16 @@ bool AF::check_attack(std::uint32_t argument, std::list<std::uint32_t> &set_argu
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
+void AF::clear() {
+	attacks.clear();
+	attackers.clear();
+	victims.clear();
+	self_attack.clear();
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
 ArrayBitSet AF::create_active_arguments() {
 	vector<uint32_t> active_args_vector;
 	vector<uint8_t> active_args_bitset(num_args + 1, 1);
@@ -82,6 +92,10 @@ void AF::initialize(uint32_t number_args) {
 
 void AF::finish_initilization()
 {
+	attackers.clear();
+	victims.clear();
+	std::fill(self_attack.begin(), self_attack.end(), 0);
+
 	for (const pair<uint32_t, uint32_t> &attack : attacks) {
 		int32_t source = attack.first;
 		int32_t target = attack.second;

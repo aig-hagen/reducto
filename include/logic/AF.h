@@ -74,6 +74,10 @@ public:
 	/// <returns>TRUE iff any member of the set attacks the specified argument. FALSE otherwise.</returns>
 	bool check_attack(std::uint32_t argument, std::list<std::uint32_t> &set_arguments, AF &framework);
 	/// <summary>
+	/// This method deletes the data structure of the instance.
+	/// </summary>
+	void clear();
+	/// <summary>
 	/// This method creates an ArrayBitSet containing all arguments of this framework.
 	/// </summary>
 	/// <returns>An ArrayBitSet of all arguments in this framework.</returns>
