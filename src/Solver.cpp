@@ -2,7 +2,7 @@
 
 Solver::Solver(){
 	_framework = AF();
-	_query_argument = 0;
+	_query_arguments = list<uint32_t>();
 	_semantics = admissible;
 	_solution = list<uint32_t>();
 	_int_to_arg = std::vector<uint32_t>();
@@ -41,7 +41,7 @@ void Solver::add_attack(uint32_t arg_attacker, uint32_t arg_victim) {
 void Solver::delete_argument(uint32_t arg) {
 	uint32_t argument_delete = _arg_to_int[arg];
 	_arg_to_int.erase(arg);
-	for (int i = argument_delete; i < _int_to_arg.size() - 1; i++) {
+	for (uint32_t i = argument_delete; i < _int_to_arg.size() - 1; i++) {
 		uint32_t _next_arg = _int_to_arg[i + 1];
 		_int_to_arg[i] = _next_arg;
 		_arg_to_int[_next_arg] = i;
@@ -66,8 +66,8 @@ void Solver::delete_attack(uint32_t arg_attacker, uint32_t arg_victim) {
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-void Solver::set_query(uint32_t arg) {
-	_query_argument = arg;
+void Solver::add_query(uint32_t arg) {
+	_query_arguments.push_back(_arg_to_int[arg]);
 }
 
 /*===========================================================================================================================================================*/
@@ -81,7 +81,7 @@ void Solver::set_semantics(semantics sem) {
 /*===========================================================================================================================================================*/
 
 int32_t Solver::solve(bool credulous_mode) {
-	if (_query_argument == 0 || _query_argument > _framework.num_args) {
+	if (_query_arguments.empty()) {
 		return -1;
 	}
 
@@ -94,10 +94,10 @@ int32_t Solver::solve(bool credulous_mode) {
 	if(credulous_mode) {
 		switch (_semantics) {
 		case complete:
-			isAccepted = Solver_DC_CO::solve(_query_argument, _framework, _solution);
+			isAccepted = Solver_DC_CO::solve(*_query_arguments.begin(), _framework, _solution);
 			break;
 		case stable:
-			isAccepted = Solver_DC_ST::solve(_query_argument, _framework, _solution);
+			isAccepted = Solver_DC_ST::solve(*_query_arguments.begin(), _framework, _solution);
 			break;
 		default:
 			cerr << _semantics << ": Unsupported semantics\n";
@@ -105,16 +105,23 @@ int32_t Solver::solve(bool credulous_mode) {
 		}
 	}
 	else {
-		switch (_semantics) {
-		case preferred:
-			isAccepted = Solver_DS_PR::solve(_query_argument, _framework, _solution);
-			break;
-		case stable:
-			isAccepted = Solver_DS_ST::solve(_query_argument, _framework, _solution);
-			break;
-		default:
-			cerr << _semantics << ": Unsupported semantics\n";
-			return -1;
+		for (std::list<uint32_t>::iterator mIter = _query_arguments.begin(); mIter != _query_arguments.end(); ++mIter) {
+			uint32_t query_argument = *mIter;
+			switch (_semantics) {
+			case preferred:
+				isAccepted = Solver_DS_PR::solve(query_argument, _framework, _solution);
+				break;
+			case stable:
+				isAccepted = Solver_DS_ST::solve(query_argument, _framework, _solution);
+				break;
+			default:
+				cerr << _semantics << ": Unsupported semantics\n";
+				return -1;
+			}
+
+			if (!isAccepted) {
+				break;
+			}
 		}
 	}
 
@@ -130,7 +137,7 @@ int32_t Solver::solve(bool credulous_mode) {
 /*===========================================================================================================================================================*/
 
 int32_t Solver::val(uint32_t arg) {
-	if (tools::Tools_List::contains(_solution, arg)) {
+	if (tools::Tools_List::contains(_solution, _arg_to_int[arg])) {
 		return arg;
 	}
 	else {
