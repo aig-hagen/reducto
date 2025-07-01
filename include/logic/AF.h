@@ -78,6 +78,13 @@ public:
 	/// </summary>
 	/// <returns>An ArrayBitSet of all arguments in this framework.</returns>
 	ArrayBitSet create_active_arguments();
+	/// <summary>
+	/// Deletes an attack of the instance.
+	/// </summary>
+	/// <param name="attacker">The argument which is attacking the other.</param>
+	/// <param name="victim">The argument which is been attacked by the other.</param>
+	/// <returns>TRUE iff the attack was successfully deleted.</returns>
+	bool delete_attack(uint32_t attacker, uint32_t victim);
     /// <summary>
     /// This method checks if there's an attack from the first to the second specified 
 	/// argument.
