@@ -85,6 +85,10 @@ int32_t Solver::solve(bool credulous_mode) {
 		return -1;
 	}
 
+	if (!_is_initialized) {
+		_framework.finish_initilization();
+	}
+
 	_solution = list<uint32_t>();
 	bool isAccepted = false;
 	if(credulous_mode) {
