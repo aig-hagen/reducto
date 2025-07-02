@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cstdint>
 #include <list>
+#include <unordered_map>
 
 #include "AF.h"
 #include "Reduct.h"
@@ -27,17 +28,9 @@ public:
 	/// </summary>
 	/// <param name="framework">The abstract argumentation framework, in which the cone if situated</param>
 	/// <param name="query">The starting argument of the cone of influence</param>
-	/// <param name="out_coi">[Output-Parameter] Object containing information about the distances of other arguments to the starting argument in the cone of influence.</param>
-	/// <returns>A reduct of the framework, setting only those argument as 'active', which are part of the cone of influence.</returns>
-	static ArrayBitSet calculate_cone_influence(AF &framework, uint32_t query, ConeOfInfluence &out_coi);
-
-	/// <summary>
-	/// Calculates the cone of influence of a specified reduced state of a specified argumentation framework, starting with a specified argument of that framework.
-	/// </summary>
-	/// <param name="framework">The abstract argumentation framework, in which the cone if situated</param>
-	/// <param name="reduct">The current state of the framework, which means the active arguments of the framework in the current state. </param>
-	/// <returns>A reduct of the framework, setting only those argument as 'active', which are part of the cone of influence.</returns>
-	static ArrayBitSet calculate_cone_influence_reduct(AF &framework, ArrayBitSet reduct, uint32_t query);
+	/// <param name="">[Output parameter] Maps the arguments of the new framework to the arguments of the old framework. </param>
+	/// <returns>A reduct of the framework, containing only those argument, which are relevant for the specified query argument.</returns>
+	static AF calculate_cone_influence(AF &framework, uint32_t query, std::unordered_map<uint32_t, uint32_t> &args_new_to_old);
 };
 #endif
 
