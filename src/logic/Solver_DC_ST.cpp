@@ -24,37 +24,47 @@ static bool start_checking(uint32_t query_argument, AF &framework, ArrayBitSet &
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
+static acceptance_result apply_shortcuts(AF &framework, uint32_t query_argument, ArrayBitSet &out_reduct, std::__cxx11::list<uint32_t> &out_grounded_extension)
+{
+	if (framework.self_attack[query_argument])
+	{
+		return acceptance_result::rejected;
+	}
+
+	if (framework.attackers[query_argument].empty())
+	{
+		return acceptance_result::accepted;
+	}
+
+	ArrayBitSet initial_actives = framework.create_active_arguments();
+	return Solver_GR::reduce_by_grounded(framework, initial_actives, query_argument, false, true, out_reduct, out_grounded_extension);
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
 bool Solver_DC_ST::solve(uint32_t query_argument, AF &framework, list<uint32_t> &out_certificate_extension)
 {
-	ArrayBitSet initial_reduct = ArrayBitSet();
-	pre_proc_result result_preProcessor = pre_proc_result::unknown;
+	ArrayBitSet reduct_after_grounded = ArrayBitSet();		
+	switch (apply_shortcuts(framework, query_argument, reduct_after_grounded, out_certificate_extension)) {
+		case rejected:
+			return false;
 
-#ifdef DO_PREPROC
-	result_preProcessor = PreProc_GR::process_only_grounded(framework, query_argument, false, true, initial_reduct, out_certificate_extension);
-#else
-	initial_reduct = framework.create_active_arguments();
-#endif
-		
-	switch (result_preProcessor) {
+		case accepted:
+			if (reduct_after_grounded._array.size() == 0) {
+				//calculated grounded extension is the stable extension
+				return true;
+			}
 
-	case rejected:
-		return false;
+			return tools::Tools_Solver::check_existance_stable_extension(framework, reduct_after_grounded, out_certificate_extension);
 
-	case accepted:
-		if (initial_reduct._array.size() == 0) {
-			//calculated grounded extension is the stable extension
-			return true;
-		}
+		default:
+			if (reduct_after_grounded._array.size() == 0) {
+				//calculated grounded extension is the stable extension
+				cout << "ERROR should be impossible" << endl;
+				return true;
+			}
 
-		return tools::Tools_Solver::check_existance_stable_extension(framework, initial_reduct, out_certificate_extension);
-
-	default:
-		if (initial_reduct._array.size() == 0) {
-			//calculated grounded extension is the stable extension
-			cout << "ERROR should be impossible" << endl;
-			return true;
-		}
-
-		return start_checking(query_argument, framework, initial_reduct, out_certificate_extension);
+			return start_checking(query_argument, framework, reduct_after_grounded, out_certificate_extension);
 	}
 }

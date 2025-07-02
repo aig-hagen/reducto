@@ -3,9 +3,11 @@
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-acceptance_result Solver_GR::reduce_by_grounded(AF &framework, ArrayBitSet &active_args, uint32_t query, bool break_accepted, bool break_rejected,
+acceptance_result Solver_GR::reduce_by_grounded(AF &framework, ArrayBitSet &input_active_args, uint32_t query, bool break_accepted, bool break_rejected,
 	ArrayBitSet &out_reduct, list<uint32_t> &out_gr_extension)
 {
+	//copy values to ensure not to change input values
+	ArrayBitSet active_args = input_active_args.copy();
 	acceptance_result result = acceptance_result::unknown;
 	// fill list with unattacked arguments
 	list<uint32_t> ls_unattacked_unprocessed;
@@ -29,16 +31,16 @@ acceptance_result Solver_GR::reduce_by_grounded(AF &framework, ArrayBitSet &acti
 	for (list<uint32_t>::iterator mIter = ls_unattacked_unprocessed.begin(); mIter != ls_unattacked_unprocessed.end(); ++mIter) {
 		const auto &ua = *mIter;
 
-		//accept query if query is part of grounded extension
-		if (ua == query) {
+		//accept query if query is part of grounded extension, if query == 0 then there is no query argument to check for
+		if (query != 0 && ua == query) {
 			if (break_accepted) {
 				return acceptance_result::accepted;
 			}
 			result = acceptance_result::accepted;
 		}
 
-		//reject query if it gets attacked by argument of grounded extension
-		if (framework.exists_attack(ua, query)) {
+		//reject query if it gets attacked by argument of grounded extension, if query == 0 then there is no query argument to check for
+		if (query != 0 && framework.exists_attack(ua, query)) {
 			if (break_rejected) {
 				return acceptance_result::rejected;
 			}

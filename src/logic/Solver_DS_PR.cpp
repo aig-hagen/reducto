@@ -7,7 +7,7 @@
 /// This method searched for complete sets in a specified state of a framework, which attack the specified query argument
 /// </summary>
 static bool search_complete_sets_in_state(AF &framework, ArrayBitSet &reduct, uint32_t query_argument,	
-	std::__cxx11::list<uint32_t> &out_certificate_extension, ConeOfInfluence &coi, bool &is_query_attacked, bool &is_complete_pr)
+	std::__cxx11::list<uint32_t> &out_certificate_extension, bool &is_query_attacked, bool &is_complete_pr)
 {
 	// initialize SATSolver
 	SatSolver *solver = NULL;
@@ -64,47 +64,52 @@ static void complete_certificate(AF &framework, list<uint32_t> &out_certificate_
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
+static acceptance_result apply_shortcuts(AF &framework, uint32_t query_argument, ArrayBitSet &out_reduct, std::__cxx11::list<uint32_t> &out_grounded_extension)
+{
+	if (framework.self_attack[query_argument])
+	{
+		return acceptance_result::rejected;
+	}
+
+	if (framework.attackers[query_argument].empty())
+	{
+		return acceptance_result::accepted;
+	}
+
+	ArrayBitSet initial_actives = framework.create_active_arguments();
+	return Solver_GR::reduce_by_grounded(framework, initial_actives, query_argument, true, true, out_reduct, out_grounded_extension);
+}
+
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
+
 bool Solver_DS_PR::solve(uint32_t query_argument, AF &framework, list<uint32_t> &out_certificate_extension)
 {
 	// initialize variables
-	ArrayBitSet active_args_in_coi = ArrayBitSet();
-	pre_proc_result result_preProcessor = pre_proc_result::unknown;
-	ConeOfInfluence coi(framework);
-	list<uint32_t> grounded_extension;
-	// preprocess the framework
+	ArrayBitSet reduct_after_grounded = ArrayBitSet();
+	switch (apply_shortcuts(framework, query_argument, reduct_after_grounded, out_certificate_extension)) {
+		case accepted:
+			return true;
 
-#ifdef DO_PREPROC
+		case rejected:
+			// complete certificate if it does not attack the query
+			if (!framework.check_attack(query_argument, out_certificate_extension, framework)) {
+				complete_certificate(framework, out_certificate_extension);
+			}
+			return false;
 
-	result_preProcessor = PreProc_GR::process(framework, query_argument, true, true, active_args_in_coi, grounded_extension, coi);
-	tools::Tools_Solver::UpdateCertificate(out_certificate_extension, grounded_extension);
-#else
-	active_args_in_coi = framework.create_active_arguments();
-#endif
+		default:
+			bool is_query_attacked = false;
+			bool is_complete_pr = false;
+			bool is_skeptically_accepted = search_complete_sets_in_state(framework, reduct_after_grounded, query_argument, out_certificate_extension, is_query_attacked, is_complete_pr);
 
-	switch (result_preProcessor) {
+			// if skeptical acceptance of query got rejected, but query is not attacked by certificate and the certificate is not a complete preferred set,
+			// then extend certificate to get a complete preferred extension of the original framework
+			if (!is_skeptically_accepted && !is_query_attacked && !is_complete_pr) {
+				complete_certificate(framework, out_certificate_extension);
+				return is_skeptically_accepted;
+			}
 
-	case accepted:
-		return true;
-
-	case rejected:
-		// complete certificate if it does not attack the query
-		if (!framework.check_attack(query_argument, out_certificate_extension, framework)) {
-			complete_certificate(framework, out_certificate_extension);
-		}
-		return false;
-
-	default:
-		bool is_query_attacked = false;
-		bool is_complete_pr = false;
-		bool is_skeptically_accepted = search_complete_sets_in_state(framework, active_args_in_coi, query_argument, out_certificate_extension, coi, is_query_attacked, is_complete_pr);
-
-		// if skeptical acceptance of query got rejected, but query is not attacked by certificate and the certificate is not a complete preferred set,
-		// then extend certificate to get a complete preferred extension of the original framework
-		if (!is_skeptically_accepted && !is_query_attacked && !is_complete_pr) {
-			complete_certificate(framework, out_certificate_extension);
 			return is_skeptically_accepted;
-		}
-
-		return is_skeptically_accepted;
 	}
 }

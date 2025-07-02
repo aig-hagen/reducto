@@ -28,7 +28,7 @@ public:
 	/// </summary>
 	/// <param name="framework">The original abstract argumentation framework of the situation.</param>
 	/// <param name="active_args">Current active arguments in the framework.</param>
-	/// <param name="query">The query argument, whose acceptance is to be checked.</param>
+	/// <param name="query">The query argument, whose acceptance is to be checked. In case that there is no query argument to check for set this parameter to 0.</param>
 	/// <param name="break_acception"> If TRUE, the preprocessing will abort the process, in case the grounded extension contains the query argument.</param>
 	/// <param name="break_rejection"> If TRUE, the preprocessing will abort the process, in case the grounded extension attacks the query argument.</param>
 	/// <param name="out_reduct">[Output-Parameter]The set of active arguments, which remain of the original framework after the preprocessor is finished.</param>

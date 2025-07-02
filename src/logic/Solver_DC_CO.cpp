@@ -24,7 +24,7 @@ bool start_checking(uint32_t query_argument, AF &framework, ArrayBitSet &active_
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-static acceptance_result apply_shortcuts(AF &framework, uint32_t query_argument, ArrayBitSet &initial_reduct, std::__cxx11::list<uint32_t> &out_certificate_extension)
+static acceptance_result apply_shortcuts(AF &framework, uint32_t query_argument, ArrayBitSet &out_reduct, std::__cxx11::list<uint32_t> &out_grounded_extension)
 {
 	if (framework.self_attack[query_argument])
 	{
@@ -37,7 +37,7 @@ static acceptance_result apply_shortcuts(AF &framework, uint32_t query_argument,
 	}
 
 	ArrayBitSet initial_actives = framework.create_active_arguments();
-	return Solver_GR::reduce_by_grounded(framework, initial_actives, query_argument, false, true, initial_reduct, out_certificate_extension);
+	return Solver_GR::reduce_by_grounded(framework, initial_actives, query_argument, false, true, out_reduct, out_grounded_extension);
 }
 
 /*===========================================================================================================================================================*/
@@ -45,23 +45,18 @@ static acceptance_result apply_shortcuts(AF &framework, uint32_t query_argument,
 
 
 bool Solver_DC_CO::solve(uint32_t query_argument, AF &framework, list<uint32_t> &out_certificate_extension) {
+	ArrayBitSet reduct_after_grounded = ArrayBitSet();
+	switch (apply_shortcuts(framework, query_argument, reduct_after_grounded, out_certificate_extension)) {
+		case accepted:
+			return true;
 
-	ArrayBitSet initial_reduct = ArrayBitSet();
-	acceptance_result result_shortcuts = acceptance_result::unknown;
-	ConeOfInfluence coi(framework);
-	result_shortcuts = apply_shortcuts(framework, query_argument, initial_reduct, out_certificate_extension);
-	switch (result_shortcuts) {
+		case rejected:
+			return false;
 
-	case accepted:
-		return true;
+		case unknown:
+			return start_checking(query_argument, framework, reduct_after_grounded, out_certificate_extension);
 
-	case rejected:
-		return false;
-
-	case unknown:
-		return start_checking(query_argument, framework, initial_reduct, out_certificate_extension);
-
-	default:
-		return start_checking(query_argument, framework, initial_reduct, out_certificate_extension);
+		default:
+			return start_checking(query_argument, framework, reduct_after_grounded, out_certificate_extension);
 	}
 }

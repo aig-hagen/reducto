@@ -25,20 +25,15 @@ static bool start_checking(AF &framework, ArrayBitSet &active_args, list<uint32_
 
 bool Solver_SE_ST::solve(AF &framework, list<uint32_t> &out_certificate_extension)
 {
-	// preprocess the framework
-	ArrayBitSet initial_reduct;
-
-#ifdef DO_PREPROC
-	initial_reduct = PreProc_GR::process_only_grounded(framework, out_certificate_extension);
-#else
-	initial_reduct = framework.create_active_arguments();
-#endif
+	ArrayBitSet active_args = framework.create_active_arguments();
+	ArrayBitSet reduct_after_grounded = ArrayBitSet();
+	Solver_GR::reduce_by_grounded(framework, active_args, 0, true, true, reduct_after_grounded, out_certificate_extension);
 
 	//check if grounded extension is stable
-	if (initial_reduct._array.size() == 0) {
+	if (reduct_after_grounded._array.size() == 0) {
 		//reduct is empty, therefore grounded extension is only stable extension
 		return true;
 	}
 
-	return start_checking(framework, initial_reduct, out_certificate_extension);
+	return start_checking(framework, reduct_after_grounded, out_certificate_extension);
 }

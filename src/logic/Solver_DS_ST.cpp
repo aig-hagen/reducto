@@ -28,43 +28,38 @@ static bool check_for_stable_extension_without_query(uint32_t query_argument, AF
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-bool Solver_DS_ST::solve(uint32_t query_argument, AF &framework, list<uint32_t> &out_certificate_extension)
+static acceptance_result apply_shortcuts(AF &framework, uint32_t query_argument, ArrayBitSet &out_reduct, std::__cxx11::list<uint32_t> &out_grounded_extension)
 {
-	// preprocess the framework
-
-	// check if query is unattacked
 	if (framework.attackers[query_argument].empty())
 	{
-		return true;
+		return acceptance_result::accepted;
 	}
 
-	// get the original state (active arguments) of the framework
 	ArrayBitSet active_args = framework.create_active_arguments();
-	ArrayBitSet initial_reduct = ArrayBitSet();
-	pre_proc_result result_preProcessor = pre_proc_result::unknown;
+	return Solver_GR::reduce_by_grounded(framework, active_args, query_argument, true, false, out_reduct, out_grounded_extension);
+}
 
-#ifdef DO_PREPROC
-	result_preProcessor = PreProc_GR::reduce_by_grounded(framework, active_args, query_argument, true, false, initial_reduct, out_certificate_extension);
-#else
-	initial_reduct = framework.create_active_arguments();
-#endif
+/*===========================================================================================================================================================*/
+/*===========================================================================================================================================================*/
 
-	switch (result_preProcessor) {
-
+bool Solver_DS_ST::solve(uint32_t query_argument, AF &framework, list<uint32_t> &out_certificate_extension)
+{
+	ArrayBitSet reduct_after_grounded = ArrayBitSet();
+	switch (apply_shortcuts(framework, query_argument, reduct_after_grounded, out_certificate_extension)) {
 	case accepted:
 		return true;
 
 	case rejected:
-		if (initial_reduct._array.size() == 0) {
+		if (reduct_after_grounded._array.size() == 0) {
 			//calculated grounded extension is the stable extension
 			return false;
 		}
 
-		return !check_for_stable_extension_without_query(query_argument, framework, initial_reduct, out_certificate_extension);
+		return !check_for_stable_extension_without_query(query_argument, framework, reduct_after_grounded, out_certificate_extension);
 
 	default:
 		
 
-		return !check_for_stable_extension_without_query(query_argument, framework, initial_reduct, out_certificate_extension);
+		return !check_for_stable_extension_without_query(query_argument, framework, reduct_after_grounded, out_certificate_extension);
 	}
 }
