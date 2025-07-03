@@ -33,8 +33,3 @@ public:
 	static AF calculate_cone_influence(AF &framework, uint32_t query, std::unordered_map<uint32_t, uint32_t> &args_new_to_old);
 };
 #endif
-
-
-#ifdef DO_PREPROC
-#else
-#endif

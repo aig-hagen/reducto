@@ -61,6 +61,18 @@ void static print_proof(std::__cxx11::list<uint32_t> &proof_extension)
 	}
 }
 
+void static print_proof(std::__cxx11::list<uint32_t> &proof_extension, unordered_map<uint32_t, uint32_t> &args_new_to_old)
+{
+	cout << "w ";
+
+	if (!proof_extension.empty()) {
+		for (list<uint32_t>::iterator mIter = proof_extension.begin(); mIter != proof_extension.end(); ++mIter) {
+			cout << args_new_to_old[*mIter] << " ";
+		}
+		cout << endl;
+	}
+}
+
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
@@ -157,6 +169,13 @@ int static execute(int argc, char **argv)
 			cerr << argv[0] << ": Unsupported file format\n";
 			return 1;
 	}
+	bool has_preprocessed = false;
+	unordered_map<uint32_t, uint32_t> args_new_to_old;
+
+#ifdef DO_PREPROC
+		has_preprocessed = true;
+		framework = PreProcessor::calculate_cone_influence(framework, query_argument, args_new_to_old);
+#endif
 
 	// parse the problem and semantics
 	string task = problem.substr(0, problem.find("-"));
@@ -191,7 +210,14 @@ int static execute(int argc, char **argv)
 			cout << (skept_accepted ? "YES" : "NO") << endl;
 			if (!skept_accepted)
 			{
-				print_proof(proof_extension);
+				if (has_preprocessed)
+				{
+					print_proof(proof_extension, args_new_to_old);
+				}
+				else 
+				{
+					print_proof(proof_extension);
+				}
 			}
 
 			//free allocated memory
@@ -226,7 +252,14 @@ int static execute(int argc, char **argv)
 			cout << (cred_accepted ? "YES" : "NO") << endl;
 			if (cred_accepted)
 			{
-				print_proof(proof_extension);
+				if (has_preprocessed)
+				{
+					print_proof(proof_extension, args_new_to_old);
+				}
+				else
+				{
+					print_proof(proof_extension);
+				}
 			}
 
 			//free allocated memory
@@ -256,7 +289,14 @@ int static execute(int argc, char **argv)
 			// print result
 			if (has_extension)
 			{
-				print_proof(proof_extension);
+				if (has_preprocessed)
+				{
+					print_proof(proof_extension, args_new_to_old);
+				}
+				else
+				{
+					print_proof(proof_extension);
+				}
 			}
 			else {
 				cout << "NO" << endl;

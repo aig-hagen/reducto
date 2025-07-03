@@ -25,7 +25,7 @@ static AF create_framework(AF &framework_old, vector<uint8_t> &active_args_bitse
 		uint32_t argument_new = i;
 		uint32_t argument_old = args_new_to_old[argument_new];
 		// iterate through attackers of the current argument
-		for (std::vector<unsigned int>::size_type j = 0; j < framework_old.attackers[argument_old].size(); i++) {
+		for (std::vector<unsigned int>::size_type j = 0; j < framework_old.attackers[argument_old].size(); j++) {
 			uint32_t attacker_old = framework_old.attackers[argument_old][j];
 			uint32_t attacker_new = args_old_to_new[attacker_old];
 			framework_new.add_attack(attacker_new, argument_new);
