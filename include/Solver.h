@@ -20,7 +20,7 @@
 class Solver {
 public:
 	Solver();
-	void add_query(uint32_t arg);
+	void set_query(uint32_t arg);
 	void set_semantics(semantics sem);
 	void add_argument(uint32_t arg);
 	void add_attack(uint32_t attacker, uint32_t victim);
@@ -31,7 +31,7 @@ public:
 
 private:
 	AF _framework;
-	list<uint32_t> _query_arguments;
+	uint32_t _query_argument;
 	semantics _semantics;
 	list<uint32_t> _solution;
 
@@ -53,7 +53,7 @@ extern "C" {
 	void ipafair_add_attack(void *s, int32_t a, int32_t b) { import(s)->add_attack(a, b); }
 	void ipafair_del_argument(void *s, int32_t a) { import(s)->delete_argument(a); }
 	void ipafair_del_attack(void *s, int32_t a, int32_t b) { import(s)->delete_attack(a, b); }
-	void ipafair_assume(void *s, int32_t a) { import(s)->add_query(a); }
+	void ipafair_assume(void *s, int32_t a) { import(s)->set_query(a); }
 	int32_t ipafair_solve_cred(void *s) { return import(s)->solve(true); }
 	int32_t ipafair_solve_skept(void *s) { return import(s)->solve(false); }
 	int32_t ipafair_val(void *s, int32_t a) { return import(s)->val(a); }
