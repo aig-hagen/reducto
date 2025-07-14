@@ -35,10 +35,6 @@ bool Solver_DC_CO::solve(uint32_t query_argument, AF &framework, list<uint32_t> 
 	switch (result_preProcessor) {
 
 	case accepted:
-		if (framework.attackers[query_argument].empty())
-		{
-			out_certificate_extension.push_back(query_argument);
-		}
 		return true;
 
 	case rejected:
