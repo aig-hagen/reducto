@@ -175,8 +175,9 @@ int static execute(int argc, char **argv)
 #ifdef DO_PREPROC
 		has_preprocessed = true;
 		framework = PreProcessor::calculate_cone_influence(framework, query_argument, args_new_to_old);
+		query_argument = 1;
 #endif
-
+		
 	// parse the problem and semantics
 	string task = problem.substr(0, problem.find("-"));
 	problem.erase(0, problem.find("-") + 1);
