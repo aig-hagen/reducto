@@ -3,14 +3,14 @@
 /*===========================================================================================================================================================*/
 /*===========================================================================================================================================================*/
 
-void add_arg_to_cone(std::__cxx11::list<uint32_t> &ls_args_unprocessed, uint32_t &query, std::vector<uint8_t> &active_args_bitset, 
-	uint32_t &num_args_new, std::unordered_map<uint32_t, uint32_t> &out_args_new_to_old, std::unordered_map<uint32_t, uint32_t> &out_args_old_to_new)
+void add_arg_to_cone(std::__cxx11::list<uint32_t> &ls_args_unprocessed, std::vector<uint8_t> &active_args_bitset, 
+	uint32_t &out_num_args_new, std::unordered_map<uint32_t, uint32_t> &out_args_new_to_old, std::unordered_map<uint32_t, uint32_t> &out_args_old_to_new, uint32_t &argument)
 {
-	active_args_bitset[query] = true;
-	num_args_new++;
-	out_args_new_to_old[num_args_new] = query;
-	out_args_old_to_new[query] = num_args_new;
-	ls_args_unprocessed.push_back(query);
+	active_args_bitset[argument] = true;
+	out_num_args_new++;
+	out_args_new_to_old[out_num_args_new] = argument;
+	out_args_old_to_new[argument] = out_num_args_new;
+	ls_args_unprocessed.push_back(argument);
 }
 
 /*===========================================================================================================================================================*/
@@ -45,7 +45,7 @@ AF PreProcessor::calculate_cone_influence(AF &framework, uint32_t query, std::un
 	list<uint32_t> ls_args_unprocessed;
 	std::unordered_map<uint32_t, uint32_t> args_old_to_new = std::unordered_map<uint32_t, uint32_t>();
 	// start list with query
-	add_arg_to_cone(ls_args_unprocessed, query, active_args_bitset, num_args_new, out_args_new_to_old, args_old_to_new);
+	add_arg_to_cone(ls_args_unprocessed, active_args_bitset, num_args_new, out_args_new_to_old, args_old_to_new, query);
 
 	// iterate through list as long as it has elements
 	for (list<uint32_t>::iterator mIter = ls_args_unprocessed.begin(); mIter != ls_args_unprocessed.end(); ++mIter) {
@@ -59,7 +59,7 @@ AF PreProcessor::calculate_cone_influence(AF &framework, uint32_t query, std::un
 			}
 
 			// add attacker to the cone of influence
-			add_arg_to_cone(ls_args_unprocessed, attacker, active_args_bitset, num_args_new, out_args_new_to_old, args_old_to_new);
+			add_arg_to_cone(ls_args_unprocessed, active_args_bitset, num_args_new, out_args_new_to_old, args_old_to_new, attacker);
 		}
 	}
 

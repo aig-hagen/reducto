@@ -172,16 +172,22 @@ int static execute(int argc, char **argv)
 	bool has_preprocessed = false;
 	unordered_map<uint32_t, uint32_t> args_new_to_old;
 
-#ifdef DO_PREPROC
-		has_preprocessed = true;
-		framework = PreProcessor::calculate_cone_influence(framework, query_argument, args_new_to_old);
-		query_argument = 1;
-#endif
-		
 	// parse the problem and semantics
 	string task = problem.substr(0, problem.find("-"));
 	problem.erase(0, problem.find("-") + 1);
 	string sem = problem.substr(0, problem.find("-"));
+
+	//preprocess if compiler flag is set
+#ifdef DO_PREPROC
+	//calculate relevant arguments for problems DC-CO and DS-PR
+	if ((Enums::string_to_task(task) == DS && Enums::string_to_sem(sem) == preferred)
+		|| (Enums::string_to_task(task) == DC && Enums::string_to_sem(sem) == complete)) {
+		has_preprocessed = true;
+		framework = PreProcessor::calculate_cone_influence(framework, query_argument, args_new_to_old);
+		query_argument = 1;
+	}	
+#endif
+		
 	// process the problem
 	switch (Enums::string_to_task(task)) {
 		// skeptical acceptance problem
