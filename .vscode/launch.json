@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/${workspaceFolderBasename}",
-            "args": ["-p","DC-CO","-f","${workspaceFolder}/build/testme.i23","-a","1"],
+            "args": ["-p","DC-CO","-f","${workspaceFolder}/build/testme.af","-fo","tgf","-a","2"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
