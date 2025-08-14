@@ -176,6 +176,7 @@ pre_proc_result PreProc_GR::process(AF &framework, uint32_t query, bool break_ac
 
 	if (framework.attackers[query].empty())
 	{
+		out_gr_extension.push_back(query);
 		return pre_proc_result::accepted;
 	}
 
@@ -209,6 +210,7 @@ pre_proc_result PreProc_GR::process_only_grounded(AF &framework, uint32_t query,
 
 	if (framework.attackers[query].empty())
 	{
+		out_gr_extension.push_back(query);
 		return pre_proc_result::accepted;
 	}
 
