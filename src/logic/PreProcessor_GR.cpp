@@ -171,13 +171,17 @@ pre_proc_result PreProc_GR::process(AF &framework, uint32_t query, bool break_ac
 {
 	if (framework.self_attack[query])
 	{
-		return pre_proc_result::rejected;
+		if(break_rejected){
+			return pre_proc_result::rejected;
+		}
 	}
 
 	if (framework.attackers[query].empty())
 	{
-		out_gr_extension.push_back(query);
-		return pre_proc_result::accepted;
+		if(break_accepted){
+			out_gr_extension.push_back(query);
+			return pre_proc_result::accepted;
+		}
 	}
 
 	ArrayBitSet active_args = calculate_cone_influence(framework, query, out_coi);
@@ -205,13 +209,17 @@ pre_proc_result PreProc_GR::process_only_grounded(AF &framework, uint32_t query,
 {
 	if (framework.self_attack[query])
 	{
-		return pre_proc_result::rejected;
+		if(break_rejection){
+			return pre_proc_result::rejected;
+		}
 	}
 
 	if (framework.attackers[query].empty())
 	{
-		out_gr_extension.push_back(query);
-		return pre_proc_result::accepted;
+		if(break_acception){
+			out_gr_extension.push_back(query);
+			return pre_proc_result::accepted;
+		}
 	}
 
 	//build active arguments of the original framework
