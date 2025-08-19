@@ -31,12 +31,6 @@ static acceptance_result apply_shortcuts(AF &framework, uint32_t query_argument,
 		return acceptance_result::rejected;
 	}
 
-	if (framework.attackers[query_argument].empty())
-	{
-		out_grounded_extension.push_back(query_argument);
-		return acceptance_result::accepted;
-	}
-
 	ArrayBitSet initial_actives = framework.create_active_arguments();
 	return Solver_GR::reduce_by_grounded(framework, initial_actives, query_argument, false, true, out_reduct, out_grounded_extension);
 }
