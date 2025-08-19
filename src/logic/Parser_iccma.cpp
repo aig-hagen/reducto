@@ -90,7 +90,12 @@ uint32_t ParserICCMA::parse_af_tgf(AF &framework, string query, string file) {
 	framework.finish_initilization();
 
 	if (!query.empty()) {
-		return  arg_str_to_int[query];
+		uint32_t query_int = arg_str_to_int[query];
+		if(query_int == 0){
+			cerr << "Either the file does not comply to TGF format or the label of the query argument was not found in the file.\n";
+			exit(1);
+		}
+		return query_int;
 	}
 	else {
 		return 0;
