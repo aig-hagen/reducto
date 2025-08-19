@@ -33,6 +33,7 @@ static acceptance_result apply_shortcuts(AF &framework, uint32_t query_argument,
 
 	if (framework.attackers[query_argument].empty())
 	{
+		out_grounded_extension.push_back(query_argument);
 		return acceptance_result::accepted;
 	}
 
