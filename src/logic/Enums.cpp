@@ -27,6 +27,7 @@ semantics Enums::string_to_sem(string semantics)
 
 format Enums::string_to_format(string format_str) {
 	if (format_str == "i23") return I23;
+	if (format_str == "af") return I23;
 	if (format_str == "tgf") return TGF;
 	return UNKNOWN_FORMAT;
 }
